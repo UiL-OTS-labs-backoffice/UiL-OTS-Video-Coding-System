@@ -1,4 +1,5 @@
 package controller;
+import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import view.*;
 import model.*;
@@ -66,7 +67,7 @@ public class Controller {
 		if( url != null)
 		{
 			Globals.experimentModel.setUrl(url);
-			Globals.editorView.getPlayer().playMedia(url);
+			Globals.editorView.getVideoPlayer().start(url);
 		}
 			
 	}
@@ -89,10 +90,19 @@ public class Controller {
 	 */
 	public void prevFrame()
 	{
-		EmbeddedMediaPlayer player = Globals.editorView.getPlayer();
-		float fps = player.getFps();
-		float frameDuration = 1/fps;
-		float curTime = player.getPosition();
-		player.setPosition(curTime-frameDuration);
+		/*DirectMediaPlayer player = Globals.editorView.getPlayer();
+		long fps = (long) (Globals.editorView.getVideoPlayer().getFps() * 1000);
+		System.out.println("Fps: " + fps);
+		
+		long frameDuration = 1000000/fps;
+		System.out.println("Frame duration: " + frameDuration + " ms");
+		
+		long curTime = player.getTime();
+		System.out.println("Current time: " + curTime);
+		player.setTime(curTime-frameDuration);
+		System.out.println("New time: " + player.getTime());
+		System.out.println("");*/
+		
+		Globals.editorView.getVideoPlayer().render();
 	}
 }

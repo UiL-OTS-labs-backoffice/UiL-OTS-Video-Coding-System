@@ -1,6 +1,7 @@
+import com.sun.jna.NativeLibrary;
+
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
-import com.sun.jna.NativeLibrary;
 
 import controller.Globals;
 

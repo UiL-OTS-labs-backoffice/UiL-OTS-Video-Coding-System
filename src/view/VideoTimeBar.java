@@ -3,12 +3,10 @@ package view;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 import javax.swing.JLabel;
-
-import com.jgoodies.forms.factories.DefaultComponentFactory;
-
 import javax.swing.JSlider;
 
 import java.awt.BorderLayout;
@@ -32,7 +30,9 @@ public class VideoTimeBar extends JPanel {
 
 	private static final long serialVersionUID = -8389945220035956775L;
 	
-	private EmbeddedMediaPlayer videoPlayer;
+	//private EmbeddedMediaPlayer videoPlayer;
+	private DirectMediaPlayer videoPlayer;
+	
 	
 	// TODO: Fix clickable end
 	private boolean endFixed = true;
@@ -44,7 +44,8 @@ public class VideoTimeBar extends JPanel {
 	 * Constructor for timebar panel
 	 * @param videoPlayer	EmbeddedMediaPlayer that is used for playing video
 	 */
-	public VideoTimeBar(EmbeddedMediaPlayer videoPlayer)
+	//public VideoTimeBar(EmbeddedMediaPlayer videoPlayer)
+	public VideoTimeBar(DirectMediaPlayer videoPlayer)
 	{
 		this.videoPlayer = videoPlayer;
 		createUI();
@@ -136,9 +137,11 @@ public class VideoTimeBar extends JPanel {
 	 */
 	private final class UpdateRunnable extends TimerTask {
 		
-		private final EmbeddedMediaPlayer mediaPlayer;
+		//private final EmbeddedMediaPlayer mediaPlayer;
+		private final DirectMediaPlayer mediaPlayer;
 		
-		public UpdateRunnable(EmbeddedMediaPlayer mediaPlayer)
+		//public UpdateRunnable(EmbeddedMediaPlayer mediaPlayer)
+		public UpdateRunnable(DirectMediaPlayer mediaPlayer)
 		{
 			this.mediaPlayer = mediaPlayer;
 		}

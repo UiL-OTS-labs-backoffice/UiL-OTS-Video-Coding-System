@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
 
+import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import controller.Controller;
 import controller.Globals;
@@ -22,8 +23,11 @@ public class Editor {
 	Controller c = Globals.controller;
 	
     // Create a new media player instance for the run-time platform
-    private EmbeddedMediaPlayer mediaPlayer;
-
+//    private EmbeddedMediaPlayer mediaPlayer;
+	private DirectMediaPlayer mediaPlayer;
+//	private VideoPlayer videoPlayer;
+	private VideoPlayerCanvas videoPlayer;
+	
 	// Panels
     private JFrame frame;
     private BottomBar bottom_bar;
@@ -52,7 +56,8 @@ public class Editor {
      * Returns the instance of the media player
      * @return	EmbeddedMediaPlayer
      */
-    public EmbeddedMediaPlayer getPlayer()
+    //public EmbeddedMediaPlayer getPlayer()
+    public DirectMediaPlayer getPlayer()
     {
     	return mediaPlayer;
     }
@@ -108,9 +113,14 @@ public class Editor {
     private void addVideoPlayerSurface()
     {
     	//Adding the panel to the frame and getting the media player
-        VideoPlayer videoPlayer = new VideoPlayer();
+        videoPlayer = new VideoPlayerCanvas();
         mediaPlayer = videoPlayer.getMediaPlayer();
         frame.getContentPane().add(videoPlayer);
+    }
+    
+    public VideoPlayerCanvas getVideoPlayer()
+    {
+    	return videoPlayer;
     }
     
     /**

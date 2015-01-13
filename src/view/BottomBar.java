@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 
+import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 public class BottomBar extends JPanel {
@@ -11,12 +12,15 @@ public class BottomBar extends JPanel {
 	
 	private static final long serialVersionUID = 8873779601345831556L;
 	
-	private EmbeddedMediaPlayer mediaPlayer;
+//	private EmbeddedMediaPlayer mediaPlayer;
+	private DirectMediaPlayer mediaPlayer;
+	
 	
 	// Trial information panel instance
 	private TrialInformation trialInformation;
 	
-	public BottomBar(EmbeddedMediaPlayer mediaPlayer)
+//	public BottomBar(EmbeddedMediaPlayer mediaPlayer)
+	public BottomBar(DirectMediaPlayer mediaPlayer)
 	{
 		this.mediaPlayer = mediaPlayer;
 		setLayout(new BorderLayout(0, 0));

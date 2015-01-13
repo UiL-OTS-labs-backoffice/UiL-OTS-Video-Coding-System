@@ -6,8 +6,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
-
 import controller.Controller;
 
 public class VideoManipulationButtons extends JPanel {
@@ -15,9 +15,11 @@ public class VideoManipulationButtons extends JPanel {
 	private static final long serialVersionUID = 9024137258475533717L;
 	
 	// Instance of the video player
-	private EmbeddedMediaPlayer videoPlayer;
+//	private EmbeddedMediaPlayer videoPlayer;
+	private DirectMediaPlayer videoPlayer;
 	
-	public VideoManipulationButtons(EmbeddedMediaPlayer videoPlayer)
+//	public VideoManipulationButtons(EmbeddedMediaPlayer videoPlayer)
+	public VideoManipulationButtons(DirectMediaPlayer videoPlayer)
 	{
 		this.videoPlayer = videoPlayer;
 		addPrevTrialButton();
