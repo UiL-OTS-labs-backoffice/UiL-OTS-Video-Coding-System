@@ -11,6 +11,6 @@ public class Main {
 		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files (x86)\\VideoLAN\\VLC\\sdk\\lib");
 		NativeLibrary.addSearchPath("libvlc", "C:\\Program Files\\VideoLAN\\VLC");
         Globals global = Globals.getInstance();
-        global.editorView.show();
+       global.getEditor().show();
 	}
 }

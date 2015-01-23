@@ -31,38 +31,62 @@ import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-import uk.co.caprica.vlcj.player.MediaPlayer;
-import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
+import controller.Globals;
 public class PlayerControlsPanel extends JPanel {
-    private static final long serialVersionUID = 1L;
-    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-    private final EmbeddedMediaPlayer mediaPlayer;
-    private JLabel timeLabel;
+    
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+   
+	/**
+	 * Single thread executor
+	 */
+	private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    
+	/**
+	 * Time slider and label
+	 */
+	private JLabel timeLabel;
     private JSlider positionSlider;
+    
+    /**
+     * DOCUMENT ME 
+     */
     @SuppressWarnings("unused")
 	private boolean mousePressedPlaying = false;
     
-    public PlayerControlsPanel(EmbeddedMediaPlayer mediaPlayer) {
-        this.mediaPlayer = mediaPlayer;
+    /**
+     * Constructor method
+     */
+    public PlayerControlsPanel() {
         createUI();
-        executorService.scheduleAtFixedRate(new UpdateRunnable(mediaPlayer), 0L, 1L, TimeUnit.SECONDS);
     }
     
+    /**
+     * Constructor helper method
+     */
     private void createUI() {
         createControls();
         layoutControls();
         registerListeners();
     }
     
+    /**
+     * Creates the time slider
+     */
     private void createControls() {
         timeLabel = new JLabel("hh:mm:ss");
         positionSlider = new JSlider();
         positionSlider.setMinimum(0);
-        positionSlider.setMaximum(1000);
+        positionSlider.setMaximum(10000);
         positionSlider.setValue(0);
         positionSlider.setToolTipText("Position");
     }
     
+    /**
+     * Creates the layoutControls
+     */
     private void layoutControls() {
 		setBorder(new EmptyBorder(4, 4, 4, 4));
 		setLayout(new BorderLayout());
@@ -80,15 +104,12 @@ public class PlayerControlsPanel extends JPanel {
      * Broken out position setting, handles updating mediaPlayer
      */
     private void setSliderBasedPosition() {
-        if (!mediaPlayer.isSeekable()) {
-            return;
-        }
-        float positionValue = positionSlider.getValue() / 1000.0f;
+       float positionValue = positionSlider.getValue() / 10000.0f;
         // Avoid end of file freeze-up
         if (positionValue > 0.99f) {
             positionValue = 0.99f;
         }
-        mediaPlayer.setPosition(positionValue);
+        Globals.getVideoController().setPosition(positionValue);
     }
     
 
@@ -96,9 +117,9 @@ public class PlayerControlsPanel extends JPanel {
         positionSlider.addMouseListener(new MouseAdapter() {@
             Override
             public void mousePressed(MouseEvent e) {
-                if (mediaPlayer.isPlaying()) {
+                if (Globals.getVideoController().isPlaying()) {
                     mousePressedPlaying = true;
-                    mediaPlayer.pause();
+                    Globals.getVideoController().play();
                 } else {
                     mousePressedPlaying = false;
                 }
@@ -107,19 +128,18 @@ public class PlayerControlsPanel extends JPanel {
             Override
             public void mouseReleased(MouseEvent e) {
                 setSliderBasedPosition();
-                mediaPlayer.nextFrame();
             }
         });
     }
     private final class UpdateRunnable implements Runnable {
-        private final MediaPlayer mediaPlayer;
-        private UpdateRunnable(MediaPlayer mediaPlayer) {
+        private final IMediaPlayer mediaPlayer;
+        private UpdateRunnable(IMediaPlayer mediaPlayer) {
             this.mediaPlayer = mediaPlayer;
         }@
         Override
         public void run() {
-            final long time = mediaPlayer.getTime();
-            final int position = (int)(mediaPlayer.getPosition() * 1000.0f);
+            final long time = mediaPlayer.getMediaTime();
+            final int position = (int)(mediaPlayer.getPosition() * 10000.0f);
             // Updates to user interface components must be executed on 
             // the Event
             // Dispatch Thread
@@ -142,11 +162,21 @@ public class PlayerControlsPanel extends JPanel {
         		TimeUnit.MILLISECONDS.toSeconds(millis) - 
         		TimeUnit.MINUTES.toSeconds(
         				TimeUnit.MILLISECONDS.toMinutes(millis)
-        		)
+        		)        			
         	);
         timeLabel.setText(s);
     }
     private void updatePosition(int value) {
         positionSlider.setValue(value);
+    }
+    
+    public void playerStarted(IMediaPlayer player)
+    {
+    	executorService.scheduleAtFixedRate(
+    			new UpdateRunnable(player), 
+    			0L, 
+    			1L, 
+    			TimeUnit.MILLISECONDS
+    		);
     }
 }

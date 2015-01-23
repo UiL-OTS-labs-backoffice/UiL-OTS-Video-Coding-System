@@ -4,10 +4,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
 
-import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
-import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
-import controller.Controller;
-import controller.Globals;
+import controller.*;
 
 /**
  * Main view of the program
@@ -20,17 +17,15 @@ public class Editor {
 	private static Editor instance;
 
 	// Instance of controller
-	Controller c = Globals.controller;
+	Controller c = Globals.getController();
 	
     // Create a new media player instance for the run-time platform
-//    private EmbeddedMediaPlayer mediaPlayer;
-	private DirectMediaPlayer mediaPlayer;
-//	private VideoPlayer videoPlayer;
-	private VideoPlayerCanvas videoPlayer;
+    private IMediaPlayer videoPlayer;
 	
 	// Panels
     private JFrame frame;
     private BottomBar bottom_bar;
+    private VideoManipulationButtons playButtons;
     
     /**
      * Getmethod for instance of Editor view
@@ -44,22 +39,77 @@ public class Editor {
     }
     
     /**
+     * Private constructor for editor
+     * Creates the main view of the program
+     * Set to private to ensure singleton
+     */
+    private Editor()
+    {
+    	createFrame();
+    	addMenu();
+    	addControlBar();
+    	addVideoManipulationButtons();
+    }
+    
+    /**
+     * Constructs the JFrame
+     */
+    private void createFrame()
+    {
+        frame = new JFrame("UiL OTS Labs Video Coding Software");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocation(400, 150);
+        frame.setSize(1024, 768);
+        frame.getContentPane().setLayout(new BorderLayout(0, 0));
+    }
+    
+    /**
+     * Adds the menu to the frame
+     */
+    private void addMenu()
+    {
+    	MainMenu menu = new MainMenu();
+    	frame.setJMenuBar(menu);
+    }
+    
+    /**
+     * Function to add the control bar to the bottom of the main view
+     */
+    private void addControlBar()
+    {
+    	bottom_bar = new BottomBar();
+        frame.getContentPane().add(bottom_bar, BorderLayout.SOUTH);
+    }
+    
+    /**
+     * Adds the video controls to the frame
+     */
+    private void addVideoManipulationButtons()
+    {
+    	playButtons = new VideoManipulationButtons();
+    	bottom_bar.add(playButtons, BorderLayout.CENTER);
+    }
+    
+    /**
+     * Creates a video panel and sets it to the content frame
+     * This is only called when the media file has been selected
+     */
+    public void addVideoPlayerSurface(VLCMediaPlayer player)
+    {
+    	videoPlayer = player;
+    	frame.getContentPane().add(videoPlayer.getVisualComponent());
+    	playButtons.setEnableButtons(true);
+    	bottom_bar.getTimeCodes().playerStarted(player);
+    	frame.revalidate();
+    }
+    
+    /**
      * Shows the main view
      */
     public void show(){
         
         frame.setVisible(true);
         c.updateTrialNumber();
-    }
-    
-    /**
-     * Returns the instance of the media player
-     * @return	EmbeddedMediaPlayer
-     */
-    //public EmbeddedMediaPlayer getPlayer()
-    public DirectMediaPlayer getPlayer()
-    {
-    	return mediaPlayer;
     }
     
     /**
@@ -74,71 +124,6 @@ public class Editor {
     	bottom_bar.setInfo(trial, look, time);
     }
     
-    /**
-     * Private constructor for editor
-     * Creates the main view of the program
-     * Set to private to ensure singleton
-     */
-    private Editor()
-    {
-    	createFrame();
-    	addMenu();
-    	addVideoPlayerSurface();
-    	addControlBar();
-    	addVideoManipulationButtons();
-    }
-    
-    
-    /**
-     * Constructs the JFrame
-     */
-    private void createFrame()
-    {
-        frame = new JFrame("UiL OTS Labs Video Coding Software");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocation(400, 150);
-        frame.setSize(1024, 768);
-        frame.getContentPane().setLayout(new BorderLayout(0, 0));
-    }
-    
-    private void addMenu()
-    {
-    	MainMenu menu = new MainMenu();
-    	frame.setJMenuBar(menu);
-    }
-    
-    /**
-     * Creates a video panel and sets it to the content frame
-     */
-    private void addVideoPlayerSurface()
-    {
-    	//Adding the panel to the frame and getting the media player
-        videoPlayer = new VideoPlayerCanvas();
-        mediaPlayer = videoPlayer.getMediaPlayer();
-        frame.getContentPane().add(videoPlayer);
-    }
-    
-    public VideoPlayerCanvas getVideoPlayer()
-    {
-    	return videoPlayer;
-    }
-    
-    /**
-     * Function to add the control bar to the bottom of the main view
-     */
-    private void addControlBar()
-    {
-    	bottom_bar = new BottomBar(mediaPlayer);
-        frame.getContentPane().add(bottom_bar, BorderLayout.SOUTH);
-    }
-    
-    private void addVideoManipulationButtons()
-    {
-    	VideoManipulationButtons playButtons = 
-    			new VideoManipulationButtons(mediaPlayer);
-    	bottom_bar.add(playButtons, BorderLayout.CENTER);
-    }
-    
-    
-    
+   
+   
 }

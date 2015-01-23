@@ -1,13 +1,19 @@
 package controller;
-import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
-import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
+
 import view.*;
 import model.*;
 
 public class Controller {
 	
+	/**
+	 * Controller instance
+	 */
 	private static Controller instance;
 	
+	/**
+	 * Get instance method
+	 * @return	Instance of the controller
+	 */
 	public static Controller getInstance()
 	{
 		if(instance == null)
@@ -15,18 +21,23 @@ public class Controller {
 		return instance;
 	}
 	
+	/**
+	 * Get the media URL
+	 * @return	Media URL
+	 */
 	public String getUrl()
 	{
-		return Globals.experimentModel.getUrl();
+		return Globals.getExperimentModel().getUrl();
 	}
 
 	/**
 	 * Function to open the settings menu
+	 * Calls to the view
 	 */
 	public void openSettings()
 	{
-		ExperimentSettings e = ExperimentSettings.getInstance();
-		Experiment g = Globals.experimentModel;
+		ExperimentSettings e = Globals.getSettingsView();
+		Experiment g = Globals.getExperimentModel();
 		e.setSettings(
 				g.getExp_id(),
 				g.getExp_name(),
@@ -42,11 +53,12 @@ public class Controller {
 	
 	/**
 	 * Function to save the settings
+	 * Calls to the model
 	 */
 	public void setSettings()
 	{
-		ExperimentSettings s = ExperimentSettings.getInstance();
-		Globals.experimentModel.setSettings(
+		ExperimentSettings s = Globals.getSettingsView();
+		Globals.getExperimentModel().setSettings(
 				s.getExp_id(),
 				s.getExp_name(),
 				s.getRes_id(),
@@ -60,49 +72,35 @@ public class Controller {
 	
 	/**
 	 * Function to open a new video file
+	 * 
+	 * Opens a window to select a video file
+	 * Calls the view to add a new video player with the video file
 	 */
 	public void videoUrlChooser()
 	{
 		String url = VideoSelector.show();
 		if( url != null)
 		{
-			Globals.experimentModel.setUrl(url);
-			Globals.editorView.getVideoPlayer().start(url);
+			VLCMediaPlayer player = new VLCMediaPlayer(url);
+			Globals.getExperimentModel().setUrl(url);
+			Globals.getEditor().addVideoPlayerSurface(player);
+			Globals.getVideoController().setPlayer(player);
 		}
-			
 	}
 	
+	/**
+	 * Updates the trial number to a new trial
+	 */
 	public void updateTrialNumber()
 	{
-		int curTrialNumber = Globals.experimentModel.getCurrentTrialNumber();
-		int curLook = Globals.experimentModel.getCurrentLookNumber();
+		int curTrialNumber = Globals.getExperimentModel().getCurrentTrialNumber();
+		int curLook = Globals.getExperimentModel().getCurrentLookNumber();
 		
 		String t = (curTrialNumber == -1) ? "Start a new trial" : 
 			Integer.toString(curTrialNumber);
 		String l = (curLook == -1) ? "Start a new look" : 
 			Integer.toString(curLook);
 		
-		Globals.editorView.setInfo(t, l, "NaN");
-	}
-	
-	/**
-	 * Go back one frame
-	 */
-	public void prevFrame()
-	{
-		/*DirectMediaPlayer player = Globals.editorView.getPlayer();
-		long fps = (long) (Globals.editorView.getVideoPlayer().getFps() * 1000);
-		System.out.println("Fps: " + fps);
-		
-		long frameDuration = 1000000/fps;
-		System.out.println("Frame duration: " + frameDuration + " ms");
-		
-		long curTime = player.getTime();
-		System.out.println("Current time: " + curTime);
-		player.setTime(curTime-frameDuration);
-		System.out.println("New time: " + player.getTime());
-		System.out.println("");*/
-		
-		Globals.editorView.getVideoPlayer().render();
+		Globals.getEditor().setInfo(t, l, "0 ms");
 	}
 }

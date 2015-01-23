@@ -9,19 +9,27 @@ package controller;
 import view.*;
 import model.*;
 
+/**
+ * Globals class contains reference to static instances that can be accessed
+ * throughout the application
+ */
 public class Globals {
 	
+	/**
+	 * Instance of this Globals class
+	 */
 	private static Globals instance;
 	
 	// Controller
-	public static Controller controller;
+	private static Controller controller;
+	private static IVideoControls videoController;
 	
 	// Views
-	public static Editor editorView;
-	public static ExperimentSettings settingsView;
+	private static Editor editorView;
+	private static ExperimentSettings settingsView;
 	
 	// Experiment model instance
-	public static Experiment experimentModel;
+	private static Experiment experimentModel;
 	
 
 	/**
@@ -32,6 +40,7 @@ public class Globals {
 	private Globals()
 	{
 		controller = Controller.getInstance();
+		videoController = VLCVideoController.getInstance();
 		editorView = Editor.getInstance();
 		settingsView = ExperimentSettings.getInstance();
 		experimentModel = new Experiment();
@@ -46,5 +55,50 @@ public class Globals {
 		if(instance == null)
 			instance = new Globals();
 		return instance;
+	}
+	
+	/**
+	 * Method to get the controller instance
+	 * @return	Controller
+	 */
+	public static Controller getController()
+	{
+		return controller;
+	}
+	
+	/**
+	 * Method to get the video controller instance
+	 * @return	video controller
+	 */
+	public static IVideoControls getVideoController()
+	{
+		return videoController;
+	}
+	
+	/**
+	 * Method to get the editor view instance
+	 * @return	Editor view
+	 */
+	public static Editor getEditor()
+	{
+		return editorView;
+	}
+	
+	/**
+	 * Method to get the settings view instance
+	 * @return	Settings view
+	 */
+	public static ExperimentSettings getSettingsView()
+	{
+		return settingsView;
+	}
+	
+	/**
+	 * Method to get the experiment model instance
+	 * @return	Experiment model
+	 */
+	public static Experiment getExperimentModel()
+	{
+		return experimentModel;
 	}
 }

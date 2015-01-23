@@ -4,25 +4,16 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 
-import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
-import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
-
 public class BottomBar extends JPanel {
-
 	
 	private static final long serialVersionUID = 8873779601345831556L;
 	
-//	private EmbeddedMediaPlayer mediaPlayer;
-	private DirectMediaPlayer mediaPlayer;
-	
-	
 	// Trial information panel instance
 	private TrialInformation trialInformation;
+	private PlayerControlsPanel timecodes;
 	
-//	public BottomBar(EmbeddedMediaPlayer mediaPlayer)
-	public BottomBar(DirectMediaPlayer mediaPlayer)
+	public BottomBar()
 	{
-		this.mediaPlayer = mediaPlayer;
 		setLayout(new BorderLayout(0, 0));
 		addTimeBar();
 		addTrialControls();
@@ -40,15 +31,19 @@ public class BottomBar extends JPanel {
     {
     	trialInformation.setInfo(trial, look, time);
     }
+    
+    public PlayerControlsPanel getTimeCodes()
+    {
+    	return timecodes;
+    }
 	
 	/**
 	 * Adds the time slider video controls to the bottom bar panel
 	 */
 	private void addTimeBar()
 	{
-		//PlayerControlsPanel Timecodes = new PlayerControlsPanel(mediaPlayer);
-		VideoTimeBar Timecodes = new VideoTimeBar(mediaPlayer);
-		add(Timecodes, BorderLayout.NORTH);
+		timecodes = new PlayerControlsPanel();
+		add(timecodes, BorderLayout.NORTH);
 	}
 	
 	/**
