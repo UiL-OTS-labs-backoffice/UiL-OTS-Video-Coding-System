@@ -42,19 +42,23 @@ public class PlayerControlsPanel extends JPanel {
 	/**
 	 * Single thread executor
 	 */
-	private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+	private final ScheduledExecutorService executorService = 
+			Executors.newSingleThreadScheduledExecutor();
+	
+	private UpdateRunnable runnable;
     
 	/**
 	 * Time slider and label
 	 */
-	private JLabel timeLabel;
+	private JLabel timeLabel, remainingLabel;
     private JSlider positionSlider;
     
     /**
      * DOCUMENT ME 
      */
-    @SuppressWarnings("unused")
+	@SuppressWarnings("unused")
 	private boolean mousePressedPlaying = false;
+	private boolean remaining = false;
     
     /**
      * Constructor method
@@ -77,6 +81,7 @@ public class PlayerControlsPanel extends JPanel {
      */
     private void createControls() {
         timeLabel = new JLabel("hh:mm:ss");
+        remainingLabel = new JLabel("hh:mm:ss");
         positionSlider = new JSlider();
         positionSlider.setMinimum(0);
         positionSlider.setMaximum(10000);
@@ -96,6 +101,7 @@ public class PlayerControlsPanel extends JPanel {
 		JPanel topPanel = new JPanel();
 		topPanel.setLayout(new BorderLayout(8, 0));
 		topPanel.add(timeLabel, BorderLayout.WEST);
+		topPanel.add(remainingLabel, BorderLayout.EAST);
 		topPanel.add(positionPanel, BorderLayout.CENTER);
 		add(topPanel, BorderLayout.NORTH);
 	}
@@ -110,6 +116,7 @@ public class PlayerControlsPanel extends JPanel {
             positionValue = 0.99f;
         }
         Globals.getVideoController().setPosition(positionValue);
+        runnable.update();
     }
     
 
@@ -130,15 +137,25 @@ public class PlayerControlsPanel extends JPanel {
                 setSliderBasedPosition();
             }
         });
+        
+        remainingLabel.addMouseListener(new MouseAdapter() {
+        	public void mousePressed(MouseEvent e) {
+        		remaining = !remaining;
+        		runnable.update();
+        	}
+        });
     }
+    
     private final class UpdateRunnable implements Runnable {
         private final IMediaPlayer mediaPlayer;
         private UpdateRunnable(IMediaPlayer mediaPlayer) {
             this.mediaPlayer = mediaPlayer;
         }@
+        
         Override
         public void run() {
             final long time = mediaPlayer.getMediaTime();
+            final long end = mediaPlayer.getMediaDuration();
             final int position = (int)(mediaPlayer.getPosition() * 10000.0f);
             // Updates to user interface components must be executed on 
             // the Event
@@ -147,15 +164,24 @@ public class PlayerControlsPanel extends JPanel {
                 Override
                 public void run() {
                     if (mediaPlayer.isPlaying()) {
-                        updateTime(time);
+                        updateTime(time, end);
                         updatePosition(position);
                     }
                 }
             });
         }
+        
+        public void update()
+        {
+        	final long time = mediaPlayer.getMediaTime();
+        	final long end = mediaPlayer.getMediaDuration();
+        	updateTime(time, end);
+        }
     }
-    private void updateTime(long millis) {
-        String s = String.format("%02d:%02d:%02d", 
+    
+    private void updateTime(long millis, long end) {
+        // Playtime string
+    	String s = String.format("%02d:%02d:%02d", 
         		TimeUnit.MILLISECONDS.toHours(millis), 
         		TimeUnit.MILLISECONDS.toMinutes(millis) - 
         		TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)), 
@@ -164,8 +190,26 @@ public class PlayerControlsPanel extends JPanel {
         				TimeUnit.MILLISECONDS.toMinutes(millis)
         		)        			
         	);
+        
+    	// RemainingTime string
+    	if(remaining)
+    		end = end - millis;
+    	
+        String r = String.format("%02d:%02d:%02d", 
+        		TimeUnit.MILLISECONDS.toHours(end), 
+        		TimeUnit.MILLISECONDS.toMinutes(end) - 
+        		TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(end)), 
+        		TimeUnit.MILLISECONDS.toSeconds(end) - 
+        		TimeUnit.MINUTES.toSeconds(
+        				TimeUnit.MILLISECONDS.toMinutes(end)
+        		)        			
+        	);
+    	
+    	// Set Times
         timeLabel.setText(s);
+        remainingLabel.setText(r);
     }
+    
     private void updatePosition(int value) {
         positionSlider.setValue(value);
     }
@@ -173,7 +217,7 @@ public class PlayerControlsPanel extends JPanel {
     public void playerStarted(IMediaPlayer player)
     {
     	executorService.scheduleAtFixedRate(
-    			new UpdateRunnable(player), 
+    			runnable = new UpdateRunnable(player), 
     			0L, 
     			1L, 
     			TimeUnit.MILLISECONDS

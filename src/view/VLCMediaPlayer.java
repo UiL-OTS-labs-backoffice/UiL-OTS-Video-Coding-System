@@ -454,7 +454,10 @@ public class VLCMediaPlayer implements IMediaPlayer{
     @Override
 	public void start() {
        	if(player.isPlaying())
-       		player.pause();
+       	{
+       		if(player.canPause())
+       			player.pause();
+       	}
        	else
        		player.play();	// async!
     }
@@ -532,10 +535,16 @@ public void setMediaTime(long time) {
  */
    @Override
 public void nextFrame() {
+	   long playTime = player.getTime();
 		if (player.isPlaying()) {
 			stop();
 		}
-       player.nextFrame();
+		long oldTime = player.getTime();
+		player.nextFrame();
+		long newTime = player.getTime();
+		System.out.println(String.format("NEXT FRAME\nPlaytime: %s\nOld time: %s\nNew Time: %s\nDifference: %s\n\n",
+				playTime,oldTime, newTime, oldTime-newTime
+				));
    }
    
    /** 
@@ -555,7 +564,8 @@ public void nextFrame() {
 			}
 	        
 			double msecPerSample = getMilliSecondsPerSample();
-			long curTime = getMediaTime();
+			long curTime = player.getTime();
+			long newTime = -1l;
 			
 	        if (frameStepsToFrameBegin) {
 	        	long curFrame = (long)(curTime / msecPerSample);
@@ -565,13 +575,17 @@ public void nextFrame() {
 	        		setMediaTime(0);
 	        	}
 	        } else {
-	        	curTime = (long) Math.floor(curTime - 2 * msecPerSample);
+	        	newTime = (long) Math.floor(curTime - msecPerSample - 190);
 	        	
-		        if (curTime < 0) {
-		        	curTime = 0;
+		        if (newTime < 0) {
+		        	newTime = 0;
 		        }
-		        setMediaTime(curTime);
+		        setMediaTime(newTime);
 	        }
+	        float fps = player.getFps();
+	        System.out.println(String.format("PREVIOUSFRAME\nCurtime: %s\nmsecPerSample: %s\nnew Time: %s\nActual time: %s\nFramerate: %s\n\n",
+					curTime, msecPerSample, newTime, player.getTime(), fps
+					));
 		}
     }
     
