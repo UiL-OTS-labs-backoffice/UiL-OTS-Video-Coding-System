@@ -32,6 +32,15 @@ public class BottomBar extends JPanel {
     	trialInformation.setInfo(trial, look, time);
     }
     
+    /**
+     * Method to change the value of the file label in the trial information
+     * @param file		Name of the file to be set
+     */
+    public void setFile(String file)
+    {
+    	trialInformation.setFile(file);
+    }
+    
     public PlayerControlsPanel getTimeCodes()
     {
     	return timecodes;

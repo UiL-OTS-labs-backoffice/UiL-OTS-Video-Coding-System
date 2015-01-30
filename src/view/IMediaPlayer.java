@@ -92,8 +92,6 @@ public interface IMediaPlayer {
 	 */
 	public void previousFrame();
 
-	public void setFrameStepsToFrameBegin(boolean stepsToFrameBegin);
-
 	/**
 	 * Gets the current temporal scale factor.
 	 *

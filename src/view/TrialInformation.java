@@ -20,7 +20,7 @@ public class TrialInformation extends JPanel {
 	GridBagLayout informationTable;
 	
 	// Fields
-    private JLabel trialNumber, lookNumber, lookTime;
+    private JLabel trialNumber, lookNumber, lookTime, currentFile;
     
     /**
      * Constructor creates the panel
@@ -28,6 +28,7 @@ public class TrialInformation extends JPanel {
     public TrialInformation()
     {
     	createLayout();
+    	addCurrentFileLabels();
     	addTrialNumberLabels();
     	addLookNumberLabels();
     	addTotalLookTimeLabels();
@@ -43,9 +44,17 @@ public class TrialInformation extends JPanel {
     {
     	this.trialNumber.setText(trial);
     	this.lookNumber.setText(look);
-    	this.lookTime.setText(time);    	
+    	this.lookTime.setText(time);
     }
     
+    /**
+     * Method to change the value of the file label
+     * @param file		Name of the file to be set
+     */
+    public void setFile(String file)
+    {
+    	this.currentFile.setText(file);
+    }
     
     private void createLayout()
     {
@@ -62,113 +71,106 @@ public class TrialInformation extends JPanel {
     }
     
     /**
+     * Add current file labels
+     */
+    private void addCurrentFileLabels()
+    {
+    	JLabel fileLabel = new JLabel("Current file:");
+    	GridBagConstraints gbc_fileLabel = new GridBagConstraints();
+    	gbc_fileLabel.anchor = GridBagConstraints.EAST;
+    	gbc_fileLabel.insets = new Insets(0, 0, 5, 5);
+    	gbc_fileLabel.gridx = 1;
+    	gbc_fileLabel.gridy = 1;
+    	add(fileLabel, gbc_fileLabel);
+    
+    	currentFile = new JLabel("");
+    	GridBagConstraints gbc_currentFile = new GridBagConstraints();
+    	gbc_currentFile.anchor = GridBagConstraints.WEST;
+    	gbc_currentFile.insets = new Insets(0, 0, 5, 0);
+    	gbc_currentFile.gridx = 2;
+    	gbc_currentFile.gridy = 1;
+    	add(currentFile, gbc_currentFile);
+    }
+    
+    /**
      * Add the trial number labels
      */
     private void addTrialNumberLabels()
     {
-    	// Create panel
-    	JPanel trialNRS = new JPanel();
-    	
-    	// Grid bag constraints
-    	GridBagConstraints gbc_trialNRS = new GridBagConstraints();
-    	gbc_trialNRS.insets = new Insets(0,0,5,5);
-    	gbc_trialNRS.fill = GridBagConstraints.BOTH;
-    	gbc_trialNRS.gridx = 0;
-    	gbc_trialNRS.gridy = 1;
-    	add(trialNRS, gbc_trialNRS);
     	
     	// Create labels
     	JLabel trialLabel = new JLabel("Trial:");
-    	trialNumber = new JLabel("");
     	
     	// Grid Bag Constraints for labels
     	GridBagConstraints gbc_trialLabel = new GridBagConstraints();
-    	GridBagConstraints gbc_trialNumber = new GridBagConstraints();
     	
     	gbc_trialLabel.anchor = GridBagConstraints.EAST;
     	gbc_trialLabel.insets = new Insets(0, 0, 5, 5);
     	gbc_trialLabel.gridx = 1;
-    	gbc_trialLabel.gridy = 1;
-        
-        gbc_trialNumber.insets = new Insets(0, 0, 5, 5);
-        gbc_trialNumber.anchor = GridBagConstraints.WEST;
-        gbc_trialNumber.gridx = 2;
-        gbc_trialNumber.gridy = 1;
+    	gbc_trialLabel.gridy = 2;
     	
     	// Add labels to trial information bar
     	add(trialLabel, gbc_trialLabel);
+    	
+    	trialNumber = new JLabel("");
+    	GridBagConstraints gbc_trialNumber = new GridBagConstraints();
+        
+        gbc_trialNumber.insets = new Insets(0, 0, 5, 0);
+        gbc_trialNumber.anchor = GridBagConstraints.WEST;
+        gbc_trialNumber.gridx = 2;
+        gbc_trialNumber.gridy = 2;
     	add(trialNumber, gbc_trialNumber);
     }
     
     private void addLookNumberLabels()
     {
-    	// Create and add panel
-    	JPanel lookNRS = new JPanel();
-
-    	// Grid bag constraints
-    	GridBagConstraints gbc_lookNRS = new GridBagConstraints();
-    	gbc_lookNRS.insets = new Insets(0,0,5,5);
-    	gbc_lookNRS.fill = GridBagConstraints.BOTH;
-    	gbc_lookNRS.gridx = 0;
-    	gbc_lookNRS.gridy = 2;
-    	add(lookNRS, gbc_lookNRS);
-    	
     	// Create labels
     	JLabel lookLabel = new JLabel("Look number:");
-    	lookNumber = new JLabel("");
     	
     	// Grid Bag Constraints for labels
     	GridBagConstraints gbc_lookLabel = new GridBagConstraints();
-    	GridBagConstraints gbc_lookNumber = new GridBagConstraints();
     	
     	gbc_lookLabel.anchor = GridBagConstraints.EAST;
     	gbc_lookLabel.insets = new Insets(0, 0, 5, 5);
     	gbc_lookLabel.gridx = 1;
-    	gbc_lookLabel.gridy = 2;
+    	gbc_lookLabel.gridy = 3;
+    	
+    	// Add labels to trial number panel
+    	add(lookLabel, gbc_lookLabel);
+    	
+    	lookNumber = new JLabel("");
+    	GridBagConstraints gbc_lookNumber = new GridBagConstraints();
     	
     	gbc_lookNumber.anchor = GridBagConstraints.WEST;
         gbc_lookNumber.insets = new Insets(0, 0, 5, 0);
         gbc_lookNumber.gridx = 2;
-        gbc_lookNumber.gridy = 2;
-    	
-    	// Add labels to trial number panel
-    	add(lookLabel, gbc_lookLabel);
+        gbc_lookNumber.gridy = 3;
     	add(lookNumber, gbc_lookNumber);
     }
     
     private void addTotalLookTimeLabels()
     {
-    	// Create and add panel
-    	JPanel lookTimePanel = new JPanel();
-    	
-    	// Grid bag constraints
-    	GridBagConstraints gbc_lookTimePanel = new GridBagConstraints();
-    	gbc_lookTimePanel.insets = new Insets(0,0,5,5);
-    	gbc_lookTimePanel.fill = GridBagConstraints.BOTH;
-    	gbc_lookTimePanel.gridx = 0;
-    	gbc_lookTimePanel.gridy = 3;
-    	add(lookTimePanel, gbc_lookTimePanel);
-    	
-    	// Create labels
-    	JLabel lookTimeLabel = new JLabel("Total look time:");
     	lookTime = new JLabel("");
-    	
-    	// Grid Bag Constraints for labels
-    	GridBagConstraints gbc_lookTimeLabel = new GridBagConstraints();
     	GridBagConstraints gbc_lookTime = new GridBagConstraints();
-    	
-    	gbc_lookTimeLabel.anchor = GridBagConstraints.EAST;
-    	gbc_lookTimeLabel.insets = new Insets(0, 0, 5, 5);
-    	gbc_lookTimeLabel.gridx = 1;
-    	gbc_lookTimeLabel.gridy = 3;
     	
     	gbc_lookTime.anchor = GridBagConstraints.WEST;
     	gbc_lookTime.insets = new Insets(0, 0, 5, 0);
     	gbc_lookTime.gridx = 2;
-    	gbc_lookTime.gridy = 3;
+    	gbc_lookTime.gridy = 4;
+    	add(lookTime, gbc_lookTime);
+    	
+    	// Create labels
+    	JLabel lookTimeLabel = new JLabel("Total look time:");
+    	
+    	// Grid Bag Constraints for labels
+    	GridBagConstraints gbc_lookTimeLabel = new GridBagConstraints();
+    	
+    	gbc_lookTimeLabel.anchor = GridBagConstraints.EAST;
+    	gbc_lookTimeLabel.insets = new Insets(0, 0, 5, 5);
+    	gbc_lookTimeLabel.gridx = 1;
+    	gbc_lookTimeLabel.gridy = 4;
     	
     	// Add labels to trial number panel
     	add(lookTimeLabel, gbc_lookTimeLabel);
-    	add(lookTime, gbc_lookTime);
     }
 }

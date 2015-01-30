@@ -85,6 +85,7 @@ public class Controller {
 			Globals.getExperimentModel().setUrl(url);
 			Globals.getEditor().addVideoPlayerSurface(player);
 			Globals.getVideoController().setPlayer(player);
+			updateCurrentFileLabel();
 		}
 	}
 	
@@ -102,5 +103,14 @@ public class Controller {
 			Integer.toString(curLook);
 		
 		Globals.getEditor().setInfo(t, l, "0 ms");
+	}
+	
+	/**
+	 * Tells the view to update the file label
+	 */
+	public void updateCurrentFileLabel()
+	{
+		String curFile = Globals.getExperimentModel().getUrl();
+		Globals.getEditor().setFile((curFile == null) ? "Select a file to play" : curFile.replaceFirst(".*/([^/?]+).*", "$1"));
 	}
 }

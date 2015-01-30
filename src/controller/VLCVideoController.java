@@ -166,11 +166,6 @@ public class VLCVideoController implements IVideoControls {
 	}
 
 	@Override
-	public void setFrameStepsToFrameBegin(boolean stepsToFrameBegin) {
-		player.setFrameStepsToFrameBegin(stepsToFrameBegin);
-	}
-
-	@Override
 	public float getRate() {
 		return player.getRate();
 	}

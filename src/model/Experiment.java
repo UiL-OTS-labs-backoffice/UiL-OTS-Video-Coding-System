@@ -7,7 +7,7 @@ package model;
  */
 public class Experiment {
 	// Current video file url
-	private String url = "C:\\Users\\Public\\Videos\\Sample Videos\\Wildlife.wmv";
+	private String url;
 		
 	// Global Experiment Settings
 	private String exp_name, exp_id, res_id, pp_id;
@@ -33,9 +33,6 @@ public class Experiment {
 			return -1;
 		Trial curTrial = trials[curTrialIndex];
 		return curTrial.getTrialNumber();
-		
-		
-			
 	}
 	
 	public int getCurrentLookNumber()

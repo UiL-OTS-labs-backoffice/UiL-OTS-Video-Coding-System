@@ -63,7 +63,8 @@ public class VideoSelector {
 	    		  return chooser.getSelectedFile().getPath();
 	    }
 	    
-	    JOptionPane.showMessageDialog(new JPanel(), error_message(), "Invalid file extension", JOptionPane.ERROR_MESSAGE);
+	    if(returnVal != JFileChooser.CANCEL_OPTION)
+	    	JOptionPane.showMessageDialog(new JPanel(), error_message(), "Invalid file extension", JOptionPane.ERROR_MESSAGE);
 	    return null;
 	    
 	}

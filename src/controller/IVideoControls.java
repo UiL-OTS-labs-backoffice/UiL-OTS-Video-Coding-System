@@ -146,8 +146,6 @@ public interface IVideoControls {
 	 */
 	public void setMediaTime(long time);
 	
-	public void setFrameStepsToFrameBegin(boolean stepsToFrameBegin);
-
 	/**
 	 * Gets the current temporal scale factor.
 	 *

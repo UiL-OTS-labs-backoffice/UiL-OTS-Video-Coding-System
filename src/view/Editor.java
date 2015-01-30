@@ -110,6 +110,7 @@ public class Editor {
         
         frame.setVisible(true);
         c.updateTrialNumber();
+        c.updateCurrentFileLabel();
     }
     
     /**
@@ -124,6 +125,14 @@ public class Editor {
     	bottom_bar.setInfo(trial, look, time);
     }
     
-   
-   
+    /**
+     * Method to change the value of the file label in the trial information
+     * by passing the argument to the bottom bar
+     * @param file		Name of the file to be set
+     */
+    public void setFile(String file)
+    {
+    	bottom_bar.setFile(file);
+    }
+    
 }

@@ -489,43 +489,31 @@ public class VLCMediaPlayer implements IMediaPlayer{
     }
     
    /* (non-Javadoc)
- * @see view.IMediaPlayer#getMediaTime()
- */
+    * @see view.IMediaPlayer#getMediaTime()
+    */
    @Override
    public long getMediaTime() {
 		return player.getTime();
    }
    
    /* (non-Javadoc)
- * @see view.IMediaPlayer#setMediaTime(long)
- */
+    * @see view.IMediaPlayer#setMediaTime(long)
+    */
    @Override
-public void setMediaTime(long time) {
+   public void setMediaTime(long time) {
 	   player.setTime(time);
    }
    
    /* (non-Javadoc)
- * @see view.IMediaPlayer#nextFrame()
- */
+    * @see view.IMediaPlayer#nextFrame()
+    */
    @Override
-public void nextFrame() {
-	   long playTime = player.getTime();
+	public void nextFrame() {
 		if (player.isPlaying()) {
 			stop();
 		}
-		long oldTime = player.getTime();
 		player.nextFrame();
-		long newTime = player.getTime();
-		System.out.println(String.format("NEXT FRAME\nPlaytime: %s\nOld time: %s\nNew Time: %s\nDifference: %s\n\n",
-				playTime,oldTime, newTime, oldTime-newTime
-				));
    }
-   
-   /** 
-    * if true frame forward and frame backward always jump to the begin
-	 * of the next/previous frame, otherwise it jumps with the frame duration.
-	 */
-	private boolean frameStepsToFrameBegin = true;
 	
 	/* (non-Javadoc)
 	 * @see view.IMediaPlayer#previousFrame()
@@ -539,55 +527,14 @@ public void nextFrame() {
 	        
 			double msecPerSample = getMilliSecondsPerSample();
 			long curTime = player.getTime() - 190;
-			long newTime = -1l;
 			
-	        if (frameStepsToFrameBegin) {
-	        	long curFrame = (long)(curTime / msecPerSample);
-	        	if (curFrame > 0) {
-	        		setMediaTime((long) Math.ceil((curFrame - 1) * msecPerSample));
-	        	} else {
-	        		setMediaTime(0);
-	        	}
-	        } else {
-	        	newTime = (long) Math.floor(curTime - msecPerSample);
-	        	
-		        if (newTime < 0) {
-		        	newTime = 0;
-		        }
-		        setMediaTime(newTime);
+        	curTime = (long) Math.floor(curTime - msecPerSample);
+        	
+	        if (curTime < 0) {
+	        	curTime = 0;
 	        }
-	        float fps = player.getFps();
-	        System.out.println(String.format("PREVIOUSFRAME\nCurtime: %s\nmsecPerSample: %s\nnew Time: %s\nActual time: %s\nFramerate: %s\n\n",
-					curTime, msecPerSample, newTime, player.getTime(), fps
-					));
+	        setMediaTime(curTime);
 		}
-    }
-    
-    /*public void previousFrame()
-    {
-    	// Stop player if playing
-    	/*if (player.isPlaying())
-    		stop();*/
-    	
-    	
-//    	long curTime = player.getTime();
-    	/*double msecPerSample = getMilliSecondsPerSample();
-    	
-    	long curFrame = (long) (curTime / msecPerSample);
-    	
-    	if(curFrame > 0)
-    		setMediaTime((long) Math.ceil((curFrame - 1) * msecPerSample));
-    	else
-    		setMediaTime(0);
-    	setMediaTime(player.getTime());
-    	
-    }*/
-    
-    /* (non-Javadoc)
-	 * @see view.IMediaPlayer#setFrameStepsToFrameBegin(boolean)
-	 */
-	public void setFrameStepsToFrameBegin(boolean stepsToFrameBegin) {
-        frameStepsToFrameBegin = stepsToFrameBegin;
     }
     
     /* (non-Javadoc)

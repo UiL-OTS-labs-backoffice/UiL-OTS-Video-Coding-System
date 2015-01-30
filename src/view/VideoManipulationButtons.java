@@ -1,5 +1,6 @@
 package view;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -131,12 +132,17 @@ public class VideoManipulationButtons extends JPanel {
 	 */
 	private void addPauseButton()
 	{
-		playPause = new JButton("Play/Pause");
+		playPause = new JButton("\u25b6");
 		playPause.setToolTipText("Play or pause video");
+		playPause.setPreferredSize(new Dimension(45,26));
 		
 		playPause.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		Globals.getVideoController().play();
+        		if(Globals.getVideoController().isPlaying())
+        			playPause.setText("\u25b6");
+        		else
+        			playPause.setText("||");
         	}
         });
 		
@@ -144,5 +150,4 @@ public class VideoManipulationButtons extends JPanel {
 		
 		playPause.setEnabled(false);
 	}
-	
 }
