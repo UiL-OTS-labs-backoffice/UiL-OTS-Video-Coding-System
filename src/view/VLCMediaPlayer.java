@@ -34,15 +34,6 @@ public class VLCMediaPlayer implements IMediaPlayer{
      * Display component
      */
     private EmbeddedMediaPlayerComponent playerComponent;
-   
-    /**
-     * The temporal offset between external and media time-stamps.
-     */
-    private long timeOffset;
-    
-    /**
-     * Current playing interval. stopTime is adjusted for the timeOffset.
-     */
     
     private Dimension videoSize;
    	private static final Dimension fallbackVideoSize = new Dimension(352, 288);
@@ -497,28 +488,11 @@ public class VLCMediaPlayer implements IMediaPlayer{
         return 1000 / 25;
     }
     
-    /**
-     * Set the offset to be used in get and set media time for this player
-     *
-     * @param offset the offset in milli seconds
-     */
-    public void setOffset(long offset) {
-        this.timeOffset = offset;
-    }
-    
-    /* (non-Javadoc)
-	 * @see view.IMediaPlayer#getOffset()
-	 */
-    @Override
-	public long getOffset() {
-        return timeOffset;
-    }
-    
    /* (non-Javadoc)
  * @see view.IMediaPlayer#getMediaTime()
  */
    @Override
-public long getMediaTime() {
+   public long getMediaTime() {
 		return player.getTime();
    }
    
@@ -551,7 +525,7 @@ public void nextFrame() {
     * if true frame forward and frame backward always jump to the begin
 	 * of the next/previous frame, otherwise it jumps with the frame duration.
 	 */
-	private boolean frameStepsToFrameBegin = false;
+	private boolean frameStepsToFrameBegin = true;
 	
 	/* (non-Javadoc)
 	 * @see view.IMediaPlayer#previousFrame()
@@ -564,7 +538,7 @@ public void nextFrame() {
 			}
 	        
 			double msecPerSample = getMilliSecondsPerSample();
-			long curTime = player.getTime();
+			long curTime = player.getTime() - 190;
 			long newTime = -1l;
 			
 	        if (frameStepsToFrameBegin) {
@@ -575,7 +549,7 @@ public void nextFrame() {
 	        		setMediaTime(0);
 	        	}
 	        } else {
-	        	newTime = (long) Math.floor(curTime - msecPerSample - 190);
+	        	newTime = (long) Math.floor(curTime - msecPerSample);
 	        	
 		        if (newTime < 0) {
 		        	newTime = 0;
@@ -589,10 +563,29 @@ public void nextFrame() {
 		}
     }
     
+    /*public void previousFrame()
+    {
+    	// Stop player if playing
+    	/*if (player.isPlaying())
+    		stop();*/
+    	
+    	
+//    	long curTime = player.getTime();
+    	/*double msecPerSample = getMilliSecondsPerSample();
+    	
+    	long curFrame = (long) (curTime / msecPerSample);
+    	
+    	if(curFrame > 0)
+    		setMediaTime((long) Math.ceil((curFrame - 1) * msecPerSample));
+    	else
+    		setMediaTime(0);
+    	setMediaTime(player.getTime());
+    	
+    }*/
+    
     /* (non-Javadoc)
 	 * @see view.IMediaPlayer#setFrameStepsToFrameBegin(boolean)
 	 */
-    @Override
 	public void setFrameStepsToFrameBegin(boolean stepsToFrameBegin) {
         frameStepsToFrameBegin = stepsToFrameBegin;
     }
@@ -626,7 +619,7 @@ public void nextFrame() {
 	 */
     @Override
 	public long getMediaDuration() {
-        return player.getLength() - timeOffset;
+        return player.getLength();
     }
 
 

@@ -1,10 +1,13 @@
 package view;
 
+
 import java.io.File;
+import java.util.StringJoiner;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
 
 
 /**
@@ -14,15 +17,19 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class VideoSelector {
 	
+	/**
+	 * Single instance
+	 */
 	private static VideoSelector instance;
-
+	
+	private static String[] extensions = {"mpeg", "avi", "asf", "wmv", "wma", 
+        "mp4", "mov", "3gp", "mkv"};
+	
+	
 	/**
 	 * Private constructor
 	 */
-	private VideoSelector()
-	{
-		
-	}
+	private VideoSelector() { }
 	
 	/**
 	 * getmethod for instance of videoselector
@@ -37,33 +44,60 @@ public class VideoSelector {
 	
 	/**
 	 * Shows a file selector for the video file to be used
+	 * @return	Path of selected file if valid, otherwise null
 	 */
 	public static String show()
 	{
 		JFileChooser chooser = new JFileChooser();
-	    FileNameExtensionFilter filter = new FileNameExtensionFilter(
-	        "All video files", "mpeg", "avi", "asf", "wmv", "wma", 
-	        "mp4", "mov", "3gp", "mkv");
+		
+		FileNameExtensionFilter filter = new FileNameExtensionFilter(
+				"All video files", extensions);
+	    
 	    chooser.setFileFilter(filter);
 	    chooser.addChoosableFileFilter(filter);
+	    
 	    int returnVal = chooser.showOpenDialog(chooser);
+	    
 	    if(returnVal == JFileChooser.APPROVE_OPTION) {
-	      return isValidFile(chooser.getSelectedFile()) ? 
-	    		  chooser.getSelectedFile().getPath() : null;
-	    } else {
-	    	return null;
+	    	if (isValidFile(chooser.getSelectedFile()))
+	    		  return chooser.getSelectedFile().getPath();
 	    }
+	    
+	    JOptionPane.showMessageDialog(new JPanel(), error_message(), "Invalid file extension", JOptionPane.ERROR_MESSAGE);
+	    return null;
+	    
 	}
 	
+	/**
+	 * Checks the extension of a file
+	 * @param f		File
+	 * @return		True if valid extension
+	 */
 	private static boolean isValidFile(File f)
 	{
 		String fi = f.getName().toLowerCase();
-		return f.isFile() && (fi.endsWith("mpeg") || fi.endsWith("avi") ||
-				fi.endsWith("asf") || fi.endsWith("wmv") || fi.endsWith("wma") ||
-				fi.endsWith("mp4") || fi.endsWith("mov") || fi.endsWith("3gp") ||
-				fi.endsWith("mkv") );
+		
+		if(f.isFile())
+			for(String e : extensions)
+				if(fi.endsWith(e)) return true;
+		
+		return false;
 	}
 	
+	/**
+	 * Creates the error message containing all available extensions
+	 */
+	private static String error_message()
+	{
+		String e = "The extension of the file you chose is not supported.\n";
+	    e += "Please select a file that has any of the following extensions:\n";
+	    StringJoiner sj = new StringJoiner(", ");
+	    for(String e1 : extensions)
+	    	sj.add(e1);
+	    e += sj.toString();
+	    
+	    return e;
+	}
 	
 	
 }

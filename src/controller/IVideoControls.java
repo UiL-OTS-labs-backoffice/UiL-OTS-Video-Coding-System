@@ -131,13 +131,6 @@ public interface IVideoControls {
 	public double getMilliSecondsPerSample();
 
 	/**
-	 * DOCUMENT ME!
-	 *
-	 * @return the offset used by this player
-	 */
-	public long getOffset();
-
-	/**
 	 * Gets this Clock's current media time in milli seconds.
 	 *
 	 * @return DOCUMENT ME!

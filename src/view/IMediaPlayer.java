@@ -65,13 +65,6 @@ public interface IMediaPlayer {
 	public double getMilliSecondsPerSample();
 
 	/**
-	 * DOCUMENT ME!
-	 *
-	 * @return the offset used by this player
-	 */
-	public long getOffset();
-
-	/**
 	 * Gets this Clock's current media time in milli seconds.
 	 *
 	 * @return DOCUMENT ME!
@@ -80,7 +73,7 @@ public interface IMediaPlayer {
 
 	/**
 	 * Sets the media time in milliseconds.
-	 * This means that the player is set to that time + the time offset.
+	 * This means that the player is set to that time
 	 * Also sets the time for all controlled media players.
 	 *
 	 * @param time in msec.

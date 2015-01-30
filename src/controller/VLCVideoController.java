@@ -156,11 +156,6 @@ public class VLCVideoController implements IVideoControls {
 	}
 
 	@Override
-	public long getOffset() {
-		return player.getOffset();
-	}
-
-	@Override
 	public long getMediaTime() {
 		return player.getMediaTime();
 	}
