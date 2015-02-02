@@ -17,7 +17,7 @@ public class VLCVideoController implements IVideoControls {
 	/**
 	 * Instance of media player
 	 */
-	private view.IMediaPlayer player;
+	private view.player.IMediaPlayer player;
 	
 	/**
 	 * Get method for the class's instance
@@ -35,12 +35,12 @@ public class VLCVideoController implements IVideoControls {
 	private VLCVideoController(){}
 	
 	@Override
-	public void setPlayer(view.IMediaPlayer player) {
+	public void setPlayer(view.player.IMediaPlayer player) {
 		this.player = player;
 	}
 
 	@Override
-	public view.IMediaPlayer getPlayer() {
+	public view.player.IMediaPlayer getPlayer() {
 		return player;
 	}	
 

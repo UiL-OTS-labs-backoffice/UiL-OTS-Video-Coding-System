@@ -9,13 +9,13 @@ package controller;
  */
 public interface IVideoControls {
 	
-	public void setPlayer(view.IMediaPlayer player);
+	public void setPlayer(view.player.IMediaPlayer player);
 	
 	/**
 	 * Get the video player class that is being used
 	 * @return	Video player if any
 	 */
-	public view.IMediaPlayer getPlayer();
+	public view.player.IMediaPlayer getPlayer();
 	
 	/**
 	 * Checks if a video File is loaded and a video player object

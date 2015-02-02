@@ -16,7 +16,7 @@
  *
  * Copyright 2009, 2010, 2011, 2012, 2013, 2014 Caprica Software Limited.
  */
-package view;
+package view.bottombar;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
@@ -31,6 +31,7 @@ import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import view.player.IMediaPlayer;
 import controller.Globals;
 public class PlayerControlsPanel extends JPanel {
     

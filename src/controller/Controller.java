@@ -1,6 +1,8 @@
 package controller;
 
-import view.*;
+import view.panels.ExperimentSettings;
+import view.panels.VideoSelector;
+import view.player.VLCMediaPlayer;
 import model.*;
 
 public class Controller {

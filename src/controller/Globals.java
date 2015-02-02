@@ -7,6 +7,7 @@ package controller;
  */
 
 import view.*;
+import view.panels.ExperimentSettings;
 import model.*;
 
 /**

@@ -5,6 +5,11 @@ import java.awt.KeyboardFocusManager;
 
 import javax.swing.JFrame;
 
+import view.bottombar.BottomBar;
+import view.events.KeyDispatch;
+import view.menu.MainMenu;
+import view.player.IMediaPlayer;
+import view.player.VLCMediaPlayer;
 import controller.*;
 
 /**

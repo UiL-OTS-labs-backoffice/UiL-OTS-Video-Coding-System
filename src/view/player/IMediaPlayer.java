@@ -1,4 +1,4 @@
-package view;
+package view.player;
 
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 

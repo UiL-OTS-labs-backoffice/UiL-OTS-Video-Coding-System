@@ -1,4 +1,4 @@
-package view;
+package view.bottombar;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

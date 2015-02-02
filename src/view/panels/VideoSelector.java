@@ -1,4 +1,4 @@
-package view;
+package view.panels;
 
 
 import java.io.File;
