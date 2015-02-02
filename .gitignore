@@ -48,3 +48,6 @@ Temporary Items
 .classpath
 .project
 *.log
+
+# Exclude binaries
+bin/

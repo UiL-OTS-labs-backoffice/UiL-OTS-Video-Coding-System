@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.KeyboardFocusManager;
 
 import javax.swing.JFrame;
 
@@ -49,6 +50,8 @@ public class Editor {
     	addMenu();
     	addControlBar();
     	addVideoManipulationButtons();
+    	KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        manager.addKeyEventDispatcher(new KeyDispatch());
     }
     
     /**
@@ -134,5 +137,7 @@ public class Editor {
     {
     	bottom_bar.setFile(file);
     }
+    
+    
     
 }

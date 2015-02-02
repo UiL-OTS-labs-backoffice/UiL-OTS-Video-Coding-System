@@ -60,7 +60,7 @@ public class VideoManipulationButtons extends JPanel {
         });
 		
 		add(prevTrial);
-		
+		prevTrial.setFocusable(false);
 		prevTrial.setEnabled(false);
 	}
 	
@@ -81,7 +81,7 @@ public class VideoManipulationButtons extends JPanel {
         });
 		
 		add(nextTrial);
-		
+		nextTrial.setFocusable(false);
 		nextTrial.setEnabled(false);
 	}
 	
@@ -101,7 +101,7 @@ public class VideoManipulationButtons extends JPanel {
         });
 		
 		add(prevFrame);
-		
+		prevTrial.setFocusable(false);
 		prevFrame.setEnabled(false);
 	}
 	
@@ -121,7 +121,7 @@ public class VideoManipulationButtons extends JPanel {
         });
 		
 		add(nextFrame);
-		
+		nextFrame.setFocusable(false);
 		nextFrame.setEnabled(false);
 	}
 	
@@ -147,7 +147,7 @@ public class VideoManipulationButtons extends JPanel {
         });
 		
 		add(playPause);
-		
+		playPause.setFocusable(false);
 		playPause.setEnabled(false);
 	}
 }
