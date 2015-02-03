@@ -4,14 +4,17 @@ import java.awt.KeyEventDispatcher;
 import java.awt.event.KeyEvent;
 
 import controller.Globals;
-import controller.IVideoControls;
 
 /**
  * Key listeners
  */
 public class KeyDispatch implements KeyEventDispatcher {
 	
-	private static IVideoControls c = Globals.getVideoController();
+	private static controller.IVideoControls vc = 
+			Globals.getVideoController();
+	
+	private static controller.Controller qk = 
+			Globals.getController();
 	
 	/** 
 	 * Key Events
@@ -21,29 +24,34 @@ public class KeyDispatch implements KeyEventDispatcher {
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent e) {
 		if(e.getID() == KeyEvent.KEY_PRESSED) {
-	    	if(c.IsLoaded())
+	    	if(Globals.getVideoController().IsLoaded())
 	    	{
-				switch (e.getKeyCode())
-		    	{
-			    	case 32: // Space button
-			    		c.play();
-			    		break;
-			    	case 37: // Left button
-			    		c.prevFrame();
-			    		break;
-			    	case 39: // Right button
-			    		c.nextFrame();
-			    		break;
-			    	case 78: // N key
-			    		break;
-			    	default: // Not registered
-			    		 break;
-		    	}
+				int kc = e.getKeyCode();
+	    		if(kc == qk.getKey("play"))
+	    			vc.play();
+	    		else if (kc == qk.getKey("prevFrame"))
+	    			vc.prevFrame();
+	    		else if (kc == qk.getKey("nextFrame"))
+	    			vc.nextFrame();
+	    		else if (kc == qk.getKey("nextTrial"))
+	    		{ } // TODO: implement next trial
+	    		else if (kc == qk.getKey("prevTrial"))
+	    		{ } // TODO: implement previous trial
+	    		else if (kc == qk.getKey("prevLook"))
+	    		{ } // TODO: implement previous look
+	    		else if (kc == qk.getKey("nextLook"))
+	    		{ } // TODO: implement next look
+	    		else if (kc == qk.getKey("newTrial"))
+	    		{ } // TODO: implement new trial
+	    		else if (kc == qk.getKey("newLook"))
+	    		{ } // TODO: implement new look
+	    		else if (kc == qk.getKey("endTrial"))
+	    		{ } // TODO: implement end trial
+	    		else if (kc == qk.getKey("endLook"))
+	    		{ } // TODO: implement end look
 	    	}
 		} else if (e.getID() == KeyEvent.KEY_RELEASED){
-		
 		} else if (e.getID() == KeyEvent.KEY_TYPED) {
-		
 		}
 		return false;
 	}

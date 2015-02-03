@@ -24,6 +24,7 @@ public class Globals {
 	// Controller
 	private static Controller controller;
 	private static IVideoControls videoController;
+	private static model.QuickKeys keyCodeModel;
 	
 	// Views
 	private static Editor editorView;
@@ -42,6 +43,7 @@ public class Globals {
 	{
 		controller = Controller.getInstance();
 		videoController = VLCVideoController.getInstance();
+		keyCodeModel = model.QuickKeys.getInstance();
 		editorView = Editor.getInstance();
 		settingsView = ExperimentSettings.getInstance();
 		experimentModel = new Experiment();
@@ -74,6 +76,11 @@ public class Globals {
 	public static IVideoControls getVideoController()
 	{
 		return videoController;
+	}
+	
+	public static model.QuickKeys getKeyCodeModel()
+	{
+		return keyCodeModel;
 	}
 	
 	/**

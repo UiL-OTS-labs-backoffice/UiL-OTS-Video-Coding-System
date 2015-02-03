@@ -7,6 +7,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
+import javax.swing.KeyStroke;
 
 import controller.*;
 
@@ -35,12 +36,19 @@ public class MainMenu extends JMenuBar {
 	private void addFileMenu()
 	{
 		JMenu fileMenu = new JMenu("File");
+		fileMenu.setMnemonic('F');
 		add(fileMenu);
 		
 		JMenuItem save = new JMenuItem("Save");
-		JMenuItem saveas = new JMenuItem("Save as");
+		save.setMnemonic('S');
+		save.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S,
+                java.awt.Event.CTRL_MASK));
+		JMenuItem saveas = new JMenuItem("Save As");
+		saveas.setMnemonic('A');
 		JMenuItem openProject = new JMenuItem("Open project");
+		openProject.setMnemonic('O');
 		JMenuItem openVideo = new JMenuItem("Op video file");
+		openVideo.setMnemonic('V');
 		
 		openVideo.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent arg0) {
@@ -63,9 +71,11 @@ public class MainMenu extends JMenuBar {
 	private void addSettingsMenu()
 	{
 		JMenu settingsMenu = new JMenu("Settings");
+		settingsMenu.setMnemonic('E');
 		add(settingsMenu);
 		
 		JMenuItem setExpInfo = new JMenuItem("Experiment Information");
+		setExpInfo.setMnemonic('I');
 		
 		setExpInfo.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
@@ -92,6 +102,7 @@ public class MainMenu extends JMenuBar {
 	private void addTrialMenu()
 	{
 		JMenu trialMenu = new JMenu("Trial");
+		trialMenu.setMnemonic('T');
 		add(trialMenu);
 		
 		JMenuItem editTrial = new JMenuItem("Edit trial number");
@@ -140,6 +151,12 @@ public class MainMenu extends JMenuBar {
 		
 		JMenuItem shortKeys = new JMenuItem("Quick keys");
 		shortKeys.setToolTipText("Show a list of quick keys");
+		shortKeys.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		view.panels.QuickKeys kdp = new view.panels.QuickKeys();
+        		kdp.setVisible(true);
+        	}
+        });
 		
 		JMenuItem about = new JMenuItem("About");
 		

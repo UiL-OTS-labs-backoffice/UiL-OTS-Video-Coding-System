@@ -1,5 +1,8 @@
 package controller;
 
+import java.awt.event.KeyEvent;
+import java.util.Collection;
+
 import view.panels.ExperimentSettings;
 import view.panels.VideoSelector;
 import view.player.VLCMediaPlayer;
@@ -115,4 +118,62 @@ public class Controller {
 		String curFile = Globals.getExperimentModel().getUrl();
 		Globals.getEditor().setFile((curFile == null) ? "Select a file to play" : curFile.replaceFirst(".*/([^/?]+).*", "$1"));
 	}
+	
+	/**
+	 * Get the assigned key for an action
+	 * @param action	Action ID
+	 * @return			Assigned key if key is assigned to action.
+	 * 					0 otherwise
+	 * 					-1 if action doesn't exist
+	 */
+	public int getKey(String action)
+	{
+		return Globals.getKeyCodeModel().getKey(action);
+	}
+	
+	/**
+	 * Get the readable name of an action
+	 * @param action	Action ID
+	 * @return			Readable name if action exists, null otherwise
+	 */
+	public String getName(String action)
+	{
+		return Globals.getKeyCodeModel().getName(action);
+	}
+	
+	/**
+	 * Assign a new key to an existing action
+	 * @param action	Name of the action
+	 * @param key		number of the new key
+	 */
+	public void setKey(String action, int key)
+	{
+		Globals.getKeyCodeModel().setKey(action, key);
+	}
+	
+	/**
+	 * Get a TreeSet of all available action
+	 * @return	TreeSet containing all actions
+	 */
+	public Collection<String> getActions()
+	{
+		return Globals.getKeyCodeModel().getActions();
+	}
+	
+	/**
+	 * Method to check if an action exists
+	 * @param action	Action ID
+	 * @return			True iff action exists
+	 */
+	public boolean isValidAction(String action)
+	{
+		return Globals.getKeyCodeModel().isValidAction(action);
+	}
+	
+	public String codeToString(String ID)
+	{
+		int key = getKey(ID);
+		return (key > 0) ? KeyEvent.getKeyText(key) : "";
+	}
+	
 }
