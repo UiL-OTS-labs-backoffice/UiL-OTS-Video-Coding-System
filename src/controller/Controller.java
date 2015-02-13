@@ -95,19 +95,145 @@ public class Controller {
 	}
 	
 	/**
-	 * Updates the trial number to a new trial
+	 * Updates the trial information labels
 	 */
-	public void updateTrialNumber()
+	public void updateLabels(long time)
+	{	
+		/*int curTrialNumber = Globals.getExperimentModel().getTrialByTime(time);
+		int curLook = Globals.getExperimentModel().getLookByTime(curTrialNumber, time);
+		int totalTrials = Globals.getExperimentModel().getNumberOfTrials();
+		int totalLooks = Globals.getExperimentModel().getNumberOfLooks(curTrialNumber);
+		long lookTime = Globals.getExperimentModel().getLookTime(curTrialNumber);
+		
+		String trial = (curTrialNumber == -1) ? " " : Integer.toString(curTrialNumber);
+		String look = (curLook == -1) ? " " : Integer.toString(curLook);
+		String looks = (totalLooks == -1) ? " " : Integer.toString(totalLooks);
+		
+		String t = 	String.format("%s / %d",trial, totalTrials);
+		String l = String.format("%s / %s", look, looks);
+		String s = String.format("%d ms", lookTime);
+		
+		Globals.getEditor().setInfo(t, l, s);
+		Globals.getEditor().updateButtons(curTrialNumber, curLook);*/
+		
+		// Get model reference	
+		model.Experiment exp = Globals.getExperimentModel();
+		
+		// Current trial number and current look number
+		String tn, ln;
+		
+		// Button texts
+		String endTrial, endLook;
+		
+		// Do some trial checking
+		boolean inTrial = true;
+		int trial = exp.getTrialByTime(time);
+		int lastTrial;
+		if(trial == -1)
+		{
+			inTrial = false;
+			lastTrial = exp.getLastTrialByTime(time);
+			if(lastTrial > 0)
+				endTrial = String.format("Extend trial %d", lastTrial);
+			else
+				endTrial = "End trial";
+			tn = " ";
+		} 
+		else
+		{
+			endTrial = String.format("End trial %d", trial);
+			tn = Integer.toString(trial);
+			lastTrial = trial;
+		}
+		
+		// Do some look checking
+		boolean inLook = true;
+		int look = exp.getLookByTime(trial, time);
+		int lastLook;
+		if(look == -1)
+		{
+			inLook = false;
+			lastLook = exp.getLastLookByTime(time);
+			if (lastLook > 0)
+				endLook = String.format("Extend look %d", lastLook);
+			else
+				endLook = "End look";
+			ln = " ";
+		}
+		else
+		{
+			endLook = String.format("End look %d", look);
+			ln = Integer.toString(look);
+			lastLook = look;
+		}
+		
+		// Get some extra numbers
+		int looks = exp.getNumberOfLooks(trial);
+		looks = (looks == -1) ? 0 : looks;
+		int trials = exp.getNumberOfTrials();
+		trials = (trials == -1) ? 0 : trials;
+		long lookTime = exp.getLookTime(trial);
+		
+		// Standard deviation for each timestamp is half the inverse of the
+		// frame rate of the video.
+		// A look time is dependant on two of these timestamps, making the
+		// standard deviation equal to twice half the inverse of the frame rate.
+		// The total look time becomes equivalent of the number of looks times 2
+		// times the inverse of the framerate of the video
+		double stdev = looks * Globals.getVideoController().getMilliSecondsPerSample();
+		
+		// Prepare label texts
+		String t = String.format("%s / %d", tn, trials);
+		String l = String.format("%s / %d", ln, looks);
+		String s = String.format("%d ms    \u03C3%d ms", lookTime, (long) stdev);
+		
+		// Set information
+		Globals.getEditor().setInfo(t, l, s);
+		Globals.getEditor().updateButtons(endTrial, endLook,
+    			!inTrial, lastTrial > 0, inTrial && !inLook, lastLook > 0  && inTrial || inLook);
+	}
+	
+	/**
+	 * Creates a new trial at the current cursor time
+	 * @return	True if trial could be created
+	 */
+	public boolean newTrial()
 	{
-		int curTrialNumber = Globals.getExperimentModel().getCurrentTrialNumber();
-		int curLook = Globals.getExperimentModel().getCurrentLookNumber();
-		
-		String t = (curTrialNumber == -1) ? "Start a new trial" : 
-			Integer.toString(curTrialNumber);
-		String l = (curLook == -1) ? "Start a new look" : 
-			Integer.toString(curLook);
-		
-		Globals.getEditor().setInfo(t, l, "0 ms");
+		long time = Globals.getVideoController().getMediaTime();
+		return Globals.getExperimentModel().addTrial(time);
+	}
+	
+	/**
+	 * Creates a new look at the current cursor time
+	 * @return		True if look could be created
+	 */
+	public boolean newLook()
+	{
+		long time = Globals.getVideoController().getMediaTime();
+		return Globals.getExperimentModel().addLook(time);
+	}
+	
+	/**
+	 * Sets the end time of the current trial to the current cursor time
+	 * @return		True if end time could be adapted
+	 */
+	public boolean setEndTrial()
+	{
+		long time = Globals.getVideoController().getMediaTime();
+		int curTrialNumber = Globals.getExperimentModel().getTrialByTime(time);
+		return Globals.getExperimentModel().endTrial(curTrialNumber, time);
+	}
+	
+	/**
+	 * Sets the end time of the current look to the current cursor time
+	 * @return		True if look could be ended here
+	 */
+	public boolean setEndLook()
+	{
+		long time = Globals.getVideoController().getMediaTime();
+		int trial = Globals.getExperimentModel().getTrialByTime(time);
+		int look = Globals.getExperimentModel().getLookByTime(trial, time);
+		return Globals.getExperimentModel().endLook(trial, look, time);
 	}
 	
 	/**
@@ -170,6 +296,11 @@ public class Controller {
 		return Globals.getKeyCodeModel().isValidAction(action);
 	}
 	
+	/**
+	 * Converts a key ID code to a readable string
+	 * @param ID	Code of the key
+	 * @return		String name of the key
+	 */
 	public String codeToString(String ID)
 	{
 		int key = getKey(ID);

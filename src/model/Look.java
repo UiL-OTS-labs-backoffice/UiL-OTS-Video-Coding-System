@@ -1,77 +1,125 @@
 package model;
 
 /**
- * Look class saves the information for a certain look
- * @author mooij006
- *
+ * A look object contains the information about a look
  */
-public class Look {
-	private int lookNumber; // The number of the current look in the trial
-	private int beginTime, endTime;
-	private int duration; // in miliseconds
+public class Look implements Comparable<Look>{
+
+	// Begin and endtime of the look
+	private long beginTime, endTime = -1L;
+	
+	// Duration of the look in milliseconds
+	private long duration;
 	
 	/**
-	 * Constructor for look object.
-	 * Sets the begintime of the look, as that's when the
-	 * new object is created. The endtime is not yet known
-	 * at this point.
-	 * @param beginTime		the begintime of the look
+	 * Constructor of the look
+	 * @param beginTime		The timestamp of the beginning of the look
 	 */
-	public Look(int beginTime)
+	public Look(long beginTime)
 	{
 		this.beginTime = beginTime;
 	}
 	
-	public int getLookNumber()
+	/**
+	 * Get method for begin time of the look
+	 * @return		The begin time of this look
+	 */
+	public long getBeginTime()
 	{
-		return lookNumber;
+		return beginTime;
 	}
 	
 	/**
-	 * Set method for begin time. Used to alter the begintime
-	 * if a mistake has been made
-	 * @param beginTime		new begintime of the look
+	 * Set method for the begin time of this look
+	 * @param beginTime		The new begin time of this look
 	 */
-	public void setBeginTime(int beginTime)
+	public boolean setBeginTime(long beginTime)
 	{
-		this.beginTime = beginTime;
-		this.duration = endTime - beginTime;
+		if(endTime == -1L || beginTime < endTime)
+		{
+			this.beginTime = beginTime;
+			duration = endTime - this.beginTime;
+			return true;
+		}
+		else
+			return false;
 	}
 	
 	/**
-	 * Get method for begintime
-	 * @return	begintime
+	 * Get method for the end time of this look
+	 * @return		The end time of this look
 	 */
-	public int getBeginTime()
+	public long getEndTime()
 	{
-		return this.beginTime;
+		return endTime;
 	}
 	
 	/**
-	 * Set method for enddtime
-	 * @param endTime	endtime of look
+	 * Set method for the end time of this look
+	 * @param endTime		The new end time of this look
 	 */
-	public void setEndTime(int endTime)
+	public boolean setEndTime(long endTime)
 	{
-		this.endTime = endTime;
-		this.duration = endTime - beginTime;
+		if(endTime > beginTime)
+		{
+			this.endTime = endTime;
+			duration = this.endTime - beginTime;
+			return true;
+		}
+		else 
+			return false;
+		
 	}
 	
 	/**
-	 * Get method for enddtime
-	 * @return	endTime
+	 * Method to check if a timestamp falls within the current look range
+	 * @param time		The timestamp to be checked
+	 * @return			True iff the timestamp falls within the current look
 	 */
-	public int getEndTime()
+	public boolean hasTime(long time)
 	{
-		return this.endTime;
+		return (beginTime < time && (endTime == -1L || time < endTime));
 	}
 	
 	/**
-	 * Method to get the duration of a look
-	 * @return	Duration of look in miliseconds
+	 * Returns the duration of this look
+	 * @return		Duration in milliseconds
 	 */
-	public int getDuration()
+	public long getDuration()
 	{
-		return this.duration;
+		return duration;
+	}	
+	
+	/**
+	 * compareTo for Look objects
+	 * Sees objects that have overlap as equal
+	 * @param l		Look object this look needs to be compared to
+	 * @return 		0 iff this and l are equal (or the fall partly in the same 
+	 * 					range)
+	 * 				1 iff this > l
+	 * 			   -1 iff this < l
+	 */
+	@Override
+	public int compareTo(Look l) {
+		if(this.endTime == -1L)
+		{
+			if(beginTime == l.beginTime) return 0;
+			if(beginTime > l.getBeginTime()) return 1;
+			else return -1;
+		}
+		else
+		{
+			if(l.getBeginTime() >= this.endTime && this.endTime != -1L)
+			{
+				return -1;
+			}
+			else if(l.getEndTime() <= this.beginTime)
+			{
+				return 1;
+			}
+			else return 0; // Ranges match
+		}
 	}
+	
+	
 }

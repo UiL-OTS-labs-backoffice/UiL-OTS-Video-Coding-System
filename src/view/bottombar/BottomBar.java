@@ -10,6 +10,7 @@ public class BottomBar extends JPanel {
 	
 	// Trial information panel instance
 	private TrialInformation trialInformation;
+	private TrialControls trial_controls;
 	private PlayerControlsPanel timecodes;
 	
 	public BottomBar()
@@ -31,6 +32,14 @@ public class BottomBar extends JPanel {
     {
     	trialInformation.setInfo(trial, look, time);
     }
+    
+    public void updateButtons(
+			String endTrial, String endLook,
+			boolean nt, boolean et, boolean nl, boolean el
+		)
+	{
+    	trial_controls.update(endTrial, endLook, nt, et, nl, el);
+	}
     
     /**
      * Method to change the value of the file label in the trial information
@@ -60,7 +69,7 @@ public class BottomBar extends JPanel {
      */
     private void addTrialControls()
     {
-    	TrialControls trial_controls = new TrialControls();
+    	trial_controls = new TrialControls();
         add(trial_controls, BorderLayout.EAST);
     }
     

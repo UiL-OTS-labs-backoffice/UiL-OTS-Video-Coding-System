@@ -129,6 +129,8 @@ public interface IVideoControls {
 	 * @return the step size for one frame
 	 */
 	public double getMilliSecondsPerSample();
+	
+	public double getStdev();
 
 	/**
 	 * Gets this Clock's current media time in milli seconds.

@@ -33,6 +33,8 @@ public class Editor {
     private BottomBar bottom_bar;
     private VideoManipulationButtons playButtons;
     
+    private java.awt.Component visualComponent = null;
+    
     /**
      * Getmethod for instance of Editor view
      * @return	Editor
@@ -105,7 +107,13 @@ public class Editor {
     public void addVideoPlayerSurface(VLCMediaPlayer player)
     {
     	videoPlayer = player;
-    	frame.getContentPane().add(videoPlayer.getVisualComponent());
+    	
+    	// Delete current video player component if exists
+    	if(visualComponent != null)
+    		frame.getContentPane().remove(visualComponent);
+    	
+    	visualComponent = videoPlayer.getVisualComponent();
+    	frame.getContentPane().add(visualComponent);
     	playButtons.setEnableButtons(true);
     	bottom_bar.getTimeCodes().playerStarted(player);
     	frame.revalidate();
@@ -117,7 +125,7 @@ public class Editor {
     public void show(){
         
         frame.setVisible(true);
-        c.updateTrialNumber();
+        c.updateLabels(0L);
         c.updateCurrentFileLabel();
     }
     
@@ -141,6 +149,14 @@ public class Editor {
     public void setFile(String file)
     {
     	bottom_bar.setFile(file);
+    }
+    
+    public void updateButtons(
+			String endTrial, String endLook,
+			boolean nt, boolean et, boolean nl, boolean el
+		)
+    {
+    	bottom_bar.updateButtons(endTrial, endLook,	nt, et, nl, el);
     }
     
     

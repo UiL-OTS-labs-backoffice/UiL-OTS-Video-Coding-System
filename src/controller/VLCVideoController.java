@@ -154,6 +154,14 @@ public class VLCVideoController implements IVideoControls {
 	public double getMilliSecondsPerSample() {
 		return player.getMilliSecondsPerSample();
 	}
+	
+	@Override
+	public double getStdev()
+	{
+		if (IsLoaded())
+			return player.getStdev();
+		else return 0;
+	}
 
 	@Override
 	public long getMediaTime() {

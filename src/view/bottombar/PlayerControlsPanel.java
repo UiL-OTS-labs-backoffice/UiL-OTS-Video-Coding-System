@@ -67,7 +67,7 @@ public class PlayerControlsPanel extends JPanel {
     public PlayerControlsPanel() {
         createUI();
     }
-    
+      
     /**
      * Constructor helper method
      */
@@ -158,6 +158,7 @@ public class PlayerControlsPanel extends JPanel {
             final long time = mediaPlayer.getMediaTime();
             final long end = mediaPlayer.getMediaDuration();
             final int position = (int)(mediaPlayer.getPosition() * 10000.0f);
+            
             // Updates to user interface components must be executed on 
             // the Event
             // Dispatch Thread
@@ -167,6 +168,7 @@ public class PlayerControlsPanel extends JPanel {
                     if (mediaPlayer.isPlaying()) {
                         updateTime(time, end);
                         updatePosition(position);
+                        controller.Controller.getInstance().updateLabels(time);
                     }
                 }
             });
@@ -217,6 +219,13 @@ public class PlayerControlsPanel extends JPanel {
     
     public void playerStarted(IMediaPlayer player)
     {
+    	long time = player.getMediaTime();
+        long end = player.getMediaDuration();
+        int position = (int)(player.getPosition() * 10000.0f);
+        
+        updateTime(time, end);
+        updatePosition(position);
+        
     	executorService.scheduleAtFixedRate(
     			runnable = new UpdateRunnable(player), 
     			0L, 

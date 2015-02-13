@@ -39,6 +39,7 @@ public class VLCMediaPlayer implements IMediaPlayer{
    	private static final Dimension fallbackVideoSize = new Dimension(352, 288);
    	private float aspectRatio, origAspectRatio;
    	private double msPerFrame = 0.0d; 
+   	private double stdev = 0.0d;
    	
    	public VLCMediaPlayer(String url)
    	{
@@ -150,8 +151,10 @@ public class VLCMediaPlayer implements IMediaPlayer{
 			    float fps = mediaPlayer.getFps();
 			    if (fps > 1) {
 			    	msPerFrame = (1000d / fps);
+			    	stdev = msPerFrame / 2;
 		        }
 		    }
+			
 		}
     	
 		public void finished(MediaPlayer mediaPlayer) {
@@ -165,6 +168,7 @@ public class VLCMediaPlayer implements IMediaPlayer{
 					float fps = mediaPlayer.getFps();
 					if (fps > 1) {
 					msPerFrame = (1000d / fps);
+					stdev = msPerFrame / 2;
 				}
 			}
 		}
@@ -486,6 +490,15 @@ public class VLCMediaPlayer implements IMediaPlayer{
     	
     	// Return an arbitrary value: 25 fps.
         return 1000 / 25;
+    }
+    
+    /* (non-Javadoc)
+	 * @see view.IMediaPlayer#getStdev()
+	 */
+    @Override
+    public double getStdev()
+    {
+    	return stdev;
     }
     
    /* (non-Javadoc)

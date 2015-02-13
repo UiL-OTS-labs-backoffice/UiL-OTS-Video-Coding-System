@@ -1,122 +1,232 @@
 package model;
 
-/**
- * Trial class keeps track of all the information in the trials
- * @author mooij006
- *
- */
-public class Trial {
-	private int trialNumber;
-	private Look[] looks;
-	private int lookCurIndex; // Keeps track of the current look
-	private int beginTime, endTime;
+import java.util.LinkedList;
+
+public class Trial implements Comparable<Trial>{
+	
+	// Reference to all the looks
+	private LinkedList<Look> looks;
+	
+	// References to begin and end time
+	private long beginTime, endTime = -1L;
 	
 	/**
-	 * Constructor for a new trial
-	 * @param trial			Trial number
-	 * @param beginTime		Begintime of trial
+	 * Constructor for a new Trial
+	 * @param beginTime		The begintime of the trial
 	 */
-	public Trial(int trialNumber, int beginTime)
-	{
-		this.trialNumber = trialNumber;
-		looks = new Look[0];
-		lookCurIndex = -1;
-		this.beginTime = beginTime;
-	}
-	
-	/**
-	 * Returns the trial number
-	 * @return	Trial number of this trial
-	 */
-	public int getTrialNumber()
-	{
-		return this.trialNumber;
-	}
-	
-	/**
-	 * Returns the current look number of the current trial
-	 * @return	Look number of current look in trial
-	 */
-	public int getCurrentLookNumber()
-	{
-		if(lookCurIndex == -1)
-			return -1;
-		return looks[lookCurIndex].getLookNumber();
-	}
-	
-	/**
-	 * Set method for begin time. Used to alter the begintime
-	 * if a mistake has been made
-	 * @param beginTime		new begintime of the trial
-	 */
-	public void setBeginTime(int beginTime)
+	public Trial(long beginTime)
 	{
 		this.beginTime = beginTime;
+		looks = new LinkedList<Look>();
 	}
 	
 	/**
-	 * Get method for begintime
-	 * @return	begintime
+	 * Get method for the begin time of this trial
+	 * @return	Begin time of this trial
 	 */
-	public int getBeginTime()
+	public long getBeginTime()
 	{
-		return this.beginTime;
+		return beginTime;
 	}
 	
 	/**
-	 * Set method for enddtime
-	 * @param endTime	endtime of trial
+	 * Set method for the begin time of this trial
+	 * @param beginTime		The new begin time for this trial
+	 * @return				True iff change could be made, i.e. if the new 
+	 * 						begin time is larger than the end time
 	 */
-	public void setEndTime(int endTime)
+	public boolean setBeginTime(long beginTime)
 	{
-		this.endTime = endTime;
-	}
-	
-	/**
-	 * Get method for enddtime
-	 * @return	endTime
-	 */
-	public int getEndTime()
-	{
-		return this.endTime;
-	}
-	
-	/**
-	 * Gets the array of looks
-	 * @return	array of looks
-	 */
-	public Look[] get_looks()
-	{
-		return this.looks;
-	}
-	
-	/**
-	 * Adds a new look to the looks in this trial
-	 * @param look	The look to be added
-	 */
-	public void add_look(Look look)
-	{
-		Look[] old_looks = this.looks;
-		this.looks = new Look[old_looks.length + 1];
-		for(int i = 0; i < old_looks.length; i++)
+		if(endTime == -1L || endTime > beginTime)
 		{
-			this.looks[i] = old_looks[i];
+			this.beginTime = beginTime;
+			return true;
 		}
-		this.looks[this.looks.length - 1] = look;
+		else
+			return false;
 	}
 	
 	/**
-	 * Returns the total time looked in this trial
-	 * @return	Total time looked
+	 * Get method for the end time of this trial
+	 * @return		The end time of this trial
 	 */
-	public int getTotalLookTime()
+	public long getEndTime()
 	{
-		int total = 0;
-		for (Look l : this.looks)
-		{
-			total += l.getDuration();
-		}
-		return total;
+		return endTime;
 	}
 	
+	/**
+	 * Set method for the end time of this trial
+	 * @param endTime	The new end time for this trial
+	 * @return			True iff changes could be made, i.e. if the new end
+	 * 					time is later than the begin time of this trial
+	 */
+	public boolean setEndTime(long endTime)
+	{
+		// TODO: either disallow if looks extend beyong this point, or remove said looks
+		if(endTime >= beginTime)
+		{
+			this.endTime = endTime;
+			return true;
+		}
+		else
+			return false;
+	}
+	
+	/**
+	 * Method to add a look to the list of looks in the right place, so
+	 * the order is maintained and only if the begintime of the look isn't
+	 * in the range of other looks
+	 * @param beginTime		The begintime of the look
+	 * @return				True iff begintime is not in range of other looks
+	 */
+	public boolean addLook(long beginTime)
+	{
+		Look last = looks.peekLast();
+		if(last != null && last.getEndTime() == -1L)
+			last.setEndTime(beginTime-1);
+		Look newLook = new Look(beginTime);
+		for(int i = 0; i < looks.size(); i++)
+		{
+			int compare = newLook.compareTo(looks.get(i));
+			if( compare > 0)
+				continue;
+			else if(compare == 0)
+			{
+				System.out.println("Same range");
+				return false;
+			}
+				
+			else if(compare < 0)
+			{
+				newLook.setEndTime(looks.get(i).getBeginTime()-1);
+				looks.add(i, newLook);
+				return true;
+			}
+		}
+		
+		looks.addLast(newLook);
+		return true;
+	}
+	
+	/**
+	 * Tries to remove the trial from the list
+	 * @param trialNumber	The trial number of the trial to be removed
+	 * @return				True iff remove succesful
+	 */
+	public boolean removeLook(int lookNumber)
+	{
+		lookNumber--;
+		if(lookNumber < 0 || lookNumber > looks.size())
+			return false;
+		else
+			return looks.remove(looks.get(lookNumber - 1));
+	}
+	
+	/**
+	 * Get method for the total number of looks
+	 * @return	Number of looks
+	 */
+	public int getNumberOfLooks()
+	{
+		return looks.size();
+	}
+	
+	public long getTotalLookTime()
+	{
+		long time = 0;
+		for(Look l : looks)
+		{
+			time += l.getDuration();
+		}
+		
+		return time;
+	}
+	
+	/**
+	 * Method to check if a timestamp falls within the current trial
+	 * @param time		The timestamp to be checked
+	 * @return			True iff the timestamp falls within the current trial
+	 */
+	public boolean hasTime(long time)
+	{
+		return (beginTime < time && (endTime == -1L || time < endTime));
+	}
+	
+	/**
+	 * Method to get the look number of the look in which the passed time
+	 * stamp falls
+	 * @param time		Timestamp to be checked
+	 * @return			Look number of the trial in which the timestamp falls
+	 * 					or -1 if no such look exists
+	 */
+	public int getLookByTime(long time)
+	{
+		for(int i = 0; i < looks.size(); i++)
+		{
+			if (looks.get(i).hasTime(time))
+				return i+1;
+		}
+		return -1;
+	}
+	
+	public int getLastLookByTime(long time)
+	{
+		for(int i = 0; i < looks.size(); i++)
+		{
+			if(looks.get(i).getBeginTime() > time)
+				return i;
+		}
+		
+		return -1;
+	}
+	
+	/**
+	 * Method to set the end time of a look in this trial
+	 * @param look		The number of the look you wish to change
+	 * @param time		The new time for this look
+	 * @return			True if succesful, i.e. if the new end time for this
+	 * 					look comes after the begin time of the look
+	 */
+	public boolean setLookEndTime(int look, long time)
+	{
+		look--;
+		if(look < 0 || look > looks.size())
+			return false;
+		else
+			return looks.get(look).setEndTime(time);
+	}
+	
+	/**
+	 * compareTo for Trial objects
+	 * Sees objects that have overlap as equal
+	 * @param t		Trial object this trial needs to be compared to
+	 * @return 		0 iff this and t are equal (or the fall partly in the same 
+	 * 					range)
+	 * 				1 iff this > t
+	 * 			   -1 iff this < t
+	 */
+	@Override
+	public int compareTo(Trial t) {
+		if(this.endTime == -1L)
+		{
+			if(beginTime == t.beginTime) return 0;
+			if(beginTime > t.getBeginTime()) return 1;
+			else return -1;
+		}
+		else
+		{
+			if(t.getBeginTime() >= this.endTime && this.endTime != -1L)
+			{
+				return -1;
+			}
+			else if(t.getEndTime() <= this.beginTime)
+			{
+				return 1;
+			}
+			else return 0; // Ranges match
+		}
+		
+	}
+
 }

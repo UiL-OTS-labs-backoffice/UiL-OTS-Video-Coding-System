@@ -63,6 +63,13 @@ public interface IMediaPlayer {
 	 * @return the step size for one frame
 	 */
 	public double getMilliSecondsPerSample();
+	
+	/**
+	 * The standard deviation for is half the inverse of the frame rate.
+	 * Within this period of time, you can never be sure of the accuracy
+	 * @return	standard deviation
+	 */
+	public double getStdev();
 
 	/**
 	 * Gets this Clock's current media time in milli seconds.

@@ -1,10 +1,7 @@
 package model;
 
-/**
- * Keeps track of an experiment
- * @author mooij006
- *
- */
+import java.util.LinkedList;
+
 public class Experiment {
 	// Current video file url
 	private String url;
@@ -13,35 +10,220 @@ public class Experiment {
 	private String exp_name, exp_id, res_id, pp_id;
 	private boolean show_exp_name, show_exp_id, show_res_id, show_pp_id;
 	
-	// Trial information
-	Trial trials[];
-	int curTrialIndex; // Current index of trial
+	// Linked list of all the trials
+	private LinkedList<Trial> trials;
 	
 	/**
-	 * Constructor for experiment
-	 * Creates a new experiment object with starting values
+	 * Constructor method
 	 */
 	public Experiment()
 	{
-		trials = new Trial[0];
-		curTrialIndex = -1;
+		trials = new LinkedList<Trial>();
 	}
 	
-	public int getCurrentTrialNumber()
+	/**
+	 * Method to add a trial to the list of trials in the right place, so
+	 * the order is maintained and only if the begintime of the trial isn't
+	 * in the range of other trials
+	 * @param beginTime		The begintime of the trial
+	 * @return				True iff begintime is not in range of other trial
+	 */
+	public boolean addTrial(long beginTime)
 	{
-		if(curTrialIndex == -1)
-			return -1;
-		Trial curTrial = trials[curTrialIndex];
-		return curTrial.getTrialNumber();
+		Trial last = trials.peekLast();
+		if(last != null && last.getEndTime() == -1L)
+			last.setEndTime(beginTime-1);
+		Trial newTrial = new Trial(beginTime);
+		for(int i = 0; i < trials.size(); i++)
+		{
+			int compare = newTrial.compareTo(trials.get(i));
+			if( compare > 0)
+				continue;
+			else if(compare == 0)
+			{
+				System.out.println("Same range");
+				return false;
+			}
+				
+			else if(compare < 0)
+			{
+				newTrial.setEndTime(trials.get(i).getBeginTime()-1);
+				trials.add(i, newTrial);
+				return true;
+			}
+		}
+		
+		trials.addLast(newTrial);
+		return true;
 	}
 	
-	public int getCurrentLookNumber()
+	/**
+	 * Method to add a look if you don't know which trial the look should be in
+	 * @param beginTime		The begintime of the look
+	 * @return				True iff look falls within the range of a trial
+	 * 							but not in the range of another look
+	 */
+	public boolean addLook(long beginTime)
 	{
-		if(curTrialIndex == -1)
+		int trial = getTrialByTime(beginTime);
+		if(trial == -1)
+			return false;
+		else
+			return trials.get(trial-1).addLook(beginTime);
+	}
+	
+	/**
+	 * Method to add a new look to an existing trial
+	 * @param trial			The trial number where the look should be added to
+	 * @param beginTime		The begintime of the look
+	 * @return				True if the trial exists, the look falls within
+	 * 							the range of the trial and not in the range
+	 * 							of another look.
+	 */
+	public boolean addLook(int trial, long beginTime)
+	{
+		trial--;
+		if(trial < 0 || trial > trials.size() || 
+				!trials.get(trial).hasTime(beginTime))
+		{
+			return false;
+		}
+		else
+		{
+			return trials.get(trial).addLook(beginTime);
+		}
+	}
+	
+	/**
+	 * Tries to remove the trial from the list
+	 * @param trialNumber	The trial number of the trial to be removed
+	 * @return				True iff remove succesful
+	 */
+	public boolean removeTrial(int trialNumber)
+	{
+		trialNumber--;
+		if(trialNumber < 0 || trialNumber > trials.size())
+			return false;
+		else
+			return trials.remove(trials.get(trialNumber));
+	}
+	
+	public int getNumberOfTrials()
+	{
+		return trials.size();
+	}
+	
+	public int getNumberOfLooks(int trial)
+	{
+		trial--;
+		if(trial < 0 || trial > trials.size())
 			return -1;
-		Trial curTrial = trials[curTrialIndex];
-		return curTrial.getCurrentLookNumber();
-			
+		return trials.get(trial).getNumberOfLooks();
+	}
+	
+	public long getLookTime(int trial)
+	{
+		trial--;
+		if(trial < 0 || trial > trials.size())
+			return 0L;
+		else
+			return trials.get(trial).getTotalLookTime();
+	}
+	
+	/**
+	 * Method to get the trial number of the trial in which the passed time
+	 * stamp falls
+	 * @param time		Timestamp to be checked
+	 * @return			Trial number of the trial in which the timestamp falls
+	 * 					or -1 if no such trial exists
+	 */
+	public int getTrialByTime(long time)
+	{
+		for(int i = 0; i < trials.size(); i++)
+		{
+			if (trials.get(i).hasTime(time))
+				return i+1;
+		}
+		
+		return -1;
+	}
+	
+	public int getLastTrialByTime(long time)
+	{
+		for(int i = 0; i < trials.size(); i++)
+		{
+			if(trials.get(i).getBeginTime() > time)
+				return i;
+		}
+		
+		return -1;
+	}
+	
+	/**
+	 * Method to get the look number of the look in which the passed time
+	 * stamp falls
+	 * @param time		Timestamp to be checked
+	 * @return			Look number of the trial in which the timestamp falls
+	 * 					or -1 if no such look exists
+	 */
+	public int getLookByTime(long time)
+	{
+		int trial = getTrialByTime(time);
+		if(trial > 0)
+		{
+			Trial t = trials.get(getTrialByTime(time) - 1);
+			return t.getLookByTime(time);
+		} else
+			return -1;
+	}
+	
+	public int getLastLookByTime(long time)
+	{
+		int trial = getTrialByTime(time);
+		return (trial != -1) ? trials.get(trial-1).getLastLookByTime(time) : -1;
+	}
+	
+	/**
+	 * Method to get the look number of the look in which the passed time
+	 * stamp falls
+	 * @param time		Timestamp to be checked
+	 * @return			Look number of the trial in which the timestamp falls
+	 * 					or -1 if no such look exists
+	 */
+	public int getLookByTime(int trial, long time)
+	{
+		trial--;
+		if(trial < 0 || trial > trials.size())
+		{
+			return -1;
+		}
+		else
+		{
+			Trial t = trials.get(trial);
+			return t.getLookByTime(time);
+		}
+	}
+	
+	public boolean endTrial(int trial, long time)
+	{
+		trial--;
+		if(trial < 0 || trial > trials.size())
+			return false;
+		else
+		{
+			return trials.get(trial).setEndTime(time);
+		}
+	}
+	
+	public boolean endLook(int trial, int look, long time)
+	{
+		trial--;
+		if(trial < 0 || trial > trials.size())
+			return false;
+		else
+		{
+			return trials.get(trial).setLookEndTime(look, time);
+		}
 	}
 	
 	/**
