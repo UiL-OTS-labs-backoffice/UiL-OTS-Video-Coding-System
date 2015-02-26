@@ -105,10 +105,6 @@ public class MainMenu extends JMenuBar {
 		trialMenu.setMnemonic('T');
 		add(trialMenu);
 		
-		JMenuItem editTrial = new JMenuItem("Edit trial number");
-		editTrial.setToolTipText("Change the number of the current "
-				+ "trial");
-		
 		JMenuItem removeTrial = new JMenuItem("Remove current trial");
 		removeTrial.setToolTipText("Removes the current trial, but doesn't"
 				+ " change the trial numbers of the remaining trials");
@@ -128,8 +124,14 @@ public class MainMenu extends JMenuBar {
 		JMenu goToLook = new JMenu("Go to look");
 		
 		JMenuItem overview = new JMenuItem("Show overview");
+		overview.setToolTipText("Show an overview of the experiment so far");
+		overview.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		view.panels.ExperimentOverview kdp = new view.panels.ExperimentOverview();
+        		kdp.setVisible(true);
+        	}
+        });
 		
-		trialMenu.add(editTrial);
 		trialMenu.add(removeTrial);
 		trialMenu.add(removeLook);
 		trialMenu.add(removeLooks);

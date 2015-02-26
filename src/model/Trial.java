@@ -2,6 +2,8 @@ package model;
 
 import java.util.LinkedList;
 
+import controller.Globals;
+
 public class Trial implements Comparable<Trial>{
 	
 	// Reference to all the looks
@@ -18,6 +20,15 @@ public class Trial implements Comparable<Trial>{
 	{
 		this.beginTime = beginTime;
 		looks = new LinkedList<Look>();
+	}
+	
+	/**
+	 * Get method for the list of looks
+	 * @return	LinkedList<Look>  list of looks
+	 */
+	public LinkedList<Look> getLooks()
+	{
+		return looks;
 	}
 	
 	/**
@@ -55,6 +66,10 @@ public class Trial implements Comparable<Trial>{
 		return endTime;
 	}
 	
+	public boolean canEndTrial(long time)
+	{
+		return time >= beginTime;
+	}
 	/**
 	 * Set method for the end time of this trial
 	 * @param endTime	The new end time for this trial
@@ -70,7 +85,48 @@ public class Trial implements Comparable<Trial>{
 			return true;
 		}
 		else
+		{
+			System.out.println("NOT Ended TRIALCLASS ERROR");
 			return false;
+		}
+			
+	}
+	
+	/**
+	 * Check if the trial can be ended at time t
+	 * @param trial		The trial to be ended
+	 * @param time		The new end time of the trial
+	 * @return			True iff trial can be ended
+	 */
+	public boolean canEndLook(int look, long time)
+	{
+		look--;
+		if(look < 0 || look > looks.size())
+			return false;
+		
+		if(looks.get(look).getBeginTime() == time)
+			return false;
+		
+		return true;
+	}
+	
+	public boolean canAddLook(long time)
+	{
+		if(!Globals.getVideoController().IsLoaded())
+			return false;
+		if(looks.size() == 0)
+			return true;
+		for(Look l : looks)
+		{
+			if(l.getBeginTime() > time)
+				return true;
+			if(l.getEndTime() < time)
+				continue;
+			else
+				return false;
+		}
+		
+		return true;
 	}
 	
 	/**
@@ -150,7 +206,7 @@ public class Trial implements Comparable<Trial>{
 	 */
 	public boolean hasTime(long time)
 	{
-		return (beginTime < time && (endTime == -1L || time < endTime));
+		return (beginTime <= time && (endTime == -1L || time < endTime));
 	}
 	
 	/**
@@ -172,6 +228,10 @@ public class Trial implements Comparable<Trial>{
 	
 	public int getLastLookByTime(long time)
 	{
+		int look = getLookByTime(time);
+		if (look > 0) return look;
+		
+		// If not currently inside a valid look, return last valid look
 		for(int i = 0; i < looks.size(); i++)
 		{
 			if(looks.get(i).getBeginTime() > time)

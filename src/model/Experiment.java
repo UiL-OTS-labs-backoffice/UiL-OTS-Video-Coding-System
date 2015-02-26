@@ -2,6 +2,8 @@ package model;
 
 import java.util.LinkedList;
 
+import controller.Globals;
+
 public class Experiment {
 	// Current video file url
 	private String url;
@@ -19,6 +21,34 @@ public class Experiment {
 	public Experiment()
 	{
 		trials = new LinkedList<Trial>();
+	}
+	
+	/**
+	 * Get method for the list of trials
+	 * @return LinkedList<Trial>  list of trials
+	 */
+	public LinkedList<Trial> getTrials()
+	{
+		return trials;
+	}
+	
+	public boolean canAddTrial(long time)
+	{
+		if(!Globals.getVideoController().IsLoaded())
+			return false;
+		if(trials.size() == 0)
+			return true;
+		for(Trial t : trials)
+		{
+			if(t.getBeginTime() > time)
+				return true;
+			if(t.getEndTime() < time)
+				continue;
+			else
+				return false;
+		}
+		
+		return true;
 	}
 	
 	/**
@@ -44,7 +74,6 @@ public class Experiment {
 				System.out.println("Same range");
 				return false;
 			}
-				
 			else if(compare < 0)
 			{
 				newTrial.setEndTime(trials.get(i).getBeginTime()-1);
@@ -70,6 +99,15 @@ public class Experiment {
 			return false;
 		else
 			return trials.get(trial-1).addLook(beginTime);
+	}
+	
+	public boolean canAddLook(int trial, long time)
+	{
+		trial--;
+		if(trial < 0 || trial > trials.size())
+			return false;
+		else
+			return trials.get(trial).canAddLook(time);
 	}
 	
 	/**
@@ -150,6 +188,11 @@ public class Experiment {
 	
 	public int getLastTrialByTime(long time)
 	{
+		int trial = getTrialByTime(time);
+		if (trial > 0) return trial;
+		
+		// If not inside a valid trial, return the last valid value
+		// for this time
 		for(int i = 0; i < trials.size(); i++)
 		{
 			if(trials.get(i).getBeginTime() > time)
@@ -204,6 +247,20 @@ public class Experiment {
 		}
 	}
 	
+	public int getLastLookByTime(int trial, long time)
+	{
+		trial--;
+		if(trial < 0 || trial > trials.size())
+		{
+			return -1;
+		}
+		else
+		{
+			Trial t = trials.get(trial);
+			return t.getLastLookByTime(time);
+		}
+	}
+	
 	public boolean endTrial(int trial, long time)
 	{
 		trial--;
@@ -213,6 +270,33 @@ public class Experiment {
 		{
 			return trials.get(trial).setEndTime(time);
 		}
+	}
+	
+	/**
+	 * Check if the trial can be ended at time t
+	 * @param trial		The trial to be ended
+	 * @param time		The new end time of the trial
+	 * @return			True iff trial can be ended
+	 */
+	public boolean canEndTrial(int trial, long time)
+	{
+		trial--;
+		if(trial < 0 || trial > trials.size())
+			return false;
+		
+		if(trials.get(trial).getBeginTime() == time)
+			return false;
+		
+		return true;
+	}
+	
+	public boolean canEndLook(int trial, int look, long time)
+	{
+		trial--;
+		if(trial < 0 || trial > trials.size())
+			return false;
+		else
+			return trials.get(trial).canEndLook(look, time);
 	}
 	
 	public boolean endLook(int trial, int look, long time)

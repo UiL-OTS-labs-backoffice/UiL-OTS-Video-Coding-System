@@ -78,7 +78,7 @@ public class Look implements Comparable<Look>{
 	 */
 	public boolean hasTime(long time)
 	{
-		return (beginTime < time && (endTime == -1L || time < endTime));
+		return (beginTime <= time && (endTime == -1L || time < endTime));
 	}
 	
 	/**

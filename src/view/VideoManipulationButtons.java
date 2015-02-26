@@ -101,7 +101,7 @@ public class VideoManipulationButtons extends JPanel {
         });
 		
 		add(prevFrame);
-		prevTrial.setFocusable(false);
+		prevFrame.setFocusable(false);
 		prevFrame.setEnabled(false);
 	}
 	

@@ -2,6 +2,7 @@ package controller;
 
 import java.awt.event.KeyEvent;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import view.panels.ExperimentSettings;
 import view.panels.VideoSelector;
@@ -91,6 +92,7 @@ public class Controller {
 			Globals.getEditor().addVideoPlayerSurface(player);
 			Globals.getVideoController().setPlayer(player);
 			updateCurrentFileLabel();
+			updateLabels(0);
 		}
 	}
 	
@@ -99,23 +101,6 @@ public class Controller {
 	 */
 	public void updateLabels(long time)
 	{	
-		/*int curTrialNumber = Globals.getExperimentModel().getTrialByTime(time);
-		int curLook = Globals.getExperimentModel().getLookByTime(curTrialNumber, time);
-		int totalTrials = Globals.getExperimentModel().getNumberOfTrials();
-		int totalLooks = Globals.getExperimentModel().getNumberOfLooks(curTrialNumber);
-		long lookTime = Globals.getExperimentModel().getLookTime(curTrialNumber);
-		
-		String trial = (curTrialNumber == -1) ? " " : Integer.toString(curTrialNumber);
-		String look = (curLook == -1) ? " " : Integer.toString(curLook);
-		String looks = (totalLooks == -1) ? " " : Integer.toString(totalLooks);
-		
-		String t = 	String.format("%s / %d",trial, totalTrials);
-		String l = String.format("%s / %s", look, looks);
-		String s = String.format("%d ms", lookTime);
-		
-		Globals.getEditor().setInfo(t, l, s);
-		Globals.getEditor().updateButtons(curTrialNumber, curLook);*/
-		
 		// Get model reference	
 		model.Experiment exp = Globals.getExperimentModel();
 		
@@ -126,12 +111,10 @@ public class Controller {
 		String endTrial, endLook;
 		
 		// Do some trial checking
-		boolean inTrial = true;
 		int trial = exp.getTrialByTime(time);
 		int lastTrial;
 		if(trial == -1)
 		{
-			inTrial = false;
 			lastTrial = exp.getLastTrialByTime(time);
 			if(lastTrial > 0)
 				endTrial = String.format("Extend trial %d", lastTrial);
@@ -147,12 +130,10 @@ public class Controller {
 		}
 		
 		// Do some look checking
-		boolean inLook = true;
 		int look = exp.getLookByTime(trial, time);
 		int lastLook;
 		if(look == -1)
 		{
-			inLook = false;
 			lastLook = exp.getLastLookByTime(time);
 			if (lastLook > 0)
 				endLook = String.format("Extend look %d", lastLook);
@@ -174,23 +155,33 @@ public class Controller {
 		trials = (trials == -1) ? 0 : trials;
 		long lookTime = exp.getLookTime(trial);
 		
-		// Standard deviation for each timestamp is half the inverse of the
-		// frame rate of the video.
-		// A look time is dependant on two of these timestamps, making the
-		// standard deviation equal to twice half the inverse of the frame rate.
-		// The total look time becomes equivalent of the number of looks times 2
-		// times the inverse of the framerate of the video
-		double stdev = looks * Globals.getVideoController().getMilliSecondsPerSample();
-		
 		// Prepare label texts
 		String t = String.format("%s / %d", tn, trials);
 		String l = String.format("%s / %d", ln, looks);
-		String s = String.format("%d ms    \u03C3%d ms", lookTime, (long) stdev);
+		String s = String.format("%d ms", lookTime);
+		
+		// 
+		boolean canNewTrial = exp.canAddTrial(time);
+		boolean canEndTrial = trial > 0 && exp.getTrials().get(trial-1).canEndTrial(time);
+		
+		boolean canNewLook = exp.canAddLook(trial, time);
+		boolean canEndLook = look > 0 && exp.canEndLook(trial, look, time);
+//		canEndLook = true;
+
 		
 		// Set information
 		Globals.getEditor().setInfo(t, l, s);
 		Globals.getEditor().updateButtons(endTrial, endLook,
-    			!inTrial, lastTrial > 0, inTrial && !inLook, lastLook > 0  && inTrial || inLook);
+    			canNewTrial, canEndTrial, canNewLook, canEndLook);
+	}
+	
+	/**
+	 * Get method for the list of trials
+	 * @return	LinkedList<Trial>  list of trials
+	 */
+	public LinkedList<model.Trial> getTrials()
+	{
+		return Globals.getExperimentModel().getTrials();
 	}
 	
 	/**
@@ -200,7 +191,9 @@ public class Controller {
 	public boolean newTrial()
 	{
 		long time = Globals.getVideoController().getMediaTime();
-		return Globals.getExperimentModel().addTrial(time);
+		boolean succes = Globals.getExperimentModel().addTrial(time);
+		updateLabels(time);
+		return succes;
 	}
 	
 	/**
@@ -210,7 +203,9 @@ public class Controller {
 	public boolean newLook()
 	{
 		long time = Globals.getVideoController().getMediaTime();
-		return Globals.getExperimentModel().addLook(time);
+		boolean succes = Globals.getExperimentModel().addLook(time);
+		updateLabels(time);
+		return succes;
 	}
 	
 	/**
@@ -220,9 +215,12 @@ public class Controller {
 	public boolean setEndTrial()
 	{
 		long time = Globals.getVideoController().getMediaTime();
-		int curTrialNumber = Globals.getExperimentModel().getTrialByTime(time);
-		return Globals.getExperimentModel().endTrial(curTrialNumber, time);
+		int curTrialNumber = Globals.getExperimentModel().getLastTrialByTime(time);
+		boolean succes =  Globals.getExperimentModel().endTrial(curTrialNumber, time);
+		updateLabels(time);
+		return succes;
 	}
+	
 	
 	/**
 	 * Sets the end time of the current look to the current cursor time
@@ -232,8 +230,10 @@ public class Controller {
 	{
 		long time = Globals.getVideoController().getMediaTime();
 		int trial = Globals.getExperimentModel().getTrialByTime(time);
-		int look = Globals.getExperimentModel().getLookByTime(trial, time);
-		return Globals.getExperimentModel().endLook(trial, look, time);
+		int look = Globals.getExperimentModel().getLastLookByTime(trial, time);
+		boolean succes = Globals.getExperimentModel().endLook(trial, look, time);
+		updateLabels(time);
+		return succes;
 	}
 	
 	/**
