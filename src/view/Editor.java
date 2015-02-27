@@ -2,8 +2,14 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.KeyboardFocusManager;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
 
 import view.bottombar.BottomBar;
 import view.events.KeyDispatch;
@@ -67,10 +73,71 @@ public class Editor {
     private void createFrame()
     {
         frame = new JFrame("UiL OTS Labs Video Coding Software");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setLocation(400, 150);
         frame.setSize(1024, 768);
         frame.getContentPane().setLayout(new BorderLayout(0, 0));
+        
+        frame.addWindowListener(new WindowListener(){
+
+			@Override
+			public void windowActivated(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void windowClosed(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				int result = JOptionPane.showConfirmDialog(frame, "Do you want to save before closing?", "alert", JOptionPane.YES_NO_CANCEL_OPTION);
+				switch(result)
+				{
+					case JOptionPane.CANCEL_OPTION: 
+						break;
+					case JOptionPane.YES_OPTION: 
+						if(!Globals.getController().save())
+						{
+							JOptionPane.showMessageDialog(new JPanel(), "Sorry! Looks like the file couldn't be saved!", "Save failed", JOptionPane.ERROR_MESSAGE);
+						} else {
+							frame.dispose();
+						}
+						break;
+					case JOptionPane.NO_OPTION: 
+						frame.dispose(); 
+						break;
+				}
+			}
+
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void windowIconified(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void windowOpened(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+        	
+        });
     }
     
     /**

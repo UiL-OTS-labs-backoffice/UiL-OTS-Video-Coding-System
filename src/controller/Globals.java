@@ -31,7 +31,7 @@ public class Globals {
 	private static ExperimentSettings settingsView;
 	
 	// Experiment model instance
-	private static Experiment experimentModel;
+	private Experiment experimentModel;
 	
 
 	/**
@@ -105,8 +105,17 @@ public class Globals {
 	 * Method to get the experiment model instance
 	 * @return	Experiment model
 	 */
-	public static Experiment getExperimentModel()
+	public Experiment getExperimentModel()
 	{
 		return experimentModel;
+	}
+	
+	/**
+	 * Method to change the experiment model when an existing project
+	 * is loaded
+	 */
+	public void setExperimentModel(Experiment experiment)
+	{
+		this.experimentModel = experiment;
 	}
 }

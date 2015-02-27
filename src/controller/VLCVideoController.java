@@ -57,11 +57,15 @@ public class VLCVideoController implements IVideoControls {
 	@Override
 	public void nextFrame() {
 		player.nextFrame();
+		long time = getMediaTime();
+		Globals.getController().updateLabels(time);
 	}
 
 	@Override
 	public void prevFrame() {
 		player.previousFrame();
+		long time = getMediaTime();
+		Globals.getController().updateLabels(time);
 	}
 
 	@Override

@@ -1,12 +1,21 @@
 package model;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 
 import controller.Globals;
 
-public class Experiment {
+public class Experiment implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	// Current video file url
 	private String url;
+	
+	// Project file location
+	private String SaveURL;
 		
 	// Global Experiment Settings
 	private String exp_name, exp_id, res_id, pp_id;
@@ -353,6 +362,24 @@ public class Experiment {
 	public void setUrl(String url)
 	{
 		this.url = url;
+	}
+	
+	/**
+	 * The current location of the project file
+	 * @return		URL to the project file location
+	 */
+	public String getSaveURL()
+	{
+		return SaveURL;
+	}
+	
+	/**
+	 * Set function for the project file location
+	 * @param url		The url to the project file
+	 */
+	public void setSaveURL(String url)
+	{
+		this.SaveURL = url;
 	}
 	
 	/**

@@ -1,9 +1,16 @@
 package model;
 
+import java.io.Serializable;
+
 /**
  * A look object contains the information about a look
  */
-public class Look implements Comparable<Look>{
+public class Look implements Comparable<Look>, Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	// Begin and endtime of the look
 	private long beginTime, endTime = -1L;

@@ -6,7 +6,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JSeparator;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 import controller.*;
@@ -43,24 +44,21 @@ public class MainMenu extends JMenuBar {
 		save.setMnemonic('S');
 		save.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S,
                 java.awt.Event.CTRL_MASK));
+		save.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				if (!c.save()) {
+					JOptionPane.showMessageDialog(new JPanel(), "Sorry! Looks like the file couldn't be saved!", "Save failed", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
 		JMenuItem saveas = new JMenuItem("Save As");
 		saveas.setMnemonic('A');
 		JMenuItem openProject = new JMenuItem("Open project");
 		openProject.setMnemonic('O');
-		JMenuItem openVideo = new JMenuItem("Op video file");
-		openVideo.setMnemonic('V');
-		
-		openVideo.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent arg0) {
-        		c.videoUrlChooser();
-        	}
-        });
 		
 		fileMenu.add(save);
 		fileMenu.add(saveas);
 		fileMenu.add(openProject);
-		fileMenu.add(new JSeparator());
-		fileMenu.add(openVideo);
 	}
 	
 	/**

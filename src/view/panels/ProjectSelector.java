@@ -14,30 +14,29 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * Video selector
  *
  */
-public class VideoSelector {
+public class ProjectSelector {
 	
 	/**
 	 * Single instance
 	 */
-	private static VideoSelector instance;
+	private static ProjectSelector instance;
 	
-	private static String[] extensions = {"mpeg", "avi", "asf", "wmv", "wma", 
-        "mp4", "mov", "3gp", "mkv"};
+	private static String[] extensions = {"UiL"};
 	
 	
 	/**
 	 * Private constructor
 	 */
-	private VideoSelector() { }
+	private ProjectSelector() { }
 	
 	/**
 	 * getmethod for instance of videoselector
 	 * @return		video selector instance
 	 */
-	public VideoSelector getInstance()
+	public ProjectSelector getInstance()
 	{
 		if(instance == null)
-			instance = new VideoSelector();
+			instance = new ProjectSelector();
 		return instance;
 	}
 	
@@ -50,7 +49,7 @@ public class VideoSelector {
 		JFileChooser chooser = new JFileChooser();
 		
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(
-				"All video files", extensions);
+				"UiL OTS Video Coding Projects", extensions);
 	    
 	    chooser.setFileFilter(filter);
 	    chooser.addChoosableFileFilter(filter);
@@ -75,7 +74,7 @@ public class VideoSelector {
 	 */
 	private static boolean isValidFile(File f)
 	{
-		String fi = f.getName().toLowerCase();
+		String fi = f.getName();
 		
 		if(f.isFile())
 			for(String e : extensions)
@@ -89,7 +88,7 @@ public class VideoSelector {
 	 */
 	private static String error_message()
 	{
-		String e = "The extension of the file you chose is not supported.\n";
+		String e = "The file you selected is not a UiL OTS Video Coding project\n";
 	    e += "Please select a file that has any of the following extensions:\n";
 	    StringJoiner sj = new StringJoiner(", ");
 	    for(String e1 : extensions)

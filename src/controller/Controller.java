@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import view.panels.ExperimentSettings;
-import view.panels.VideoSelector;
 import view.player.VLCMediaPlayer;
 import model.*;
 
@@ -33,7 +32,7 @@ public class Controller {
 	 */
 	public String getUrl()
 	{
-		return Globals.getExperimentModel().getUrl();
+		return Globals.getInstance().getExperimentModel().getUrl();
 	}
 
 	/**
@@ -43,7 +42,7 @@ public class Controller {
 	public void openSettings()
 	{
 		ExperimentSettings e = Globals.getSettingsView();
-		Experiment g = Globals.getExperimentModel();
+		Experiment g = Globals.getInstance().getExperimentModel();
 		e.setSettings(
 				g.getExp_id(),
 				g.getExp_name(),
@@ -64,7 +63,7 @@ public class Controller {
 	public void setSettings()
 	{
 		ExperimentSettings s = Globals.getSettingsView();
-		Globals.getExperimentModel().setSettings(
+		Globals.getInstance().getExperimentModel().setSettings(
 				s.getExp_id(),
 				s.getExp_name(),
 				s.getRes_id(),
@@ -77,22 +76,51 @@ public class Controller {
 	}
 	
 	/**
-	 * Function to open a new video file
-	 * 
-	 * Opens a window to select a video file
-	 * Calls the view to add a new video player with the video file
+	 * Method to load the video selected by the user in the editor view
+	 * and to show the editor
+	 * @param url		The video url
 	 */
-	public void videoUrlChooser()
+	public void setVideo(String url)
 	{
-		String url = VideoSelector.show();
-		if( url != null)
+		VLCMediaPlayer player = new VLCMediaPlayer(url);
+		Globals.getInstance().getExperimentModel().setUrl(url);
+		Globals.getEditor().addVideoPlayerSurface(player);
+		Globals.getVideoController().setPlayer(player);
+		Globals.getEditor().show();
+	}
+	
+	/**
+	 * Method to write the Experiment model as a serialized class to the
+	 * user provided file location
+	 */
+	public boolean save()
+	{
+		return controller.serializer.Serializer.writeExperimentModel();
+	}
+	
+	/**
+	 * Method to write the experiment model to another location than provided
+	 * by the user
+	 */
+	public void saveAs()
+	{
+		// TODO: implement this
+		System.out.println("TODO: implement this shit");
+	}
+	
+	public boolean open(String url)
+	{
+		model.Experiment exp = controller.serializer.Serializer.readExperimentModel(url);
+		if (exp != null)
 		{
-			VLCMediaPlayer player = new VLCMediaPlayer(url);
-			Globals.getExperimentModel().setUrl(url);
-			Globals.getEditor().addVideoPlayerSurface(player);
-			Globals.getVideoController().setPlayer(player);
-			updateCurrentFileLabel();
-			updateLabels(0);
+			Globals.getInstance().setExperimentModel(exp);
+			Globals.getEditor();
+			Globals.getEditor().show();
+			setVideo(exp.getUrl());
+			updateLabels(0L);
+			return true;
+		} else {
+			return false;
 		}
 	}
 	
@@ -102,7 +130,7 @@ public class Controller {
 	public void updateLabels(long time)
 	{	
 		// Get model reference	
-		model.Experiment exp = Globals.getExperimentModel();
+		model.Experiment exp = Globals.getInstance().getExperimentModel();
 		
 		// Current trial number and current look number
 		String tn, ln;
@@ -181,7 +209,7 @@ public class Controller {
 	 */
 	public LinkedList<model.Trial> getTrials()
 	{
-		return Globals.getExperimentModel().getTrials();
+		return Globals.getInstance().getExperimentModel().getTrials();
 	}
 	
 	/**
@@ -191,7 +219,7 @@ public class Controller {
 	public boolean newTrial()
 	{
 		long time = Globals.getVideoController().getMediaTime();
-		boolean succes = Globals.getExperimentModel().addTrial(time);
+		boolean succes = Globals.getInstance().getExperimentModel().addTrial(time);
 		updateLabels(time);
 		return succes;
 	}
@@ -203,7 +231,7 @@ public class Controller {
 	public boolean newLook()
 	{
 		long time = Globals.getVideoController().getMediaTime();
-		boolean succes = Globals.getExperimentModel().addLook(time);
+		boolean succes = Globals.getInstance().getExperimentModel().addLook(time);
 		updateLabels(time);
 		return succes;
 	}
@@ -215,8 +243,8 @@ public class Controller {
 	public boolean setEndTrial()
 	{
 		long time = Globals.getVideoController().getMediaTime();
-		int curTrialNumber = Globals.getExperimentModel().getLastTrialByTime(time);
-		boolean succes =  Globals.getExperimentModel().endTrial(curTrialNumber, time);
+		int curTrialNumber = Globals.getInstance().getExperimentModel().getLastTrialByTime(time);
+		boolean succes =  Globals.getInstance().getExperimentModel().endTrial(curTrialNumber, time);
 		updateLabels(time);
 		return succes;
 	}
@@ -228,10 +256,11 @@ public class Controller {
 	 */
 	public boolean setEndLook()
 	{
+		Globals g = Globals.getInstance();
 		long time = Globals.getVideoController().getMediaTime();
-		int trial = Globals.getExperimentModel().getTrialByTime(time);
-		int look = Globals.getExperimentModel().getLastLookByTime(trial, time);
-		boolean succes = Globals.getExperimentModel().endLook(trial, look, time);
+		int trial = g.getExperimentModel().getTrialByTime(time);
+		int look = g.getExperimentModel().getLastLookByTime(trial, time);
+		boolean succes = g.getExperimentModel().endLook(trial, look, time);
 		updateLabels(time);
 		return succes;
 	}
@@ -241,7 +270,7 @@ public class Controller {
 	 */
 	public void updateCurrentFileLabel()
 	{
-		String curFile = Globals.getExperimentModel().getUrl();
+		String curFile = Globals.getInstance().getExperimentModel().getUrl();
 		Globals.getEditor().setFile((curFile == null) ? "Select a file to play" : curFile.replaceFirst(".*/([^/?]+).*", "$1"));
 	}
 	

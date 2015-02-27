@@ -1,11 +1,17 @@
 package model;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 
 import controller.Globals;
 
-public class Trial implements Comparable<Trial>{
+public class Trial implements Comparable<Trial>, Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	// Reference to all the looks
 	private LinkedList<Look> looks;
 	
