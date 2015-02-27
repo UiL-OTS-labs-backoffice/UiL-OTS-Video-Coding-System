@@ -9,8 +9,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
-
 import view.bottombar.BottomBar;
 import view.events.KeyDispatch;
 import view.menu.MainMenu;
