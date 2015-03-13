@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import view.panels.CSVExportSelector;
 import view.panels.ExperimentSettings;
 import view.player.VLCMediaPlayer;
 import model.*;
@@ -64,8 +65,8 @@ public class Controller {
 	{
 		ExperimentSettings s = Globals.getSettingsView();
 		Globals.getInstance().getExperimentModel().setSettings(
-				s.getExp_id(),
 				s.getExp_name(),
+				s.getExp_id(),
 				s.getRes_id(),
 				s.getPP_id(),
 				s.getShow_exp_id(),
@@ -106,6 +107,21 @@ public class Controller {
 	{
 		// TODO: implement this
 		System.out.println("TODO: implement this shit");
+	}
+	
+	public boolean export()
+	{
+		view.panels.CSVExportSelector.getInstance();
+		String name = CSVExportSelector.show();
+		if (name == null)
+			return false;
+		else{
+			if (!(name.endsWith(".csv") || name.endsWith(".CSV")))
+				name += ".csv";
+			controller.export.CSVExport exporter = new controller.export.CSVExport();
+			return exporter.writeCsv(name);
+		}
+		
 	}
 	
 	public boolean open(String url)

@@ -56,9 +56,22 @@ public class MainMenu extends JMenuBar {
 		JMenuItem openProject = new JMenuItem("Open project");
 		openProject.setMnemonic('O');
 		
+		JMenuItem exportProject = new JMenuItem("Export project to CSV");
+		exportProject.setMnemonic('E');
+		exportProject.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				if (!c.export())
+				{
+					JOptionPane.showMessageDialog(new JPanel(), "Sorry! Looks like the file couldn't exported!", "Exporting failed", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+		
 		fileMenu.add(save);
 		fileMenu.add(saveas);
 		fileMenu.add(openProject);
+		fileMenu.addSeparator();
+		fileMenu.add(exportProject);
 	}
 	
 	/**
