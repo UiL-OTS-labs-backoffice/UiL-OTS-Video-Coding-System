@@ -19,11 +19,15 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
+import controller.*;
+
 public class ExperimentOverview extends JFrame {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private Controller c;
 	
 	// Linked list of all the trials
 	private LinkedList<model.Trial> trials;
@@ -40,7 +44,8 @@ public class ExperimentOverview extends JFrame {
 	private JPanel container;
 
 	public ExperimentOverview() {
-		this.trials = controller.Controller.getInstance().getTrials();
+		c = Globals.getInstance().getController();
+		this.trials = c.getTrials();
 		setTitle("Experiment Overview");
 		setType(Type.UTILITY);
 		setResizable(false);

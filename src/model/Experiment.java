@@ -10,6 +10,8 @@ public class Experiment implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	transient private Globals g;
 
 	// Current video file url
 	private String url;
@@ -27,8 +29,9 @@ public class Experiment implements Serializable{
 	/**
 	 * Constructor method
 	 */
-	public Experiment()
+	public Experiment(Globals g)
 	{
+		this.g = g;
 		trials = new LinkedList<Trial>();
 	}
 	
@@ -41,9 +44,14 @@ public class Experiment implements Serializable{
 		return trials;
 	}
 	
+	public void setGlobals(Globals g)
+	{
+		this.g = g;
+	}
+	
 	public boolean canAddTrial(long time)
 	{
-		if(!Globals.getVideoController().IsLoaded())
+		if(!g.getVideoController().IsLoaded())
 			return false;
 		if(trials.size() == 0)
 			return true;
@@ -457,6 +465,8 @@ public class Experiment implements Serializable{
 	{
 		return show_pp_id;
 	}
+	
+	
 	
 	
 }

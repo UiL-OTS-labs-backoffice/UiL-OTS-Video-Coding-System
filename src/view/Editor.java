@@ -23,11 +23,9 @@ import controller.*;
  */
 public class Editor {
 	
-	// Instance of editor
-	private static Editor instance;
-
 	// Instance of controller
-	Controller c = Globals.getController();
+	Globals g;
+	Controller c;
 	
     // Create a new media player instance for the run-time platform
     private IMediaPlayer videoPlayer;
@@ -40,29 +38,20 @@ public class Editor {
     private java.awt.Component visualComponent = null;
     
     /**
-     * Getmethod for instance of Editor view
-     * @return	Editor
-     */
-    public static Editor getInstance()
-    {
-    	if(instance == null)
-    		instance = new Editor();
-    	return instance;
-    }
-    
-    /**
      * Private constructor for editor
      * Creates the main view of the program
      * Set to private to ensure singleton
      */
-    private Editor()
+    public Editor(Globals g)
     {
+    	this.g = g;
+    	this.c = this.g.getController();
     	createFrame();
     	addMenu();
     	addControlBar();
     	addVideoManipulationButtons();
     	KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        manager.addKeyEventDispatcher(new KeyDispatch());
+        manager.addKeyEventDispatcher(new KeyDispatch(g));
     }
     
     /**
@@ -98,15 +87,15 @@ public class Editor {
 					case JOptionPane.CANCEL_OPTION: 
 						break;
 					case JOptionPane.YES_OPTION: 
-						if(!Globals.getController().save())
+						if(!c.save())
 						{
 							JOptionPane.showMessageDialog(new JPanel(), "Sorry! Looks like the file couldn't be saved!", "Save failed", JOptionPane.ERROR_MESSAGE);
 						} else {
-							frame.dispose();
+							System.exit(0);
 						}
 						break;
 					case JOptionPane.NO_OPTION: 
-						frame.dispose(); 
+						System.exit(0);
 						break;
 				}
 			}
@@ -143,7 +132,7 @@ public class Editor {
      */
     private void addMenu()
     {
-    	MainMenu menu = new MainMenu();
+    	MainMenu menu = new MainMenu(g);
     	frame.setJMenuBar(menu);
     }
     
@@ -152,7 +141,7 @@ public class Editor {
      */
     private void addControlBar()
     {
-    	bottom_bar = new BottomBar();
+    	bottom_bar = new BottomBar(g);
         frame.getContentPane().add(bottom_bar, BorderLayout.SOUTH);
     }
     
@@ -161,7 +150,7 @@ public class Editor {
      */
     private void addVideoManipulationButtons()
     {
-    	playButtons = new VideoManipulationButtons();
+    	playButtons = new VideoManipulationButtons(g);
     	bottom_bar.add(playButtons, BorderLayout.CENTER);
     }
     
@@ -188,7 +177,6 @@ public class Editor {
      * Shows the main view
      */
     public void show(){
-        
         frame.setVisible(true);
         c.updateLabels(0L);
         c.updateCurrentFileLabel();

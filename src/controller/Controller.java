@@ -4,8 +4,13 @@ import java.awt.event.KeyEvent;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 import view.panels.CSVExportSelector;
 import view.panels.ExperimentSettings;
+import view.panels.SaveAs;
+import view.panels.VideoSelector;
 import view.player.VLCMediaPlayer;
 import model.*;
 
@@ -14,17 +19,11 @@ public class Controller {
 	/**
 	 * Controller instance
 	 */
-	private static Controller instance;
+	private Globals g;
 	
-	/**
-	 * Get instance method
-	 * @return	Instance of the controller
-	 */
-	public static Controller getInstance()
+	protected Controller(Globals g)
 	{
-		if(instance == null)
-			instance = new Controller();
-		return instance;
+		this.g = g;
 	}
 	
 	/**
@@ -33,7 +32,7 @@ public class Controller {
 	 */
 	public String getUrl()
 	{
-		return Globals.getInstance().getExperimentModel().getUrl();
+		return g.getExperimentModel().getUrl();
 	}
 
 	/**
@@ -42,17 +41,17 @@ public class Controller {
 	 */
 	public void openSettings()
 	{
-		ExperimentSettings e = Globals.getSettingsView();
-		Experiment g = Globals.getInstance().getExperimentModel();
+		ExperimentSettings e = g.getSettingsView();
+		Experiment ex = g.getExperimentModel();
 		e.setSettings(
-				g.getExp_id(),
-				g.getExp_name(),
-				g.getRes_id(),
-				g.getPP_id(),
-				g.getShow_exp_id(),
-				g.getShow_exp_name(),
-				g.getShow_res_id(),
-				g.getShow_pp_id()
+				ex.getExp_id(),
+				ex.getExp_name(),
+				ex.getRes_id(),
+				ex.getPP_id(),
+				ex.getShow_exp_id(),
+				ex.getShow_exp_name(),
+				ex.getShow_res_id(),
+				ex.getShow_pp_id()
 				);
 		e.show();
 	}
@@ -63,8 +62,8 @@ public class Controller {
 	 */
 	public void setSettings()
 	{
-		ExperimentSettings s = Globals.getSettingsView();
-		Globals.getInstance().getExperimentModel().setSettings(
+		ExperimentSettings s = g.getSettingsView();
+		g.getExperimentModel().setSettings(
 				s.getExp_name(),
 				s.getExp_id(),
 				s.getRes_id(),
@@ -84,10 +83,10 @@ public class Controller {
 	public void setVideo(String url)
 	{
 		VLCMediaPlayer player = new VLCMediaPlayer(url);
-		Globals.getInstance().getExperimentModel().setUrl(url);
-		Globals.getEditor().addVideoPlayerSurface(player);
-		Globals.getVideoController().setPlayer(player);
-		Globals.getEditor().show();
+		g.getExperimentModel().setUrl(url);
+		g.getEditor().addVideoPlayerSurface(player);
+		g.getVideoController().setPlayer(player);
+		g.getEditor().show();
 	}
 	
 	/**
@@ -105,8 +104,8 @@ public class Controller {
 	 */
 	public void saveAs()
 	{
-		// TODO: implement this
-		System.out.println("TODO: implement this shit");
+		SaveAs dialog = new SaveAs();
+		dialog.setVisible(true);
 	}
 	
 	public boolean export()
@@ -129,9 +128,29 @@ public class Controller {
 		model.Experiment exp = controller.serializer.Serializer.readExperimentModel(url);
 		if (exp != null)
 		{
-			Globals.getInstance().setExperimentModel(exp);
-			Globals.getEditor();
-			Globals.getEditor().show();
+			if(!new java.io.File(
+					exp.getUrl()).exists())
+			{
+				JOptionPane.showMessageDialog(new JPanel(), 
+						"The video that was used with this project doesn't "
+						+ "exist and has probably been replaced or renamed.\n "
+						+ "Please select the original video.\n\n "
+						+ "Make sure you select exactly the same video, because "
+						+ "the coding is based on the video time.\n"
+						+ "If the video has been "
+						+ "altered, the coding results will no longer be correct", 
+						"Video doesn't exist",
+						JOptionPane.ERROR_MESSAGE);
+				String newURL = VideoSelector.show();
+				if (newURL == null)
+					return false;
+				exp.setUrl(newURL);
+			}
+			
+			exp.setGlobals(g);
+			g.setExperimentModel(exp);
+			g.getEditor();
+			g.getEditor().show();
 			setVideo(exp.getUrl());
 			updateLabels(0L);
 			return true;
@@ -146,7 +165,7 @@ public class Controller {
 	public void updateLabels(long time)
 	{	
 		// Get model reference	
-		model.Experiment exp = Globals.getInstance().getExperimentModel();
+		model.Experiment exp = g.getExperimentModel();
 		
 		// Current trial number and current look number
 		String tn, ln;
@@ -204,18 +223,16 @@ public class Controller {
 		String l = String.format("%s / %d", ln, looks);
 		String s = String.format("%d ms", lookTime);
 		
-		// 
 		boolean canNewTrial = exp.canAddTrial(time);
 		boolean canEndTrial = trial > 0 && exp.getTrials().get(trial-1).canEndTrial(time);
 		
 		boolean canNewLook = exp.canAddLook(trial, time);
 		boolean canEndLook = look > 0 && exp.canEndLook(trial, look, time);
 //		canEndLook = true;
-
 		
 		// Set information
-		Globals.getEditor().setInfo(t, l, s);
-		Globals.getEditor().updateButtons(endTrial, endLook,
+		g.getEditor().setInfo(t, l, s);
+		g.getEditor().updateButtons(endTrial, endLook,
     			canNewTrial, canEndTrial, canNewLook, canEndLook);
 	}
 	
@@ -225,7 +242,7 @@ public class Controller {
 	 */
 	public LinkedList<model.Trial> getTrials()
 	{
-		return Globals.getInstance().getExperimentModel().getTrials();
+		return g.getExperimentModel().getTrials();
 	}
 	
 	/**
@@ -234,8 +251,8 @@ public class Controller {
 	 */
 	public boolean newTrial()
 	{
-		long time = Globals.getVideoController().getMediaTime();
-		boolean succes = Globals.getInstance().getExperimentModel().addTrial(time);
+		long time = g.getVideoController().getMediaTime();
+		boolean succes = g.getExperimentModel().addTrial(time);
 		updateLabels(time);
 		return succes;
 	}
@@ -246,8 +263,8 @@ public class Controller {
 	 */
 	public boolean newLook()
 	{
-		long time = Globals.getVideoController().getMediaTime();
-		boolean succes = Globals.getInstance().getExperimentModel().addLook(time);
+		long time = g.getVideoController().getMediaTime();
+		boolean succes = g.getExperimentModel().addLook(time);
 		updateLabels(time);
 		return succes;
 	}
@@ -258,9 +275,9 @@ public class Controller {
 	 */
 	public boolean setEndTrial()
 	{
-		long time = Globals.getVideoController().getMediaTime();
-		int curTrialNumber = Globals.getInstance().getExperimentModel().getLastTrialByTime(time);
-		boolean succes =  Globals.getInstance().getExperimentModel().endTrial(curTrialNumber, time);
+		long time = g.getVideoController().getMediaTime();
+		int curTrialNumber = g.getExperimentModel().getLastTrialByTime(time);
+		boolean succes =  g.getExperimentModel().endTrial(curTrialNumber, time);
 		updateLabels(time);
 		return succes;
 	}
@@ -272,8 +289,7 @@ public class Controller {
 	 */
 	public boolean setEndLook()
 	{
-		Globals g = Globals.getInstance();
-		long time = Globals.getVideoController().getMediaTime();
+		long time = g.getVideoController().getMediaTime();
 		int trial = g.getExperimentModel().getTrialByTime(time);
 		int look = g.getExperimentModel().getLastLookByTime(trial, time);
 		boolean succes = g.getExperimentModel().endLook(trial, look, time);
@@ -286,8 +302,8 @@ public class Controller {
 	 */
 	public void updateCurrentFileLabel()
 	{
-		String curFile = Globals.getInstance().getExperimentModel().getUrl();
-		Globals.getEditor().setFile((curFile == null) ? "Select a file to play" : curFile.replaceFirst(".*/([^/?]+).*", "$1"));
+		String curFile = g.getExperimentModel().getUrl();
+		g.getEditor().setFile((curFile == null) ? "Select a file to play" : curFile.replaceFirst(".*/([^/?]+).*", "$1"));
 	}
 	
 	/**
@@ -299,7 +315,7 @@ public class Controller {
 	 */
 	public int getKey(String action)
 	{
-		return Globals.getKeyCodeModel().getKey(action);
+		return g.getKeyCodeModel().getKey(action);
 	}
 	
 	/**
@@ -309,7 +325,7 @@ public class Controller {
 	 */
 	public String getName(String action)
 	{
-		return Globals.getKeyCodeModel().getName(action);
+		return g.getKeyCodeModel().getName(action);
 	}
 	
 	/**
@@ -319,7 +335,7 @@ public class Controller {
 	 */
 	public void setKey(String action, int key)
 	{
-		Globals.getKeyCodeModel().setKey(action, key);
+		g.getKeyCodeModel().setKey(action, key);
 	}
 	
 	/**
@@ -328,7 +344,7 @@ public class Controller {
 	 */
 	public Collection<String> getActions()
 	{
-		return Globals.getKeyCodeModel().getActions();
+		return g.getKeyCodeModel().getActions();
 	}
 	
 	/**
@@ -338,7 +354,7 @@ public class Controller {
 	 */
 	public boolean isValidAction(String action)
 	{
-		return Globals.getKeyCodeModel().isValidAction(action);
+		return g.getKeyCodeModel().isValidAction(action);
 	}
 	
 	/**

@@ -36,8 +36,7 @@ import java.awt.Point;
  */
 public class ExperimentSettings{
 	
-	// Insure singleton
-	private static ExperimentSettings instance;
+	private Controller c;
 
 	// Fields
 	private JFrame frmExperimentSettings;
@@ -51,22 +50,12 @@ public class ExperimentSettings{
 	// Keeps track if checkbox should be enabled automatically on text change
 	private boolean exp_name_checked = false, exp_id_checked = false, 
 		res_id_checked = false, pp_id_checked = false;
-	
-	/**
-	 * Getmethod for instance to ensure singleton
-	 * @return	instance of ExperimentSettings
-	 */
-	public static ExperimentSettings getInstance()
-	{
-		if(instance == null)
-			instance = new ExperimentSettings();
-		return instance;
-	}
 
 	/**
 	 * Create the frame.
 	 */
-	private ExperimentSettings() {
+	public ExperimentSettings(Globals g) {
+		c = g.getController();
 		frmExperimentSettings = new JFrame();
 		frmExperimentSettings.setResizable(false);
 		frmExperimentSettings.setLocation(new Point(500, 500));
@@ -286,7 +275,7 @@ public class ExperimentSettings{
 		JButton btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Controller.getInstance().setSettings();
+				c.setSettings();
 				hide();
 			}
 		});

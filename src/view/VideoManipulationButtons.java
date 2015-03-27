@@ -3,9 +3,12 @@ package view;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JPanel;
+
 import controller.Globals;
+import controller.IVideoControls;
 
 /**
  * Panel with buttons for video manipulation
@@ -17,6 +20,9 @@ public class VideoManipulationButtons extends JPanel {
 	 */
 	private static final long serialVersionUID = 9024137258475533717L;
 	
+	private Globals g;
+	private IVideoControls c;
+	
 	/**
 	 * Buttons
 	 */
@@ -25,8 +31,10 @@ public class VideoManipulationButtons extends JPanel {
 	/**
 	 * Constructor class, creates the buttons
 	 */
-	public VideoManipulationButtons()
+	public VideoManipulationButtons(Globals g)
 	{
+		this.g = g;
+		c = this.g.getVideoController();
 		addPrevTrialButton();
 		addPrevFrameButton();
 		addPauseButton();
@@ -55,7 +63,7 @@ public class VideoManipulationButtons extends JPanel {
 		
 		prevTrial.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		Globals.getVideoController().prevTrial();
+        		c.prevTrial();
         	}
         });
 		
@@ -76,7 +84,7 @@ public class VideoManipulationButtons extends JPanel {
 		
 		nextTrial.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		Globals.getVideoController().nextTrial();
+        		c.nextTrial();
         	}
         });
 		
@@ -96,7 +104,7 @@ public class VideoManipulationButtons extends JPanel {
 		
 		prevFrame.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		Globals.getVideoController().prevFrame();
+        		c.prevFrame();
         	}
         });
 		
@@ -116,7 +124,7 @@ public class VideoManipulationButtons extends JPanel {
 		
 		nextFrame.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		Globals.getVideoController().nextFrame();
+        		c.nextFrame();
         	}
         });
 		
@@ -138,8 +146,8 @@ public class VideoManipulationButtons extends JPanel {
 		
 		playPause.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		Globals.getVideoController().play();
-        		if(Globals.getVideoController().isPlaying())
+        		c.play();
+        		if(c.isPlaying())
         			playPause.setText("\u25b6");
         		else
         			playPause.setText("||");

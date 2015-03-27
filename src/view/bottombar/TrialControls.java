@@ -9,17 +9,23 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import controller.Controller;
+import controller.Globals;
+
 public class TrialControls extends JPanel {
 	
 	private static final long serialVersionUID = -2015592156911727320L;
+	
+	private Controller c;
 	
 	// Buttons
 	private JButton newTrial, endTrial, newLook, endLook;
 	
 	private static final Dimension BUTTON_SIZE = new Dimension(150, 25);
 
-	public TrialControls()
+	public TrialControls(Globals g)
 	{
+		c = g.getController();
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		addNewTrialButton();
 		addEndTrialButton();
@@ -62,7 +68,7 @@ public class TrialControls extends JPanel {
 		newTrial.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(!controller.Controller.getInstance().newTrial())
+				if(!c.newTrial())
 				{
 					System.out.println("Couldn't create trial");
 				}
@@ -84,7 +90,7 @@ public class TrialControls extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(!controller.Controller.getInstance().setEndTrial())
+				if(!c.setEndTrial())
 				{
 					System.out.println("Trial couldn't be ended");
 				}
@@ -105,7 +111,7 @@ public class TrialControls extends JPanel {
 		newLook.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(!controller.Controller.getInstance().newLook())
+				if(!c.newLook())
 				{
 					System.out.println("Couldn't create look");
 				}
@@ -126,7 +132,7 @@ public class TrialControls extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(!controller.Controller.getInstance().setEndLook())
+				if(!c.setEndLook())
 				{
 					System.out.println("Look couldn't be ended");
 				}

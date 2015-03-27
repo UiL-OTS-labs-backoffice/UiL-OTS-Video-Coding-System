@@ -4,17 +4,21 @@ import java.awt.KeyEventDispatcher;
 import java.awt.event.KeyEvent;
 
 import controller.Globals;
+import controller.*;
 
 /**
  * Key listeners
  */
 public class KeyDispatch implements KeyEventDispatcher {
 	
-	private static controller.IVideoControls vc = 
-			Globals.getVideoController();
+	private IVideoControls vc;
+	private Controller qk;
 	
-	private static controller.Controller qk = 
-			Globals.getController();
+	public KeyDispatch(Globals g)
+	{
+		vc = g.getVideoController();
+		qk = g.getController();
+	}
 	
 	/** 
 	 * Key Events
@@ -24,7 +28,7 @@ public class KeyDispatch implements KeyEventDispatcher {
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent e) {
 		if(e.getID() == KeyEvent.KEY_PRESSED) {
-	    	if(Globals.getVideoController().IsLoaded())
+	    	if(vc.IsLoaded())
 	    	{
 				int kc = e.getKeyCode();
 	    		if(kc == qk.getKey("play"))

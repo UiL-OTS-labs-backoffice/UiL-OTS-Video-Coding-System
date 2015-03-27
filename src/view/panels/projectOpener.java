@@ -19,6 +19,7 @@ import javax.swing.JSeparator;
 import javax.swing.JCheckBox;
 import javax.swing.border.Border;
 
+import controller.Controller;
 import controller.Globals;
 
 import java.awt.Dialog.ModalExclusionType;
@@ -35,6 +36,8 @@ public class projectOpener extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private Controller c;
 	
 	private JTextField text_videoURL;
 	private JFormattedTextField text_projectName;
@@ -72,8 +75,9 @@ public class projectOpener extends JFrame {
 	/**
 	 * Constructor of the project opener frame
 	 */
-	public projectOpener()
+	public projectOpener(Globals g)
 	{
+		c = g.getController();
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
 		setTitle("New Project");
@@ -304,9 +308,6 @@ public class projectOpener extends JFrame {
 		button_open.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e)
 			{
-				Globals.getInstance();
-				controller.Controller c = Globals.getController();
-				
 				String url = view.panels.ProjectSelector.show();
 				
 				if (url != null)
@@ -318,9 +319,6 @@ public class projectOpener extends JFrame {
 					else {
 						JOptionPane.showMessageDialog(new JPanel(), "Sorry! It looks like the project couldn't be opened", "Opening project failed", JOptionPane.ERROR_MESSAGE);
 					}
-				} else {
-					// TODO: handle nicely
-					System.out.println("Not valid");
 				}
 			}
 		});
@@ -329,6 +327,25 @@ public class projectOpener extends JFrame {
 		button_create.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
+				String saveURL = String.format(
+						"%s\\%s", 
+						text_projectLocation.getText(),
+						text_projectName.getText()
+					);
+				
+				if(new java.io.File(
+						saveURL + ".UiL").exists())
+				{
+					if(JOptionPane.showConfirmDialog(
+							null, 
+							"This file already exists. Continuing will overwrite this file permanently. "
+							+ "Are you sure you want to continue?", "This file alreay exists", 
+							JOptionPane.YES_NO_OPTION) == 1)
+					{
+						return;
+					}
+				}
+				
 				Globals g = Globals.getInstance();
 				
 				// Save the settings
@@ -339,17 +356,11 @@ public class projectOpener extends JFrame {
 						include_res_id.isSelected(), include_part_id.isSelected()
 					);
 				
-				Globals.getController().setVideo(text_videoURL.getText());
-				
-				String saveURL = String.format(
-						"%s\\%s", 
-						text_projectLocation.getText(),
-						text_projectName.getText()
-					);
+				c.setVideo(text_videoURL.getText());
 				
 				g.getExperimentModel().setSaveURL(saveURL);
 				
-				Globals.getController().save();
+				c.save();
 				
 				dispose();
 			}

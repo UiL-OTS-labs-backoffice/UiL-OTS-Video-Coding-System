@@ -1,6 +1,7 @@
 package view.bottombar;
 
 import java.awt.BorderLayout;
+import controller.*;
 
 import javax.swing.JPanel;
 
@@ -13,8 +14,11 @@ public class BottomBar extends JPanel {
 	private TrialControls trial_controls;
 	private PlayerControlsPanel timecodes;
 	
-	public BottomBar()
+	private Globals g;
+	
+	public BottomBar(Globals g)
 	{
+		this.g = g;
 		setLayout(new BorderLayout(0, 0));
 		addTimeBar();
 		addTrialControls();
@@ -60,7 +64,7 @@ public class BottomBar extends JPanel {
 	 */
 	private void addTimeBar()
 	{
-		timecodes = new PlayerControlsPanel();
+		timecodes = new PlayerControlsPanel(g);
 		add(timecodes, BorderLayout.NORTH);
 	}
 	
@@ -69,7 +73,7 @@ public class BottomBar extends JPanel {
      */
     private void addTrialControls()
     {
-    	trial_controls = new TrialControls();
+    	trial_controls = new TrialControls(g);
         add(trial_controls, BorderLayout.EAST);
     }
     

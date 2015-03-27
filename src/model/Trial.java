@@ -11,7 +11,7 @@ public class Trial implements Comparable<Trial>, Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	
 	// Reference to all the looks
 	private LinkedList<Look> looks;
 	
@@ -27,6 +27,7 @@ public class Trial implements Comparable<Trial>, Serializable{
 		this.beginTime = beginTime;
 		looks = new LinkedList<Look>();
 	}
+	
 	
 	/**
 	 * Get method for the list of looks
@@ -118,7 +119,7 @@ public class Trial implements Comparable<Trial>, Serializable{
 	
 	public boolean canAddLook(long time)
 	{
-		if(!Globals.getVideoController().IsLoaded())
+		if(!Globals.getInstance().getVideoController().IsLoaded())
 			return false;
 		if(looks.size() == 0)
 			return true;

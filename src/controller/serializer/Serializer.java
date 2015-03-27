@@ -25,7 +25,7 @@ public class Serializer {
 		} catch (Exception e)
 		{
 			// TODO: add error window
-			System.out.println("Error");
+			System.out.println("Error" + e);
 			return false;
 		}
 	}

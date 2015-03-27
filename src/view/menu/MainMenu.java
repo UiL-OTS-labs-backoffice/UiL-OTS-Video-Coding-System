@@ -2,6 +2,9 @@ package view.menu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.LinkedList;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -10,16 +13,21 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import model.Look;
+import model.Trial;
 import controller.*;
 
 public class MainMenu extends JMenuBar {
 
 	private static final long serialVersionUID = 5103817458709866267L;
 	
-	private static Controller c = Controller.getInstance();
+	private static Controller c;
+	private static IVideoControls vc;
 	
-	public MainMenu()
+	public MainMenu(Globals g)
 	{
+		c = g.getController();
+		vc = g.getVideoController();
 		addFileMenu();
 		addTrialMenu();
 		addSettingsMenu();
@@ -52,6 +60,11 @@ public class MainMenu extends JMenuBar {
 			}
 		});
 		JMenuItem saveas = new JMenuItem("Save As");
+		saveas.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				c.saveAs();
+			}
+		});
 		saveas.setMnemonic('A');
 		JMenuItem openProject = new JMenuItem("Open project");
 		openProject.setMnemonic('O');
@@ -117,12 +130,10 @@ public class MainMenu extends JMenuBar {
 		add(trialMenu);
 		
 		JMenuItem removeTrial = new JMenuItem("Remove current trial");
-		removeTrial.setToolTipText("Removes the current trial, but doesn't"
-				+ " change the trial numbers of the remaining trials");
+		removeTrial.setToolTipText("Removes the current trial");
 		
 		JMenuItem removeLook = new JMenuItem("Remove current look");
-		removeLook.setToolTipText("Removes the current look and changes "
-				+ "the numbers of the remaining looks");
+		removeLook.setToolTipText("Removes the current look");
 		
 		JMenuItem removeLooks = new JMenuItem("Remove looks in trial");
 		removeLooks.setToolTipText("Removes all the looks from the current "
@@ -131,8 +142,24 @@ public class MainMenu extends JMenuBar {
 		// TODO: generate list of current trials
 		JMenu goToTrial = new JMenu("Go to trial");
 		
-		// TODO: generate list of current looks
-		JMenu goToLook = new JMenu("Go to look");
+		goToTrial.addMouseListener(new MouseListener(){
+			public void mouseClicked(MouseEvent e) {
+			}
+
+			public void mouseEntered(MouseEvent e) {
+				generateTrialMenuItems(goToTrial);
+			}
+
+			public void mouseExited(MouseEvent e) {
+			}
+
+			public void mousePressed(MouseEvent e) {
+			}
+
+			public void mouseReleased(MouseEvent e) {
+			}
+			
+		});
 		
 		JMenuItem overview = new JMenuItem("Show overview");
 		overview.setToolTipText("Show an overview of the experiment so far");
@@ -147,9 +174,91 @@ public class MainMenu extends JMenuBar {
 		trialMenu.add(removeLook);
 		trialMenu.add(removeLooks);
 		trialMenu.add(goToTrial);
-		trialMenu.add(goToLook);
 		trialMenu.add(overview);
 	}
+	
+	private void generateTrialMenuItems(JMenu menu)
+	{
+		while(menu.getItemCount() > 0)
+		{
+			menu.remove(0);
+		}
+		
+		LinkedList<Trial> trials = c.getTrials();
+		
+		for(int i = 0; i < trials.size(); i++)
+		{
+			
+			int index = i;
+			Trial t = trials.get(index);
+			LinkedList<Look> looks = t.getLooks();
+			
+			long time = t.getBeginTime();
+			String trialText = String.format(
+					"Trial %d (%s)", 
+					i+1, 
+					view.bottombar.PlayerControlsPanel.formatTime(time)
+				);
+			
+			JMenuItem item;
+			if (looks.size() > 0)
+			{
+				item = new JMenu(trialText);
+				item.addMouseListener(new MouseListener(){
+					public void mouseClicked(MouseEvent e) {
+						vc.setMediaTime(time);
+					}
+
+					public void mouseEntered(MouseEvent e) {
+					}
+
+					public void mouseExited(MouseEvent e) {
+					}
+
+					public void mousePressed(MouseEvent e) {
+					}
+
+					public void mouseReleased(MouseEvent e) {
+					}
+					
+				});
+			}
+			else
+			{
+				item = new JMenuItem(trialText);
+				item.addActionListener(new ActionListener(){
+					public void actionPerformed(ActionEvent e)
+					{
+						vc.setMediaTime(time);
+					}
+				});
+			}
+			
+			
+			for(int j = 0; j < looks.size(); j++)
+			{
+				int lookIndex = j;
+				long ltime = looks.get(lookIndex).getBeginTime(); 
+				String lookText = String.format(
+						"Look %d (%s)", 
+						j+1, 
+						view.bottombar.PlayerControlsPanel.formatTime(ltime)
+					);
+				JMenuItem look = new JMenuItem(lookText);
+				look.addActionListener(new ActionListener(){
+					public void actionPerformed(ActionEvent e)
+					{
+						vc.setMediaTime(ltime);
+					}
+				});
+				
+				item.add(look);
+			}
+			
+			menu.add(item);
+		}
+	}
+	
 	
 	/**
 	 * Adds the help menu
@@ -176,4 +285,5 @@ public class MainMenu extends JMenuBar {
 		help.add(shortKeys);
 		help.add(about);
 	}
+	
 }

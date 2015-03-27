@@ -37,6 +37,7 @@ public class CSVExport {
 		if (expID != null) header += "Experiment ID;";
 		if (resID != null) header += "Researcher ID;";
 		if (ppID != null) header += "Participant ID;";
+		header += "Trial;Number of Looks;Total looktime";
 		
 		csv.add(header);
 		

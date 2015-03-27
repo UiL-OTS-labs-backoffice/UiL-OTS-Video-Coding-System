@@ -7,6 +7,8 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.JTextField;
 
+import controller.Controller;
+import controller.Globals;
 import view.panels.QuickKeys;
 
 /**
@@ -32,7 +34,7 @@ public class ChangeKeyListener implements FocusListener {
 	/**
 	 * Controller instance
 	 */
-	controller.Controller c = controller.Controller.getInstance();
+	Controller c;
 	
 	/**
 	 * Keychanger
@@ -46,6 +48,7 @@ public class ChangeKeyListener implements FocusListener {
 	 */
 	public ChangeKeyListener(JTextField field, String action, QuickKeys quickKeys)
 	{
+		c = Globals.getInstance().getController();
 		this.field = field;
 		this.action = action;
 		this.quickKeys = quickKeys;

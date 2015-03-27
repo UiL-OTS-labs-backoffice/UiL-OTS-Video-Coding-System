@@ -6,7 +6,7 @@ import java.awt.event.KeyListener;
 import javax.swing.JTextField;
 
 import view.panels.QuickKeys;
-import controller.Controller;
+import controller.*;
 
 public class KeyChanger implements KeyListener {
 
@@ -20,7 +20,7 @@ public class KeyChanger implements KeyListener {
 		this.action = action;
 		this.field = field;
 		this.quickKeys = quickKeys;
-		c = Controller.getInstance();
+		c = Globals.getInstance().getController();
 	}
 	
 	@Override

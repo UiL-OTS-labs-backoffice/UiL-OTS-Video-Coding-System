@@ -12,27 +12,16 @@ public class VLCVideoController implements IVideoControls {
 	/**
 	 * Instance of the video Controller
 	 */
-	private static VLCVideoController instance;
+	private Globals g;
 	
 	/**
 	 * Instance of media player
 	 */
 	private view.player.IMediaPlayer player;
 	
-	/**
-	 * Get method for the class's instance
-	 * @return	Instance of VLCVideoController
-	 */
-	public static VLCVideoController getInstance() {
-		if(instance == null)
-			instance = new VLCVideoController();
-		return instance;
+	protected VLCVideoController(Globals globals){
+		this.g = globals;
 	}
-	
-	/** 
-	 * Ensures single instance
-	 */
-	private VLCVideoController(){}
 	
 	@Override
 	public void setPlayer(view.player.IMediaPlayer player) {
@@ -58,14 +47,14 @@ public class VLCVideoController implements IVideoControls {
 	public void nextFrame() {
 		player.nextFrame();
 		long time = getMediaTime();
-		Globals.getController().updateLabels(time);
+		g.getController().updateLabels(time);
 	}
 
 	@Override
 	public void prevFrame() {
 		player.previousFrame();
 		long time = getMediaTime();
-		Globals.getController().updateLabels(time);
+		g.getController().updateLabels(time);
 	}
 
 	@Override

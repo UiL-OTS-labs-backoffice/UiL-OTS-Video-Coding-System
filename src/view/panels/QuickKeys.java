@@ -6,6 +6,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import view.events.ChangeKeyListener;
+import controller.Controller;
 import controller.Globals;
 
 import java.awt.GridBagLayout;
@@ -42,12 +43,13 @@ public class QuickKeys extends JFrame{
 	/**
 	 * Controller reference
 	 */
-	private static controller.Controller c = Globals.getController();
+	private Controller c;
 
 	/**
 	 * Constructor
 	 */
 	public QuickKeys() {
+		c = Globals.getInstance().getController();
 		// Frame options
 		setTitle("Quick key commands");
 		setResizable(false);

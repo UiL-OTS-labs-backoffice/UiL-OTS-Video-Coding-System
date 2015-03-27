@@ -32,13 +32,18 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import view.player.IMediaPlayer;
+import controller.Controller;
 import controller.Globals;
+import controller.IVideoControls;
 public class PlayerControlsPanel extends JPanel {
     
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private IVideoControls c;
+	private Controller controller;
    
 	/**
 	 * Single thread executor
@@ -64,7 +69,9 @@ public class PlayerControlsPanel extends JPanel {
     /**
      * Constructor method
      */
-    public PlayerControlsPanel() {
+    public PlayerControlsPanel(Globals g) {
+    	c = g.getVideoController();
+    	controller = g.getController();
         createUI();
     }
       
@@ -116,7 +123,7 @@ public class PlayerControlsPanel extends JPanel {
         if (positionValue > 0.99f) {
             positionValue = 0.99f;
         }
-        Globals.getVideoController().setPosition(positionValue);
+        c.setPosition(positionValue);
         runnable.update();
     }
     
@@ -125,9 +132,9 @@ public class PlayerControlsPanel extends JPanel {
         positionSlider.addMouseListener(new MouseAdapter() {@
             Override
             public void mousePressed(MouseEvent e) {
-                if (Globals.getVideoController().isPlaying()) {
+                if (c.isPlaying()) {
                     mousePressedPlaying = true;
-                    Globals.getVideoController().play();
+                    c.play();
                 } else {
                     mousePressedPlaying = false;
                 }
@@ -168,7 +175,7 @@ public class PlayerControlsPanel extends JPanel {
                     if (mediaPlayer.isPlaying()) {
                         updateTime(time, end);
                         updatePosition(position);
-                        controller.Controller.getInstance().updateLabels(time);
+                        controller.updateLabels(time);
                     }
                 }
             });
@@ -183,34 +190,13 @@ public class PlayerControlsPanel extends JPanel {
     }
     
     private void updateTime(long millis, long end) {
-        // Playtime string
-    	String s = String.format("%02d:%02d:%02d", 
-        		TimeUnit.MILLISECONDS.toHours(millis), 
-        		TimeUnit.MILLISECONDS.toMinutes(millis) - 
-        		TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)), 
-        		TimeUnit.MILLISECONDS.toSeconds(millis) - 
-        		TimeUnit.MINUTES.toSeconds(
-        				TimeUnit.MILLISECONDS.toMinutes(millis)
-        		)        			
-        	);
-        
     	// RemainingTime string
     	if(remaining)
     		end = end - millis;
     	
-        String r = String.format("%02d:%02d:%02d", 
-        		TimeUnit.MILLISECONDS.toHours(end), 
-        		TimeUnit.MILLISECONDS.toMinutes(end) - 
-        		TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(end)), 
-        		TimeUnit.MILLISECONDS.toSeconds(end) - 
-        		TimeUnit.MINUTES.toSeconds(
-        				TimeUnit.MILLISECONDS.toMinutes(end)
-        		)        			
-        	);
-    	
     	// Set Times
-        timeLabel.setText(s);
-        remainingLabel.setText(r);
+        timeLabel.setText(formatTime(millis));
+        remainingLabel.setText(formatTime(end));
     }
     
     private void updatePosition(int value) {
@@ -232,5 +218,23 @@ public class PlayerControlsPanel extends JPanel {
     			1L, 
     			TimeUnit.MILLISECONDS
     		);
+    }
+    
+    /**
+     * Formats the time in a nice format
+     * @param millis	The timestring to be encoded
+     * @return			String displaying the time nicely
+     */
+    public static String formatTime(long millis)
+    {
+    	return String.format("%02d:%02d:%02d", 
+        		TimeUnit.MILLISECONDS.toHours(millis), 
+        		TimeUnit.MILLISECONDS.toMinutes(millis) - 
+        		TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)), 
+        		TimeUnit.MILLISECONDS.toSeconds(millis) - 
+        		TimeUnit.MINUTES.toSeconds(
+        				TimeUnit.MILLISECONDS.toMinutes(millis)
+        		)        			
+        	);
     }
 }
