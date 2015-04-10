@@ -35,7 +35,6 @@ public class Globals {
 	// Experiment model instance
 	private Experiment experimentModel;
 	
-
 	/**
 	 * Constructor for global class
 	 * Creates a new instance of the controller, the editor and 

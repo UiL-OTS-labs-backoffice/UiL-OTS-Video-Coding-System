@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.LinkedList;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -13,7 +12,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
-import model.Look;
 import model.Trial;
 import controller.*;
 
@@ -184,24 +182,19 @@ public class MainMenu extends JMenuBar {
 			menu.remove(0);
 		}
 		
-		LinkedList<Trial> trials = c.getTrials();
-		
-		for(int i = 0; i < trials.size(); i++)
+		for(int i = 1; i <= c.getNumberOfTrials(); i++)
 		{
+			Trial t = c.getTrial(i);
 			
-			int index = i;
-			Trial t = trials.get(index);
-			LinkedList<Look> looks = t.getLooks();
-			
-			long time = t.getBeginTime();
+			long time = t.getBegin();
 			String trialText = String.format(
 					"Trial %d (%s)", 
-					i+1, 
+					i, 
 					view.bottombar.PlayerControlsPanel.formatTime(time)
 				);
 			
 			JMenuItem item;
-			if (looks.size() > 0)
+			if (t.getNumberOfItems() > 0)
 			{
 				item = new JMenu(trialText);
 				item.addMouseListener(new MouseListener(){
@@ -234,14 +227,13 @@ public class MainMenu extends JMenuBar {
 				});
 			}
 			
-			
-			for(int j = 0; j < looks.size(); j++)
+			for(int j = 1; j <= t.getNumberOfItems(); j++)
 			{
-				int lookIndex = j;
-				long ltime = looks.get(lookIndex).getBeginTime(); 
+				
+				long ltime = t.getItem(j).getBegin();
 				String lookText = String.format(
 						"Look %d (%s)", 
-						j+1, 
+						j, 
 						view.bottombar.PlayerControlsPanel.formatTime(ltime)
 					);
 				JMenuItem look = new JMenuItem(lookText);

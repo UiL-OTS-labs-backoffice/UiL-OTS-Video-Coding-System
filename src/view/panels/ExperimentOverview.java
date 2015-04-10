@@ -29,9 +29,6 @@ public class ExperimentOverview extends JFrame {
 	
 	private Controller c;
 	
-	// Linked list of all the trials
-	private LinkedList<model.Trial> trials;
-	
 	private static final int COLUMNS = 5;
 	private static final int COL_WIDTH = 50;
 	
@@ -45,7 +42,6 @@ public class ExperimentOverview extends JFrame {
 
 	public ExperimentOverview() {
 		c = Globals.getInstance().getController();
-		this.trials = c.getTrials();
 		setTitle("Experiment Overview");
 		setType(Type.UTILITY);
 		setResizable(false);
@@ -111,31 +107,31 @@ public class ExperimentOverview extends JFrame {
 	private void addOverview()
 	{
 		int row = 1;
-		int trial = 1;
-		for(model.Trial t : trials)
+		
+		for(int i = 1; i <= c.getNumberOfTrials(); i++)
 		{
-			row = addSeparator(row);
+			model.Trial t = c.getTrial(i);
 			
-			addLabel("Trial " + trial, row, 0, HEADER_COLOR);
+			addSeparator(row);
+			
+			addLabel("Trial " + i, row, 0, HEADER_COLOR);
 			addLabel(" ", row, 1, HEADER_COLOR);
-			addLabel(timeToString(t.getBeginTime()), row, 2, HEADER_COLOR);
-			addLabel(timeToString(t.getEndTime()), row, 3, HEADER_COLOR);
-			addLabel(t.getTotalLookTime() + " ms", row, 4, HEADER_COLOR);
+			addLabel(timeToString(t.getBegin()), row, 2, HEADER_COLOR);
+			addLabel(timeToString(t.getEnd()), row, 3, HEADER_COLOR);
+			addLabel(t.getTotalTimeForItems() + " ms", row, 4, HEADER_COLOR);
 			row++;
-			int look = 1;
-			for(model.Look l : t.getLooks())
+			
+			for(int j = 1; j <= t.getNumberOfItems(); j++)
 			{
+				model.Look l = (model.Look) t.getItem(j);
 				Color color = (row % 2 == 0) ? ROW1_COLOR : ROW2_COLOR;
 				addLabel(" ", row, 0, color);
-				addLabel("Look " + look, row, 1, color);
-				addLabel(timeToString(l.getBeginTime()), row, 2, color);
-				addLabel(timeToString(l.getEndTime()), row, 3, color);
+				addLabel("Look " + j, row, 1, color);
+				addLabel(timeToString(l.getBegin()), row, 2, color);
+				addLabel(timeToString(l.getEnd()), row, 3, color);
 				addLabel(l.getDuration() + " ms", row, 4, color);
 				row++;
-				look++;
 			}
-			
-			trial++;
 		}
 	}
 	

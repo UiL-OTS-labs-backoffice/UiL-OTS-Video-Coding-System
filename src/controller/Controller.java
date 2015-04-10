@@ -160,141 +160,172 @@ public class Controller {
 	}
 	
 	/**
-	 * Updates the trial information labels
+	 * Updates the buttons and labels for the trials and looks
+	 * @param time	The current time stamp.
 	 */
 	public void updateLabels(long time)
 	{	
-		// Get model reference	
-		model.Experiment exp = g.getExperimentModel();
-		
-		// Current trial number and current look number
-		String tn, ln;
-		
-		// Button texts
-		String endTrial, endLook;
-		
-		// Do some trial checking
-		int trial = exp.getTrialByTime(time);
-		int lastTrial;
-		if(trial == -1)
-		{
-			lastTrial = exp.getLastTrialByTime(time);
-			if(lastTrial > 0)
-				endTrial = String.format("Extend trial %d", lastTrial);
-			else
-				endTrial = "End trial";
-			tn = " ";
-		} 
-		else
-		{
-			endTrial = String.format("End trial %d", trial);
-			tn = Integer.toString(trial);
-			lastTrial = trial;
-		}
-		
-		// Do some look checking
-		int look = exp.getLookByTime(trial, time);
-		int lastLook;
-		if(look == -1)
-		{
-			lastLook = exp.getLastLookByTime(time);
-			if (lastLook > 0)
-				endLook = String.format("Extend look %d", lastLook);
-			else
-				endLook = "End look";
-			ln = " ";
-		}
-		else
-		{
-			endLook = String.format("End look %d", look);
-			ln = Integer.toString(look);
-			lastLook = look;
-		}
-		
-		// Get some extra numbers
-		int looks = exp.getNumberOfLooks(trial);
-		looks = (looks == -1) ? 0 : looks;
-		int trials = exp.getNumberOfTrials();
-		trials = (trials == -1) ? 0 : trials;
-		long lookTime = exp.getLookTime(trial);
-		
-		// Prepare label texts
-		String t = String.format("%s / %d", tn, trials);
-		String l = String.format("%s / %d", ln, looks);
-		String s = String.format("%d ms", lookTime);
-		
-		boolean canNewTrial = exp.canAddTrial(time);
-		boolean canEndTrial = trial > 0 && exp.getTrials().get(trial-1).canEndTrial(time);
-		
-		boolean canNewLook = exp.canAddLook(trial, time);
-		boolean canEndLook = look > 0 && exp.canEndLook(trial, look, time);
-//		canEndLook = true;
-		
-		// Set information
-		g.getEditor().setInfo(t, l, s);
-		g.getEditor().updateButtons(endTrial, endLook,
-    			canNewTrial, canEndTrial, canNewLook, canEndLook);
+		int tnr = g.getExperimentModel().getItemForTime(time);
+		updateButtons(tnr, time);
+		generateInfo(tnr, time);
 	}
+	
+	/**
+	 * Generates the labels for current trial and look and total look time
+	 * @param tnr		Current trial number
+	 * @param t			Current trial
+	 * @param lnr		Current look number
+	 */
+	private void generateInfo(int tnr, long time)
+	{
+		int totalTrials = g.getExperimentModel().getNumberOfItems();
+		String trial, look, totalTime;
+		
+		if(tnr > -1)
+		{
+			trial = (tnr > 0) ? Integer.toString(tnr) : " ";
+			trial += String.format(" / %d", totalTrials);
+			
+			Trial t = (Trial) g.getExperimentModel().getItem(tnr);
+			totalTime = String.format("%d ms", t.getTotalTimeForItems());
+			
+			int totalLooks = t.getNumberOfItems();
+			
+			int lnr = t.getItemForTime(time);
+			
+			if (lnr > -1)
+			{
+				look = (lnr > 0) ? Integer.toString(lnr) : " ";
+				look += String.format(" / %d", totalLooks);
+			} else {
+				look = "Start a new look";
+			}
+		} else {
+			trial = "Start a new trial";
+			look = trial;
+			totalTime = trial;
+		}
+		
+		g.getEditor().setInfo(trial, look, totalTime);
+	}
+	
+	/**
+	 * Updates the button text and state
+	 * @param tnr		Current trial number
+	 * @param t			Current trial
+	 * @param lnr		Current look number
+	 * @param l			Current look
+	 * @param time		Current time
+	 */
+	private void updateButtons(int tnr, long time)
+	{
+		boolean nt = g.getExperimentModel().canAddItem(time) >= 0;
+		System.out.println(nt);
+		boolean et = false, nl = false, el = false;
+		int lnr = -1;
+		
+		if(tnr > -1)
+		{
+			Trial t = (Trial) g.getExperimentModel().getItem(tnr);
+			lnr = t.getItemForTime(time);
+			et = t.canEnd(time);
+			nl = t.canAddItem(time) >= 0;
+			
+			if(lnr > -1)
+			{
+				Look l = (Look) t.getItem(lnr);
+				el = l.canEnd(time);
+			}
+		}
+		
+		g.getEditor().updateButtons(endOrExtend(tnr, "trial"), endOrExtend(lnr, "look"), nt, et, nl, el);
+	}
+	
+	/**
+	 * Formats the text for the buttons
+	 * @param nr		The item number
+	 * @param type		"look" or "trial"
+	 * @return			A nice string for on a button
+	 */
+	private String endOrExtend(int nr, String type)
+	{
+		String str = (nr < 0) ? "Extend %s %d" : "End %s %d";
+		return String.format(str, type, Math.abs(nr));
+	}
+	
+	
 	
 	/**
 	 * Get method for the list of trials
 	 * @return	LinkedList<Trial>  list of trials
 	 */
-	public LinkedList<model.Trial> getTrials()
+	public LinkedList<AbstractTimeFrame> getTrials()
 	{
-		return g.getExperimentModel().getTrials();
+		return g.getExperimentModel().getItems();
 	}
 	
 	/**
 	 * Creates a new trial at the current cursor time
-	 * @return	True if trial could be created
 	 */
-	public boolean newTrial()
+	public void newTrial()
 	{
 		long time = g.getVideoController().getMediaTime();
-		boolean succes = g.getExperimentModel().addTrial(time);
+		g.getExperimentModel().addItem(time);
 		updateLabels(time);
-		return succes;
 	}
 	
 	/**
 	 * Creates a new look at the current cursor time
-	 * @return		True if look could be created
 	 */
-	public boolean newLook()
+	public void newLook()
 	{
 		long time = g.getVideoController().getMediaTime();
-		boolean succes = g.getExperimentModel().addLook(time);
-		updateLabels(time);
-		return succes;
+		int tnr = g.getExperimentModel().getItemForTime(time);
+		if(tnr > 0)
+		{
+			Trial trial = (Trial) g.getExperimentModel().getItem(tnr);
+			trial.addItem(time);
+			updateLabels(time);
+		} else {
+			throw new IllegalStateException("Not currently in a trial");
+		}
 	}
 	
 	/**
 	 * Sets the end time of the current trial to the current cursor time
-	 * @return		True if end time could be adapted
 	 */
-	public boolean setEndTrial()
+	public void setEndTrial()
 	{
 		long time = g.getVideoController().getMediaTime();
-		int curTrialNumber = g.getExperimentModel().getLastTrialByTime(time);
-		boolean succes =  g.getExperimentModel().endTrial(curTrialNumber, time);
+		int tnr = Math.abs(g.getExperimentModel().getItemForTime(time));
+		Trial t = (Trial) g.getExperimentModel().getItem(tnr);
+		t.setEnd(time);
 		updateLabels(time);
-		return succes;
 	}
 	
 	
 	/**
 	 * Sets the end time of the current look to the current cursor time
-	 * @return		True if look could be ended here
 	 */
-	public boolean setEndLook()
+	public void setEndLook()
 	{
 		long time = g.getVideoController().getMediaTime();
-		int trial = g.getExperimentModel().getTrialByTime(time);
-		int look = g.getExperimentModel().getLastLookByTime(trial, time);
-		boolean succes = g.getExperimentModel().endLook(trial, look, time);
+		int tnr = g.getExperimentModel().getItemForTime(time);
+		Trial t = (Trial) g.getExperimentModel().getItem(tnr);
+		int lnr = Math.abs(t.getItemForTime(time));
+		Look l = (Look) t.getItem(lnr);
+		l.setEnd(time);
 		updateLabels(time);
-		return succes;
+	}
+	
+	public int getNumberOfTrials()
+	{
+		return g.getExperimentModel().getNumberOfItems();
+	}
+	
+	public Trial getTrial(int trial)
+	{
+		return (Trial) g.getExperimentModel().getItem(trial);
 	}
 	
 	/**

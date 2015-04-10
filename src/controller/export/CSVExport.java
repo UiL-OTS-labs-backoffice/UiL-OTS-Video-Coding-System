@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 
+
 import controller.Globals;
 import model.*;
 
@@ -41,12 +42,12 @@ public class CSVExport {
 		
 		csv.add(header);
 		
-		LinkedList<Trial> trials = exp.getTrials();
+		LinkedList<AbstractTimeFrame> trials = exp.getItems();
 		for(int t = 0; t < trials.size(); t++)
 		{
 			String row = "";
 			
-			Trial trial = trials.get(t);
+			AbstractTimeContainer trial = (AbstractTimeContainer) trials.get(t);
 			
 			if (expName != null) row += expName + ";";
 			if (expID != null) row += expID + ";";
@@ -54,8 +55,8 @@ public class CSVExport {
 			if (ppID != null) row += ppID + ";";
 			
 			row += Integer.toString(t+1) + ";";
-			row += Integer.toString(trial.getNumberOfLooks()) + ";";
-			row += Long.toString(trial.getTotalLookTime());
+			row += Integer.toString(trial.getNumberOfItems()) + ";";
+			row += Long.toString(trial.getDuration());
 			
 			csv.add(row);
 		}

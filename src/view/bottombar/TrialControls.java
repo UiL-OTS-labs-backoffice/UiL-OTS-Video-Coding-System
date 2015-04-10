@@ -68,10 +68,7 @@ public class TrialControls extends JPanel {
 		newTrial.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(!c.newTrial())
-				{
-					System.out.println("Couldn't create trial");
-				}
+				c.newTrial();
 			}
 		});
 		
@@ -90,10 +87,7 @@ public class TrialControls extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(!c.setEndTrial())
-				{
-					System.out.println("Trial couldn't be ended");
-				}
+				c.setEndTrial();
 			}
 			
 		});
@@ -111,10 +105,7 @@ public class TrialControls extends JPanel {
 		newLook.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(!c.newLook())
-				{
-					System.out.println("Couldn't create look");
-				}
+				c.newLook();
 			}
 		});
 		
@@ -132,10 +123,7 @@ public class TrialControls extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(!c.setEndLook())
-				{
-					System.out.println("Look couldn't be ended");
-				}
+				c.setEndLook();
 			}
 			
 		});

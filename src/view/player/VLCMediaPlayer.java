@@ -101,22 +101,74 @@ public class VLCMediaPlayer implements IMediaPlayer{
     /*
      * Play media invisibly, to find out the size.
      */
-    private void tryHiddenPlayer(String media) {
-	    	MediaPlayerFactory factory = new MediaPlayerFactory();
-	    	TestRenderCallback render = new TestRenderCallback();
-	    	hiddenMediaPlayer = factory.newDirectMediaPlayer(new TestBufferFormatCallback(), render);
-	        hiddenMediaPlayer.setVolume(0);
-	        semaphore = new Semaphore(0);	        
-	        hiddenMediaPlayer.playMedia(media);
-	        try {
-	        	semaphore.tryAcquire(1000L, TimeUnit.MILLISECONDS);
-	        } catch(InterruptedException ex) {	        		
-	        }
-        	hiddenMediaPlayer.stop();
-	        hiddenMediaPlayer.release();
-	        hiddenMediaPlayer = null;
-	        semaphore = null;
+    private synchronized void tryHiddenPlayer(String media) {
+    	MediaPlayerFactory factory = new MediaPlayerFactory();
+    	TestRenderCallback render = new TestRenderCallback();
+    	hiddenMediaPlayer = factory.newDirectMediaPlayer(new TestBufferFormatCallback(), render);
+        hiddenMediaPlayer.setVolume(0);
+        semaphore = new Semaphore(0);	        
+        hiddenMediaPlayer.playMedia(media);
+        
+        try {
+        	semaphore.tryAcquire(1000L, TimeUnit.MILLISECONDS);
+        	wait(1000);
+        } catch(InterruptedException ex) {	        		
+        }
+        
+        
+        /*long offset = 0L;
+        for(int i = 0; i < 10; i++)
+        {
+        	long noff = tryCalculateOffset(offset);
+        	if (noff != 0L)
+        	{
+        		System.out.println("Offset changed!");
+        		offset = (i * offset + noff)/(i+1);
+        	}
+        	else{
+        		System.out.println("Offset is 0!");
+        	}
+        	System.out.println(i*10 + 10);
+        }
+        
+        System.out.println("\n");
+        System.out.println("Final offset: " + offset);*/
+        
+        // TODO: see if this offset helps. Also, why isn't it 190?
+        
+        hiddenMediaPlayer.stop();
+        hiddenMediaPlayer.release();
+        hiddenMediaPlayer = null;
+        semaphore = null;
     }
+    
+    /*private synchronized long tryCalculateOffset(long off)
+    {   	
+    	long frametime = (long)(1000 / hiddenMediaPlayer.getFps());
+    	frametime = (hiddenMediaPlayer.getFps() == 0) ? 1000/25 : frametime;
+        long startTime = hiddenMediaPlayer.getTime();
+        long newTime = startTime - frametime;
+        hiddenMediaPlayer.setTime(newTime);
+        try
+        {
+        	wait(1000);
+        } catch(InterruptedException ex) {	        		
+        }
+        long actualNewTime = hiddenMediaPlayer.getTime();
+        long offset = actualNewTime - newTime - off;
+        
+        System.out.println(String.format(
+        		"Frametime: %d\n"
+		        + "start time: %d\n"
+		        + "new hope time: %d\n"
+		        + "actual new time: %d\n"
+		        + "Difference (actual - hoped): %d",
+		        frametime, startTime,newTime, actualNewTime,offset
+    		));
+        
+        return offset + off;
+        
+    }*/
 
     /**
      * Test render callback
@@ -539,14 +591,25 @@ public class VLCMediaPlayer implements IMediaPlayer{
 			}
 	        
 			double msecPerSample = getMilliSecondsPerSample();
-			long curTime = player.getTime() - 190;
+			long curTime = player.getTime();// - 190;
+			System.out.println(curTime);
 			
-        	curTime = (long) Math.floor(curTime - msecPerSample);
+        	long newTime = (long) Math.floor(curTime - msecPerSample);
         	
-	        if (curTime < 0) {
-	        	curTime = 0;
+	        if (newTime < 0) {
+	        	newTime = 0;
 	        }
-	        setMediaTime(curTime);
+	        setMediaTime(newTime);
+	        System.out.println(newTime);
+	        System.out.println(player.getTime());
+	       /* try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}*/
+	        System.out.println(player.getTime());
+	        System.out.println("");
 		}
     }
     

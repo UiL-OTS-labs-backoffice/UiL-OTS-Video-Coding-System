@@ -8,13 +8,5 @@ public class Main {
 		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files (x86)\\VideoLAN\\VLC\\sdk\\lib");
 		NativeLibrary.addSearchPath("libvlc", "C:\\Program Files\\VideoLAN\\VLC");
 		Globals.getInstance();
-		
-		/*SwingUtilities.invokeLater(new Runnable(){
-			public void run()
-			{
-				view.panels.projectOpener opener = new view.panels.projectOpener();
-				opener.setVisible(true);
-			}
-		});*/
 	}
 }
