@@ -45,6 +45,7 @@ public class VLCMediaPlayer implements IMediaPlayer{
    	private float aspectRatio, origAspectRatio;
    	private double msPerFrame = 0.0d; 
    	private double stdev = 0.0d;
+   	private long offset = 0L;
    	
    	public VLCMediaPlayer(String url)
    	{
@@ -122,26 +123,13 @@ public class VLCMediaPlayer implements IMediaPlayer{
         }
 
         mediaLength = hiddenMediaPlayer.getLength();
-        
-        /*long offset = 0L;
-        for(int i = 0; i < 10; i++)
-        {
-        	long noff = tryCalculateOffset(offset);
-        	if (noff != 0L)
-        	{
-        		System.out.println("Offset changed!");
-        		offset = (i * offset + noff)/(i+1);
-        	}
-        	else{
-        		System.out.println("Offset is 0!");
-        	}
-        	System.out.println(i*10 + 10);
+        hiddenMediaPlayer.pause();
+        hiddenMediaPlayer.setTime(1000);
+        try{
+        	wait(1000);
+        } catch(InterruptedException ex){
         }
-        
-        System.out.println("\n");
-        System.out.println("Final offset: " + offset);*/
-        
-        // TODO: see if this offset helps. Also, why isn't it 190?
+        this.offset = hiddenMediaPlayer.getTime() - 1000;
         
         hiddenMediaPlayer.stop();
         hiddenMediaPlayer.release();
@@ -149,34 +137,6 @@ public class VLCMediaPlayer implements IMediaPlayer{
         semaphore = null;
     }
     
-    /*private synchronized long tryCalculateOffset(long off)
-    {   	
-    	long frametime = (long)(1000 / hiddenMediaPlayer.getFps());
-    	frametime = (hiddenMediaPlayer.getFps() == 0) ? 1000/25 : frametime;
-        long startTime = hiddenMediaPlayer.getTime();
-        long newTime = startTime - frametime;
-        hiddenMediaPlayer.setTime(newTime);
-        try
-        {
-        	wait(1000);
-        } catch(InterruptedException ex) {	        		
-        }
-        long actualNewTime = hiddenMediaPlayer.getTime();
-        long offset = actualNewTime - newTime - off;
-        
-        System.out.println(String.format(
-        		"Frametime: %d\n"
-		        + "start time: %d\n"
-		        + "new hope time: %d\n"
-		        + "actual new time: %d\n"
-		        + "Difference (actual - hoped): %d",
-		        frametime, startTime,newTime, actualNewTime,offset
-    		));
-        
-        return offset + off;
-        
-    }*/
-
     /**
      * Test render callback
      */
@@ -599,24 +559,13 @@ public class VLCMediaPlayer implements IMediaPlayer{
 	        
 			double msecPerSample = getMilliSecondsPerSample();
 			long curTime = player.getTime();// - 190;
-			System.out.println(curTime);
 			
-        	long newTime = (long) Math.floor(curTime - msecPerSample);
+        	long newTime = (long) Math.floor(curTime - msecPerSample - offset);
         	
 	        if (newTime < 0) {
 	        	newTime = 0;
 	        }
 	        setMediaTime(newTime);
-	        System.out.println(newTime);
-	        System.out.println(player.getTime());
-	       /* try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
-	        System.out.println(player.getTime());
-	        System.out.println("");
 		}
     }
     

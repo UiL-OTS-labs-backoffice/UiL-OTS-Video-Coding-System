@@ -44,12 +44,12 @@ public class Controller {
 		ExperimentSettings e = g.getSettingsView();
 		Experiment ex = g.getExperimentModel();
 		e.setSettings(
-				ex.getExp_id(),
 				ex.getExp_name(),
+				ex.getExp_id(),
 				ex.getRes_id(),
 				ex.getPP_id(),
-				ex.getShow_exp_id(),
 				ex.getShow_exp_name(),
+				ex.getShow_exp_id(),
 				ex.getShow_res_id(),
 				ex.getShow_pp_id()
 				);
@@ -68,8 +68,8 @@ public class Controller {
 				s.getExp_id(),
 				s.getRes_id(),
 				s.getPP_id(),
-				s.getShow_exp_id(),
 				s.getShow_exp_name(),
+				s.getShow_exp_id(),
 				s.getShow_res_id(),
 				s.getShow_pp_id()
 			);
@@ -217,7 +217,6 @@ public class Controller {
 	 */
 	private void updateButtons(int tnr, long time)
 	{
-		System.out.println(String.format("Trial nr: %d\nTime: %d", tnr, time));
 		boolean nt = g.getExperimentModel().canAddItem(time) >= 0;
 		boolean et = false, nl = false, el = false;
 		int lnr = 0;
@@ -233,7 +232,6 @@ public class Controller {
 			{
 				Look l = (Look) t.getItem(Math.abs(lnr));
 				el = tnr > 0 && l.canEnd(time);
-//				el = t.canEndItem(lnr, time);
 			}
 		}
 		
@@ -280,7 +278,6 @@ public class Controller {
 	{
 		long time = g.getVideoController().getMediaTime();
 		int tnr = g.getExperimentModel().getItemForTime(time);
-		System.out.println("New look to be created in " + tnr);
 		if(tnr != 0)
 		{
 			Trial trial = (Trial) g.getExperimentModel().getItem(Math.abs(tnr));

@@ -21,7 +21,7 @@ public class VideoSelector {
 	 */
 	private static VideoSelector instance;
 	
-	private static String[] extensions = {"mpeg", "mpg", "avi", "asf", "wmv", "wma", 
+	private static String[] extensions = {"mpeg", "avi", "asf", "wmv", "wma", 
         "mp4", "mov", "3gp", "mkv"};
 	
 	

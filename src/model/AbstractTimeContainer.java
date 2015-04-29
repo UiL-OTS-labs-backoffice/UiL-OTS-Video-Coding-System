@@ -323,5 +323,4 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame
 		}
 		return time;
 	}
-
 }
