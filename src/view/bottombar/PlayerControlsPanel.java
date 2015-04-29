@@ -58,10 +58,6 @@ public class PlayerControlsPanel extends JPanel {
 	 */
 	private JLabel timeLabel, remainingLabel;
     private JSlider positionSlider;
-    
-    /**
-     * DOCUMENT ME 
-     */
 	@SuppressWarnings("unused")
 	private boolean mousePressedPlaying = false;
 	private boolean remaining = false;
@@ -73,6 +69,14 @@ public class PlayerControlsPanel extends JPanel {
     	c = g.getVideoController();
     	controller = g.getController();
         createUI();
+    }
+    
+    /**
+     * Method to force the updating of the slider position
+     */
+    public void updateSlider()
+    {
+    	if(runnable != null) runnable.update();
     }
       
     /**
@@ -154,6 +158,16 @@ public class PlayerControlsPanel extends JPanel {
         });
     }
     
+    /**
+     * Calculates slider position from media position
+     * @param position	Media position
+     * @return			Slider position
+     */
+    private int positionToTime(float position)
+    {
+    	return (int)(position * 10000.0f);
+    }
+    
     private final class UpdateRunnable implements Runnable {
         private final IMediaPlayer mediaPlayer;
         private UpdateRunnable(IMediaPlayer mediaPlayer) {
@@ -164,7 +178,7 @@ public class PlayerControlsPanel extends JPanel {
         public void run() {
             final long time = mediaPlayer.getMediaTime();
             final long end = mediaPlayer.getMediaDuration();
-            final int position = (int)(mediaPlayer.getPosition() * 10000.0f);
+            final int position = positionToTime(mediaPlayer.getPosition());
             
             // Updates to user interface components must be executed on 
             // the Event
@@ -186,6 +200,9 @@ public class PlayerControlsPanel extends JPanel {
         	final long time = mediaPlayer.getMediaTime();
         	final long end = mediaPlayer.getMediaDuration();
         	updateTime(time, end);
+        	
+        	final int position = positionToTime(mediaPlayer.getPosition());
+        	updatePosition(position);
         }
     }
     

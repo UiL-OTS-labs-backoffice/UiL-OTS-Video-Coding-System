@@ -37,6 +37,15 @@ public class BottomBar extends JPanel {
     	trialInformation.setInfo(trial, look, time);
     }
     
+    /**
+     * Method to update the buttons in the bottombar
+     * @param endTrial	The text for the end trial button
+     * @param endLook	The text for the end look button
+     * @param nt		The state of the new trial button
+     * @param et		The state of the end trial button
+     * @param nl		The state of the new look button
+     * @param el		The state of the end look button
+     */
     public void updateButtons(
 			String endTrial, String endLook,
 			boolean nt, boolean et, boolean nl, boolean el
@@ -54,6 +63,10 @@ public class BottomBar extends JPanel {
     	trialInformation.setFile(file);
     }
     
+    /**
+     * Method to get the panel that contains the time codes
+     * @return	PlayerCOntrolsPanel instance
+     */
     public PlayerControlsPanel getTimeCodes()
     {
     	return timecodes;

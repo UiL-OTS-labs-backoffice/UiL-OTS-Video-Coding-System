@@ -233,11 +233,8 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame
 				);
 			throw new IllegalStateException(e);
 		} else {
-			System.out.println("Size: " + items.size());
-			System.out.println("Canadd " + canAdd);
 			if(items.size() > 0 && items.peekLast().getEnd() < 0)
 			{
-				System.out.println("Last frame not yet ended");
 				items.peekLast().setEnd(time);
 			}
 			items.add(canAdd, tf);

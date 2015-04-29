@@ -181,11 +181,10 @@ public class VLCMediaPlayer implements IMediaPlayer{
 			VLCMediaPlayer.this.player.stop();
 		}
 		
-		public void timeChanged(MediaPlayer mediaPlayer,
-			long newTime) {
-				if (msPerFrame <= 0) {
-					float fps = mediaPlayer.getFps();
-					if (fps > 1) {
+		public void timeChanged(MediaPlayer mediaPlayer, long newTime) {
+			if (msPerFrame <= 0) {
+				float fps = mediaPlayer.getFps();
+				if (fps > 1) {
 					msPerFrame = (1000d / fps);
 					stdev = msPerFrame / 2;
 				}

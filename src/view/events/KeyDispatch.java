@@ -30,34 +30,60 @@ public class KeyDispatch implements KeyEventDispatcher {
 		if(e.getID() == KeyEvent.KEY_PRESSED) {
 	    	if(vc.IsLoaded())
 	    	{
-				int kc = e.getKeyCode();
-	    		if(kc == qk.getKey("play"))
-	    			vc.play();
-	    		else if (kc == qk.getKey("prevFrame"))
-	    			vc.prevFrame();
-	    		else if (kc == qk.getKey("nextFrame"))
-	    			vc.nextFrame();
-	    		else if (kc == qk.getKey("nextTrial"))
-	    		{ } // TODO: implement next trial
-	    		else if (kc == qk.getKey("prevTrial"))
-	    		{ } // TODO: implement previous trial
-	    		else if (kc == qk.getKey("prevLook"))
-	    		{ } // TODO: implement previous look
-	    		else if (kc == qk.getKey("nextLook"))
-	    		{ } // TODO: implement next look
-	    		else if (kc == qk.getKey("newTrial"))
-	    		{ } // TODO: implement new trial
-	    		else if (kc == qk.getKey("newLook"))
-	    		{ } // TODO: implement new look
-	    		else if (kc == qk.getKey("endTrial"))
-	    		{ } // TODO: implement end trial
-	    		else if (kc == qk.getKey("endLook"))
-	    		{ } // TODO: implement end look
+	    		int keycode = e.getKeyCode();
+	    		executeCodeForKey(keycode);
 	    	}
 		} else if (e.getID() == KeyEvent.KEY_RELEASED){
 		} else if (e.getID() == KeyEvent.KEY_TYPED) {
 		}
 		return false;
+	}
+	
+	/**
+	 * Finds the function to execute for the key that
+	 * is pressed
+	 * @param keycode	The keycode of the key that was pressed
+	 */
+	private void executeCodeForKey(int keycode)
+	{
+		if(keycode == qk.getKey("play"))
+			vc.play();
+		else if (keycode == qk.getKey("prevFrame"))
+			vc.prevFrame();
+		else if (keycode == qk.getKey("nextFrame"))
+			vc.nextFrame();
+		else if (keycode == qk.getKey("nextTrial"))
+		{ 
+			vc.nextTrial();
+		}
+		else if (keycode == qk.getKey("prevTrial"))
+		{
+			vc.prevTrial();
+		}
+		else if (keycode == qk.getKey("prevLook"))
+		{ 
+			vc.prevLook();
+		}
+		else if (keycode == qk.getKey("nextLook"))
+		{ 
+			vc.nextLook();
+		}
+		else if (keycode == qk.getKey("newTrial"))
+		{ 
+			qk.newTrial();
+		} 
+		else if (keycode == qk.getKey("newLook"))
+		{ 
+			qk.newLook();
+		} 
+		else if (keycode == qk.getKey("endTrial"))
+		{ 
+			qk.setEndTrial();
+		} 
+		else if (keycode == qk.getKey("endLook"))
+		{ 
+			qk.setEndLook();
+		} 
 	}
 
 }

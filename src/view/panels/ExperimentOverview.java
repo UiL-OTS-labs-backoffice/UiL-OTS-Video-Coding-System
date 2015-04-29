@@ -113,6 +113,7 @@ public class ExperimentOverview extends JFrame {
 			model.Trial t = c.getTrial(i);
 			
 			addSeparator(row);
+			row++;
 			
 			addLabel("Trial " + i, row, 0, HEADER_COLOR);
 			addLabel(" ", row, 1, HEADER_COLOR);

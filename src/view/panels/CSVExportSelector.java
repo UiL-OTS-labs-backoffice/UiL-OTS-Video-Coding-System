@@ -47,7 +47,6 @@ public class CSVExportSelector {
 	    chooser.setFileFilter(filter);
 	    chooser.addChoosableFileFilter(filter);
 		
-		//chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		chooser.setAcceptAllFileFilterUsed(false);
 	    
 	    int returnVal = chooser.showSaveDialog(chooser);

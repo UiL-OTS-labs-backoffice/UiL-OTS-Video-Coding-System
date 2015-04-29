@@ -30,11 +30,19 @@ public class Experiment extends AbstractTimeContainer{
 	 */
 	transient private Globals g;
 	
+	/**
+	 * Constructor that saves a reference to the globals
+	 * @param g		Globals instance
+	 */
 	public Experiment(Globals g) {
 		super(0);
 		this.g = g;
 	}
 	
+	/**
+	 * Method to change the reference to the globals
+	 * @param g		New Globals instance
+	 */
 	public void setGlobals(Globals g)
 	{
 		this.g = g;

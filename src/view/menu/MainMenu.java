@@ -137,7 +137,6 @@ public class MainMenu extends JMenuBar {
 		removeLooks.setToolTipText("Removes all the looks from the current "
 				+ "trial");
 		
-		// TODO: generate list of current trials
 		JMenu goToTrial = new JMenu("Go to trial");
 		
 		goToTrial.addMouseListener(new MouseListener(){
@@ -223,6 +222,7 @@ public class MainMenu extends JMenuBar {
 					public void actionPerformed(ActionEvent e)
 					{
 						vc.setMediaTime(time);
+						c.updateLabels(time);
 					}
 				});
 			}
@@ -241,6 +241,7 @@ public class MainMenu extends JMenuBar {
 					public void actionPerformed(ActionEvent e)
 					{
 						vc.setMediaTime(ltime);
+						c.updateLabels(ltime);
 					}
 				});
 				

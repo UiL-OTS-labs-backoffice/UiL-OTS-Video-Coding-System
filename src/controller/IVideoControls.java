@@ -121,11 +121,6 @@ public interface IVideoControls {
 	public void JumpToStart();
 	
 	/**
-	 * TODO We don't know always how many frames per second the media is...
-	 * That hopefully becomes known while playing, but even that
-	 * depends in the format of the media. It seems to work for MPEG4
-	 * but not for MPEG(2).
-	 *
 	 * @return the step size for one frame
 	 */
 	public double getMilliSecondsPerSample();

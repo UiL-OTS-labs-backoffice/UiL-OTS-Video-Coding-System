@@ -109,21 +109,11 @@ public class Controller {
 		dialog.setVisible(true);
 	}
 	
-	public boolean export()
-	{
-		view.panels.CSVExportSelector.getInstance();
-		String name = CSVExportSelector.show();
-		if (name == null)
-			return false;
-		else{
-			if (!(name.endsWith(".csv") || name.endsWith(".CSV")))
-				name += ".csv";
-			controller.export.CSVExport exporter = new controller.export.CSVExport();
-			return exporter.writeCsv(name);
-		}
-		
-	}
-	
+	/**
+	 * Method to open the experiment model from a previously saved location
+	 * @param url		The location of the file to be opened
+	 * @return			true iff successful
+	 */
 	public boolean open(String url)
 	{
 		model.Experiment exp = controller.serializer.Serializer.readExperimentModel(url);
@@ -161,6 +151,25 @@ public class Controller {
 	}
 	
 	/**
+	 * Method to export the experiment information to a CSV file
+	 * @return
+	 */
+	public boolean export()
+	{
+		view.panels.CSVExportSelector.getInstance();
+		String name = CSVExportSelector.show();
+		if (name == null)
+			return false;
+		else{
+			if (!(name.endsWith(".csv") || name.endsWith(".CSV")))
+				name += ".csv";
+			controller.export.CSVExport exporter = new controller.export.CSVExport();
+			return exporter.writeCsv(name);
+		}
+		
+	}
+	
+	/**
 	 * Updates the buttons and labels for the trials and looks
 	 * @param time	The current time stamp.
 	 */
@@ -169,6 +178,7 @@ public class Controller {
 		int tnr = g.getExperimentModel().getItemForTime(time);
 		updateButtons(tnr, time);
 		generateInfo(tnr, time);
+		g.getEditor().updateSlider();
 	}
 	
 	/**
@@ -249,7 +259,6 @@ public class Controller {
 		String str = (nr < 0) ? "Extend %s %d" : "End %s %d";
 		return String.format(str, type, Math.abs(nr));
 	}
-	
 	
 	
 	/**

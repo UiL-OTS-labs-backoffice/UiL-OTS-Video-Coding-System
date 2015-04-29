@@ -195,6 +195,15 @@ public class Editor {
     }
     
     /**
+     * Method to update the slider position based on the time.
+     * Used the sliders own update function
+     */
+    public void updateSlider()
+    {
+    	bottom_bar.getTimeCodes().updateSlider();
+    }
+    
+    /**
      * Method to change the value of the file label in the trial information
      * by passing the argument to the bottom bar
      * @param file		Name of the file to be set
