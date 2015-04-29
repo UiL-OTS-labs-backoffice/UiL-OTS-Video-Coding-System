@@ -87,7 +87,7 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame
 	public boolean canEnd(long time)
 	{
 		boolean itemCanEnd = super.canEnd(time);
-		boolean containerCanEnd = !items.peekLast().timeInRange(time);
+		boolean containerCanEnd = items.size() == 0 || items.peekLast().getEnd() == -1 ||items.peekLast().getEnd() < time;
 		return itemCanEnd && containerCanEnd;
 	}
 
@@ -110,21 +110,24 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame
 			for(int i = 0; i < items.size(); i++)
 			{
 				AbstractTimeFrame tf = items.get(i);
-				if(tf.getEnd() > time) {
+				if(tf.getBegin() > time)
+				{
+					canAdd = i-1;
+					break;
+				} else if (tf.getEnd() < time || tf.getEnd() == -1)
+				{
 					continue;
-				} else if (tf.getBegin() <= time) {
-					canAdd = -1;
-					break;
 				} else {
-					canAdd = i;
-					break;
+					canAdd = -1;
 				}
 			}
 		}
 		
 		if(canAdd == null)
+		{
 			canAdd = items.size();
-
+		}
+		
 		return canAdd;
 	}
 
@@ -230,6 +233,13 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame
 				);
 			throw new IllegalStateException(e);
 		} else {
+			System.out.println("Size: " + items.size());
+			System.out.println("Canadd " + canAdd);
+			if(items.size() > 0 && items.peekLast().getEnd() < 0)
+			{
+				System.out.println("Last frame not yet ended");
+				items.peekLast().setEnd(time);
+			}
 			items.add(canAdd, tf);
 		}
 	}
@@ -286,18 +296,18 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame
 		for(int i = 0; i < items.size(); i++)
 		{
 			AbstractTimeFrame tf = items.get(i);
-			if(tf.getEnd() <= time)
-			{
+			if(tf.getEnd() >= 0 && tf.getEnd() < time) {
+				if(i == items.size()-1)
+					return 0 - i - 1;
 				continue;
-			} else if (tf.getBegin() >= time)
-			{
+			} else if (tf.getBegin() >= time || tf.getEnd() == -1) {
 				return i + 1;
 			} else {
 				return 0 - i - 1;
 			}
 		}
 		
-		return -1;
+		return 0;
 	}
 	
 	/**

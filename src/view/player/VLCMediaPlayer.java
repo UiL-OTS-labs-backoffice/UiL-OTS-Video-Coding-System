@@ -31,6 +31,11 @@ public class VLCMediaPlayer implements IMediaPlayer{
     private String mediaURL;
     
     /**
+     * Media length is figured out by the hidden media player
+     */
+    private long mediaLength;
+    
+    /**
      * Display component
      */
     private EmbeddedMediaPlayerComponent playerComponent;
@@ -109,12 +114,14 @@ public class VLCMediaPlayer implements IMediaPlayer{
         semaphore = new Semaphore(0);	        
         hiddenMediaPlayer.playMedia(media);
         
+        
         try {
         	semaphore.tryAcquire(1000L, TimeUnit.MILLISECONDS);
         	wait(1000);
         } catch(InterruptedException ex) {	        		
         }
-        
+
+        mediaLength = hiddenMediaPlayer.getLength();
         
         /*long offset = 0L;
         for(int i = 0; i < 10; i++)
@@ -642,7 +649,8 @@ public class VLCMediaPlayer implements IMediaPlayer{
 	 */
     @Override
 	public long getMediaDuration() {
-        return player.getLength();
+        //return player.getLength();
+    	return mediaLength;
     }
 
 

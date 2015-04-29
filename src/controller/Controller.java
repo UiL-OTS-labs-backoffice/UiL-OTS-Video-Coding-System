@@ -86,6 +86,7 @@ public class Controller {
 		g.getExperimentModel().setUrl(url);
 		g.getEditor().addVideoPlayerSurface(player);
 		g.getVideoController().setPlayer(player);
+		g.getExperimentModel().setEnd(player.getMediaDuration());
 		g.getEditor().show();
 	}
 	
@@ -180,20 +181,17 @@ public class Controller {
 	{
 		int totalTrials = g.getExperimentModel().getNumberOfItems();
 		String trial, look, totalTime;
-		
-		if(tnr > -1)
+		if(totalTrials > 0)
 		{
 			trial = (tnr > 0) ? Integer.toString(tnr) : " ";
 			trial += String.format(" / %d", totalTrials);
-			
-			Trial t = (Trial) g.getExperimentModel().getItem(tnr);
+			Trial t = (Trial) g.getExperimentModel().getItem(Math.abs(tnr));
 			totalTime = String.format("%d ms", t.getTotalTimeForItems());
-			
 			int totalLooks = t.getNumberOfItems();
 			
 			int lnr = t.getItemForTime(time);
 			
-			if (lnr > -1)
+			if (totalLooks > 0)
 			{
 				look = (lnr > 0) ? Integer.toString(lnr) : " ";
 				look += String.format(" / %d", totalLooks);
@@ -219,22 +217,23 @@ public class Controller {
 	 */
 	private void updateButtons(int tnr, long time)
 	{
+		System.out.println(String.format("Trial nr: %d\nTime: %d", tnr, time));
 		boolean nt = g.getExperimentModel().canAddItem(time) >= 0;
-		System.out.println(nt);
 		boolean et = false, nl = false, el = false;
-		int lnr = -1;
+		int lnr = 0;
 		
-		if(tnr > -1)
+		if(tnr != 0)
 		{
-			Trial t = (Trial) g.getExperimentModel().getItem(tnr);
+			Trial t = (Trial) g.getExperimentModel().getItem(Math.abs(tnr));
 			lnr = t.getItemForTime(time);
 			et = t.canEnd(time);
 			nl = t.canAddItem(time) >= 0;
 			
-			if(lnr > -1)
+			if(lnr != 0)
 			{
-				Look l = (Look) t.getItem(lnr);
-				el = l.canEnd(time);
+				Look l = (Look) t.getItem(Math.abs(lnr));
+				el = tnr > 0 && l.canEnd(time);
+//				el = t.canEndItem(lnr, time);
 			}
 		}
 		
@@ -281,9 +280,10 @@ public class Controller {
 	{
 		long time = g.getVideoController().getMediaTime();
 		int tnr = g.getExperimentModel().getItemForTime(time);
-		if(tnr > 0)
+		System.out.println("New look to be created in " + tnr);
+		if(tnr != 0)
 		{
-			Trial trial = (Trial) g.getExperimentModel().getItem(tnr);
+			Trial trial = (Trial) g.getExperimentModel().getItem(Math.abs(tnr));
 			trial.addItem(time);
 			updateLabels(time);
 		} else {

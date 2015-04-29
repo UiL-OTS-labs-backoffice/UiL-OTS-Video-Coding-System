@@ -212,6 +212,11 @@ public class Editor {
     	bottom_bar.updateButtons(endTrial, endLook,	nt, et, nl, el);
     }
     
+    public void setPlayState(boolean state)
+    {
+    	playButtons.setPlay(state);
+    }
+    
     
     
 }

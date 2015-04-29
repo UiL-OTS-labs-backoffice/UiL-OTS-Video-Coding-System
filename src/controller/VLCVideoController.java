@@ -41,6 +41,7 @@ public class VLCVideoController implements IVideoControls {
 	@Override
 	public void play() {
 		player.start();
+		g.getEditor().setPlayState(player.isPlaying());
 	}
 
 	@Override

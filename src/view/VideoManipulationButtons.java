@@ -147,15 +147,19 @@ public class VideoManipulationButtons extends JPanel {
 		playPause.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		c.play();
-        		if(c.isPlaying())
-        			playPause.setText("\u25b6");
-        		else
-        			playPause.setText("||");
         	}
         });
 		
 		add(playPause);
 		playPause.setFocusable(false);
 		playPause.setEnabled(false);
+	}
+	
+	public void setPlay(boolean state)
+	{
+		if (state)
+			playPause.setText("\u25b6");
+		else
+			playPause.setText("||");
 	}
 }

@@ -41,6 +41,7 @@ public abstract class AbstractTimeFrame implements Serializable
 	 */
 	public boolean timeInRange(long time)
 	{
+//		TODO: Does this make sense? Can't add a new look in a trial, but new trials work
 		return time >= begintime && (endtime == -1L || time <= endtime);
 	}
 	
