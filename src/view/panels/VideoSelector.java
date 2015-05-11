@@ -2,8 +2,6 @@ package view.panels;
 
 
 import java.io.File;
-import java.util.StringJoiner;
-
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -91,12 +89,37 @@ public class VideoSelector {
 	{
 		String e = "The extension of the file you chose is not supported.\n";
 	    e += "Please select a file that has any of the following extensions:\n";
-	    StringJoiner sj = new StringJoiner(", ");
-	    for(String e1 : extensions)
-	    	sj.add(e1);
-	    e += sj.toString();
-	    
+	    e += stringJoiner(extensions, ", ");
 	    return e;
+	}
+	
+	private static String stringJoiner(String[] list, String sep)
+	{
+		int l = list.length;
+		String s;
+		
+		switch(l)
+		{
+		case 0: 
+			s = "";
+			break;
+		case 1: 
+			s = list[0];
+			break;
+		case 2: 
+			s = String.format("%s%s%s", list[0], sep, list[1]);
+			break;
+		default:
+			s = list[0];
+			for(int i = 1; i < l-1; i++)
+			{
+				s += String.format("%s%s", sep, list[i]);
+			}
+			s += String.format("%s%s%s", s, sep, list[l-1]);
+			break;
+		}
+		
+		return s;
 	}
 	
 	
