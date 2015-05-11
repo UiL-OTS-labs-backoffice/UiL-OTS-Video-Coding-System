@@ -316,6 +316,14 @@ public class MainMenu extends JMenuBar {
         });
 		
 		JMenuItem about = new JMenuItem("About");
+		about.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				new view.panels.About().setVisible(true);
+			}
+			
+		});
 		
 		help.add(shortKeys);
 		help.add(about);

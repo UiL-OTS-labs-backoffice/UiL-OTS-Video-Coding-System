@@ -1,18 +1,26 @@
 package view.panels;
 
 import javax.swing.JFrame;
-import java.awt.Window.Type;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
+
 import java.awt.Font;
+
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-public class about extends JFrame {
-	public about() {
+public class About extends JFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public About() {
+		setResizable(false);
 		setTitle("About: UiL OTS Video Coding System");
 		setType(Type.UTILITY);
-		setResizable(false);
+		this.setSize(361, 156);
+		this.setLocation(600, 400);
 		
 		JLabel lblUilOtsVideo = new JLabel("UiL OTS Video Coding System V0.8.0.0 (Beta)");
 		lblUilOtsVideo.setFont(new Font("Tahoma", Font.BOLD, 14));
