@@ -3,6 +3,8 @@ package view.panels;
 import java.awt.BorderLayout;
 //import java.awt.EventQueue;
 
+import java.awt.Toolkit;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -18,6 +20,7 @@ import java.awt.Insets;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+
 
 
 import controller.*;
@@ -57,6 +60,7 @@ public class ExperimentSettings{
 	public ExperimentSettings(Globals g) {
 		c = g.getController();
 		frmExperimentSettings = new JFrame();
+		frmExperimentSettings.setIconImage(Toolkit.getDefaultToolkit().getImage(projectOpener.class.getResource("/img/favicon.png")));
 		frmExperimentSettings.setResizable(false);
 		frmExperimentSettings.setLocation(new Point(500, 500));
 		frmExperimentSettings.setType(Type.UTILITY);

@@ -6,6 +6,7 @@ import java.awt.event.HierarchyListener;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import controller.Globals;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
 import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
@@ -510,7 +511,8 @@ public class VLCMediaPlayer implements IMediaPlayer{
     */
    @Override
    public void setMediaTime(long time) {
-	   player.setTime(time);
+	   player.setTime(time - offset);
+	   Globals.getInstance().getController().updateLabels(time);
    }
    
    /* (non-Javadoc)
@@ -537,7 +539,7 @@ public class VLCMediaPlayer implements IMediaPlayer{
 			double msecPerSample = getMilliSecondsPerSample();
 			long curTime = player.getTime();// - 190;
 			
-        	long newTime = (long) Math.floor(curTime - msecPerSample - offset);
+        	long newTime = (long) Math.floor(curTime - msecPerSample);
         	
 	        if (newTime < 0) {
 	        	newTime = 0;

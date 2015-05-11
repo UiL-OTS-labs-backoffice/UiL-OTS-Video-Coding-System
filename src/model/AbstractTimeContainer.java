@@ -126,7 +126,6 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame
 		{
 			canAdd = items.size();
 		}
-		System.out.println(canAdd);
 		return canAdd;
 	}
 

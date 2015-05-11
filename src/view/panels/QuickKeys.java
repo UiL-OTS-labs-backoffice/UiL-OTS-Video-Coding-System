@@ -13,6 +13,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.util.List;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -53,6 +54,7 @@ public class QuickKeys extends JFrame{
 		// Frame options
 		setTitle("Quick key commands");
 		setResizable(false);
+		setIconImage(Toolkit.getDefaultToolkit().getImage(projectOpener.class.getResource("/img/favicon.png")));
 		
 		// Add content
 		createLayout();

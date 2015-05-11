@@ -77,14 +77,30 @@ public class VLCVideoController implements IVideoControls {
 
 	@Override
 	public void nextTrial() {
-		// TODO Auto-generated method stub
-
-	}
+		int tnr = Math.abs(g.getExperimentModel().getItemForTime(getMediaTime()));
+		if(tnr > 0 && tnr < g.getExperimentModel().getNumberOfItems())
+		{
+			model.AbstractTimeFrame t = g.getExperimentModel().getItem(tnr+1);
+			long time = t.getBegin();
+			player.setMediaTime(time);
+		} else {
+			player.setMediaTime(player.getMediaDuration());
+		}
+	}		
 
 	@Override
 	public void prevTrial() {
-		// TODO Auto-generated method stub
-
+		int tnr = Math.abs(g.getExperimentModel().getItemForTime(getMediaTime()));
+		if (tnr > 1) tnr--;
+		else if (tnr < 0) tnr = Math.abs(tnr);
+		if(tnr > 0)
+		{
+			model.AbstractTimeFrame t = g.getExperimentModel().getItem(tnr);
+			long time = t.getBegin();
+			player.setMediaTime(time);
+		} else {
+			player.setMediaTime(0);
+		}
 	}
 
 	@Override
