@@ -137,7 +137,7 @@ public class MainMenu extends JMenuBar {
 		removeLooks.setToolTipText("Removes all the looks from the current "
 				+ "trial");
 		
-		JMenu goToTrial = new JMenu("Go to trial");
+		final JMenu goToTrial = new JMenu("Go to trial");
 		
 		goToTrial.addMouseListener(new MouseListener(){
 			public void mouseClicked(MouseEvent e) {
@@ -185,7 +185,7 @@ public class MainMenu extends JMenuBar {
 		{
 			Trial t = c.getTrial(i);
 			
-			long time = t.getBegin();
+			final long time = t.getBegin();
 			String trialText = String.format(
 					"Trial %d (%s)", 
 					i, 
@@ -230,7 +230,7 @@ public class MainMenu extends JMenuBar {
 			for(int j = 1; j <= t.getNumberOfItems(); j++)
 			{
 				
-				long ltime = t.getItem(j).getBegin();
+				final long ltime = t.getItem(j).getBegin();
 				String lookText = String.format(
 						"Look %d (%s)", 
 						j, 

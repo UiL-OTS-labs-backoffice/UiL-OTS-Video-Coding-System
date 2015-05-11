@@ -135,7 +135,7 @@ public class QuickKeys extends JFrame{
 			getContentPane().add(lblActionName, gbc_lblActionName);
 			
 			// Key Label 
-			JTextField txtKey = new JTextField(c.codeToString(action));
+			final JTextField txtKey = new JTextField(c.codeToString(action));
 			fields.add(new Field(txtKey, action));
 			txtKey.setHorizontalAlignment(SwingConstants.CENTER);
 			txtKey.setEditable(false);

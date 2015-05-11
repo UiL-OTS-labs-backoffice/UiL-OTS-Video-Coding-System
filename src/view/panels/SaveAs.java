@@ -70,10 +70,10 @@ public class SaveAs extends JFrame {
 	private void createTextFields()
 	{
 		// Borders
-		Border invalid = BorderFactory.createLineBorder(Color.red);
+		final Border invalid = BorderFactory.createLineBorder(Color.red);
 				
 		text_projectName = new JFormattedTextField();
-		Border valid = text_projectName.getBorder();
+		final Border valid = text_projectName.getBorder();
 		
 		text_projectName.addKeyListener(new KeyAdapter() {
 			@Override

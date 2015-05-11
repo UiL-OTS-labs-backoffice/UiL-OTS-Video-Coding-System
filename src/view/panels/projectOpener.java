@@ -123,7 +123,7 @@ public class projectOpener extends JFrame {
 	private void createTextFields() throws ParseException
 	{
 		// Borders
-		Border invalid = BorderFactory.createLineBorder(Color.red);
+		final Border invalid = BorderFactory.createLineBorder(Color.red);
 		
 		text_videoURL = new JTextField();
 		text_videoURL.setEditable(false);
@@ -144,7 +144,7 @@ public class projectOpener extends JFrame {
 		});
 		
 		text_projectName = new JFormattedTextField();
-		Border valid = text_projectName.getBorder();
+		final Border valid = text_projectName.getBorder();
 		
 		text_projectName.addKeyListener(new KeyAdapter() {
 			@Override
