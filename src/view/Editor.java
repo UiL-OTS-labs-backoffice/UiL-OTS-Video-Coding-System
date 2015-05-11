@@ -37,6 +37,8 @@ public class Editor {
     
     private java.awt.Component visualComponent = null;
     
+    private MainMenu menu;
+    
     /**
      * Private constructor for editor
      * Creates the main view of the program
@@ -132,7 +134,7 @@ public class Editor {
      */
     private void addMenu()
     {
-    	MainMenu menu = new MainMenu(g);
+    	menu = new MainMenu(g);
     	frame.setJMenuBar(menu);
     }
     
@@ -213,12 +215,25 @@ public class Editor {
     	bottom_bar.setFile(file);
     }
     
+    /**
+     * Method to set state of buttons
+     * @param endTrial		Text for end trial button
+     * @param endLook		Text for end look button
+     * @param nt			State of new trial button
+     * @param et			State of end trial button
+     * @param nl			State of new look button
+     * @param el			State of end look button
+     * @param rmt			Currently in trial
+     * @param rml			Currently in look
+     */
     public void updateButtons(
 			String endTrial, String endLook,
-			boolean nt, boolean et, boolean nl, boolean el
+			boolean nt, boolean et, boolean nl, boolean el,
+			boolean rmt, boolean rml
 		)
     {
     	bottom_bar.updateButtons(endTrial, endLook,	nt, et, nl, el);
+    	menu.updateButtons(rmt, rml);
     }
     
     public void setPlayState(boolean state)

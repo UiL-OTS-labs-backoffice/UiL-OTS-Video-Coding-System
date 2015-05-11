@@ -22,6 +22,8 @@ public class MainMenu extends JMenuBar {
 	private static Controller c;
 	private static IVideoControls vc;
 	
+	private JMenuItem removeTrial, removeLook, removeLooks;
+	
 	public MainMenu(Globals g)
 	{
 		c = g.getController();
@@ -86,6 +88,18 @@ public class MainMenu extends JMenuBar {
 	}
 	
 	/**
+	 * Sets the state of the remove trial, remove look and remove all look
+	 * options in the menu.
+	 * @param rmt	True iff currently in trial
+	 * @param rml	True iff currently in look
+	 */
+	public void updateButtons(boolean rmt, boolean rml){
+		removeTrial.setEnabled(rmt);
+		removeLook.setEnabled(rml);
+		removeLooks.setEnabled(rmt);
+	}
+	
+	/**
 	 * Adds the settings menu
 	 * Contains:
 	 * 		- Experiment settings
@@ -127,7 +141,7 @@ public class MainMenu extends JMenuBar {
 		trialMenu.setMnemonic('T');
 		add(trialMenu);
 		
-		JMenuItem removeTrial = new JMenuItem("Remove current trial");
+		removeTrial = new JMenuItem("Remove current trial");
 		removeTrial.setToolTipText("Removes the current trial");
 		removeTrial.addActionListener(new ActionListener(){
 
@@ -138,7 +152,7 @@ public class MainMenu extends JMenuBar {
 			
 		});
 		
-		JMenuItem removeLook = new JMenuItem("Remove current look");
+		removeLook = new JMenuItem("Remove current look");
 		removeLook.setToolTipText("Removes the current look");
 		removeLook.addActionListener(new ActionListener(){
 
@@ -149,7 +163,7 @@ public class MainMenu extends JMenuBar {
 			
 		});
 		
-		JMenuItem removeLooks = new JMenuItem("Remove looks in trial");
+		removeLooks = new JMenuItem("Remove looks in trial");
 		removeLooks.setToolTipText("Removes all the looks from the current "
 				+ "trial");
 		removeLooks.addActionListener(new ActionListener(){

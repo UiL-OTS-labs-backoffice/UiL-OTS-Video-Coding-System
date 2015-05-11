@@ -35,7 +35,7 @@ public class Experiment extends AbstractTimeContainer{
 	 * @param g		Globals instance
 	 */
 	public Experiment(Globals g) {
-		super(0);
+		super(0L);
 		this.g = g;
 	}
 	

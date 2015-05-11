@@ -230,7 +230,6 @@ public class Controller {
 		boolean nt = g.getExperimentModel().canAddItem(time) >= 0;
 		boolean et = false, nl = false, el = false;
 		int lnr = 0;
-		
 		if(tnr != 0)
 		{
 			Trial t = (Trial) g.getExperimentModel().getItem(Math.abs(tnr));
@@ -245,7 +244,7 @@ public class Controller {
 			}
 		}
 		
-		g.getEditor().updateButtons(endOrExtend(tnr, "trial"), endOrExtend(lnr, "look"), nt, et, nl, el);
+		g.getEditor().updateButtons(endOrExtend(tnr, "trial"), endOrExtend(lnr, "look"), nt, et, nl, el, tnr > 0, lnr > 0);
 	}
 	
 	/**
@@ -324,38 +323,72 @@ public class Controller {
 		updateLabels(time);
 	}
 	
+	/**
+	 * Removes the trial at the current time from the list, along with all
+	 * looks in that trial.
+	 * Doesn't do anything if no trial is active for the current time
+	 */
 	public void removeCurrentTrial()
 	{
 		long time = g.getVideoController().getMediaTime();
 		int tnr = g.getExperimentModel().getItemForTime(time);
-		g.getExperimentModel().removeItem(tnr);
+		if(tnr > 0){
+			g.getExperimentModel().removeItem(tnr);
+		}
 	}
 	
+	/**
+	 * Removes the active look at the current time
+	 * Does nothing if no trial or look is active
+	 */
 	public void removeCurrentLook()
 	{
 		long time = g.getVideoController().getMediaTime();
 		int tnr = g.getExperimentModel().getItemForTime(time);
-		Trial t = (Trial) g.getExperimentModel().getItem(tnr);
-		int lnr = t.getItemForTime(time);
-		t.removeItem(lnr);
+		if(tnr > 0)
+		{
+			Trial t = (Trial) g.getExperimentModel().getItem(tnr);
+			int lnr = t.getItemForTime(time);
+			if (lnr > 0)
+			{
+				t.removeItem(lnr);
+			}
+		}
+		
 	}
 	
+	/**
+	 * Removes all looks from the active trial at the current time
+	 * Does nothing if no trial is active
+	 */
 	public void removeAllCurrentLooks()
 	{
 		long time = g.getVideoController().getMediaTime();
 		int tnr = g.getExperimentModel().getItemForTime(time);
-		Trial t = (Trial) g.getExperimentModel().getItem(tnr);
-		for(int i = 0; i < t.getNumberOfItems(); i++)
+		if(tnr > 0)
 		{
-			t.removeItem(i);
-		}
+			Trial t = (Trial) g.getExperimentModel().getItem(tnr);
+			while(t.getNumberOfItems() > 0)
+			{
+				t.removeItem(1);
+			}
+		}	
 	}
 	
+	/**
+	 * Returns the number of trials
+	 * @return	The number of trials
+	 */
 	public int getNumberOfTrials()
 	{
 		return g.getExperimentModel().getNumberOfItems();
 	}
 	
+	/**
+	 * Returns the number of looks for a trial
+	 * @param trial		Target trial number
+	 * @return			number of looks in the trial
+	 */
 	public Trial getTrial(int trial)
 	{
 		return (Trial) g.getExperimentModel().getItem(trial);
