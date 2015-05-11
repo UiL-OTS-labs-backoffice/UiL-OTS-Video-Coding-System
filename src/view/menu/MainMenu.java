@@ -129,13 +129,37 @@ public class MainMenu extends JMenuBar {
 		
 		JMenuItem removeTrial = new JMenuItem("Remove current trial");
 		removeTrial.setToolTipText("Removes the current trial");
+		removeTrial.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				c.removeCurrentTrial();
+			}
+			
+		});
 		
 		JMenuItem removeLook = new JMenuItem("Remove current look");
 		removeLook.setToolTipText("Removes the current look");
+		removeLook.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				c.removeCurrentLook();
+			}
+			
+		});
 		
 		JMenuItem removeLooks = new JMenuItem("Remove looks in trial");
 		removeLooks.setToolTipText("Removes all the looks from the current "
 				+ "trial");
+		removeLooks.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				c.removeAllCurrentLooks();
+			}
+			
+		});
 		
 		final JMenu goToTrial = new JMenu("Go to trial");
 		
@@ -172,6 +196,10 @@ public class MainMenu extends JMenuBar {
 		trialMenu.add(removeLooks);
 		trialMenu.add(goToTrial);
 		trialMenu.add(overview);
+		
+		removeTrial.setEnabled(false);
+		removeLook.setEnabled(false);
+		removeLooks.setEnabled(false);
 	}
 	
 	private void generateTrialMenuItems(JMenu menu)

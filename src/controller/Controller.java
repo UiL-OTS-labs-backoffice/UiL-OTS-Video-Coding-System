@@ -324,6 +324,33 @@ public class Controller {
 		updateLabels(time);
 	}
 	
+	public void removeCurrentTrial()
+	{
+		long time = g.getVideoController().getMediaTime();
+		int tnr = g.getExperimentModel().getItemForTime(time);
+		g.getExperimentModel().removeItem(tnr);
+	}
+	
+	public void removeCurrentLook()
+	{
+		long time = g.getVideoController().getMediaTime();
+		int tnr = g.getExperimentModel().getItemForTime(time);
+		Trial t = (Trial) g.getExperimentModel().getItem(tnr);
+		int lnr = t.getItemForTime(time);
+		t.removeItem(lnr);
+	}
+	
+	public void removeAllCurrentLooks()
+	{
+		long time = g.getVideoController().getMediaTime();
+		int tnr = g.getExperimentModel().getItemForTime(time);
+		Trial t = (Trial) g.getExperimentModel().getItem(tnr);
+		for(int i = 0; i < t.getNumberOfItems(); i++)
+		{
+			t.removeItem(i);
+		}
+	}
+	
 	public int getNumberOfTrials()
 	{
 		return g.getExperimentModel().getNumberOfItems();
