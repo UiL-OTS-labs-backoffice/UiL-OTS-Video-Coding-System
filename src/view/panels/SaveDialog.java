@@ -17,7 +17,9 @@ public class SaveDialog {
 	/**
 	 * Private constructor
 	 */
-	private SaveDialog() { }
+	private SaveDialog() { 
+		
+	}
 	
 	/**
 	 * getmethod for instance of videoselector

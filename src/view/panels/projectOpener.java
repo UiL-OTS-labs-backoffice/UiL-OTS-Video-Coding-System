@@ -30,7 +30,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.ParseException;
-import java.awt.Toolkit;
 
 public class projectOpener extends JFrame {
 	/**
@@ -78,7 +77,7 @@ public class projectOpener extends JFrame {
 	 */
 	public projectOpener(Globals g)
 	{
-		setIconImage(Toolkit.getDefaultToolkit().getImage(projectOpener.class.getResource("/img/favicon.png")));
+		setIconImages(Globals.getIcons());
 		c = g.getController();
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);

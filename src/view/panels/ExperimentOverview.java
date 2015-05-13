@@ -15,7 +15,6 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.Font;
 import java.awt.Insets;
-import java.awt.Toolkit;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
@@ -56,7 +55,7 @@ public class ExperimentOverview extends JFrame {
 	 */
 	private void createLayout()
 	{
-		setIconImage(Toolkit.getDefaultToolkit().getImage(projectOpener.class.getResource("/img/favicon.png")));
+		setIconImages(Globals.getIcons());
 		container = new JPanel();
 		JScrollPane scrPane = new JScrollPane(container,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		add(scrPane, BorderLayout.CENTER);

@@ -2,7 +2,6 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.KeyboardFocusManager;
-import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -13,7 +12,6 @@ import javax.swing.JPanel;
 import view.bottombar.BottomBar;
 import view.events.KeyDispatch;
 import view.menu.MainMenu;
-import view.panels.projectOpener;
 import view.player.IMediaPlayer;
 import view.player.VLCMediaPlayer;
 import controller.*;
@@ -67,7 +65,7 @@ public class Editor {
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setLocation(400, 150);
         frame.setSize(1024, 768);
-        frame.setIconImage(Toolkit.getDefaultToolkit().getImage(projectOpener.class.getResource("/img/favicon.png")));
+        frame.setIconImages(Globals.getIcons());
         frame.getContentPane().setLayout(new BorderLayout(0, 0));
         
         frame.addWindowListener(new WindowListener(){

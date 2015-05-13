@@ -6,6 +6,11 @@ package controller;
  *
  */
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
 import view.*;
@@ -35,6 +40,8 @@ public class Globals {
 	// Experiment model instance
 	private Experiment experimentModel;
 	
+	private static ArrayList<BufferedImage> IconImages = new ArrayList<BufferedImage>();
+	
 	/**
 	 * Constructor for global class
 	 * Creates a new instance of the controller, the editor and 
@@ -47,6 +54,8 @@ public class Globals {
 		videoController = new VLCVideoController(instance);
 		experimentModel = new Experiment(instance);
 		
+		readIcons();
+		
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run()
 			{
@@ -58,6 +67,24 @@ public class Globals {
 				opener.setVisible(true);
 			}
 		});
+	}
+	
+	private static void readIcons(){
+		String path = "/img/icons/";
+		int sizes[] = {16, 24, 32, 48, 64, 96, 128, 256, 512};
+		for(int i = 0; i < 9; i++)
+		{
+			String filename = String.format("%s%dx%d.png", path, sizes[i], sizes[i]);
+			
+			try {
+				BufferedImage image = ImageIO.read(Globals.class.getResource(filename));
+				IconImages.add(image);
+			} catch (IOException e) {
+				System.out.println(filename);
+				e.printStackTrace();
+				System.out.println("");
+			}
+		}
 	}
 	
 	/**
@@ -128,5 +155,11 @@ public class Globals {
 	public void setExperimentModel(Experiment experiment)
 	{
 		this.experimentModel = experiment;
+	}
+	
+	public static ArrayList<BufferedImage> getIcons(){
+		if(IconImages == null)
+			readIcons();
+		return IconImages;
 	}
 }
