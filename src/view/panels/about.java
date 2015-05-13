@@ -9,6 +9,8 @@ import java.awt.Font;
 
 import javax.swing.LayoutStyle.ComponentPlacement;
 
+import controller.Globals;
+
 public class About extends JFrame {
 	/**
 	 * 
@@ -18,8 +20,8 @@ public class About extends JFrame {
 	public About() {
 		setResizable(false);
 		setTitle("About: UiL OTS Video Coding System");
-		setType(Type.UTILITY);
-		this.setSize(361, 156);
+		setIconImages(Globals.getIcons());
+		this.setSize(361, 180);
 		this.setLocation(600, 400);
 		
 		JLabel lblUilOtsVideo = new JLabel("UiL OTS Video Coding System V0.8.0.0 (Beta)");

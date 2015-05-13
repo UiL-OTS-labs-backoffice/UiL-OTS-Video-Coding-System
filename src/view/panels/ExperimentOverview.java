@@ -43,7 +43,7 @@ public class ExperimentOverview extends JFrame {
 	public ExperimentOverview() {
 		c = Globals.getInstance().getController();
 		setTitle("Experiment Overview");
-		setType(Type.UTILITY);
+		setIconImages(Globals.getIcons());
 		setResizable(false);
 		this.setBounds(300, 200, 700, 500);
 		createLayout();

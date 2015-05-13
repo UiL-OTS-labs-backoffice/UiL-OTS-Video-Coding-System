@@ -173,7 +173,6 @@ public class Editor {
     	frame.getContentPane().add(visualComponent);
     	playButtons.setEnableButtons(true);
     	bottom_bar.getTimeCodes().playerStarted(player);
-    	frame.revalidate();
     }
     
     /**

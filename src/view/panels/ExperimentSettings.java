@@ -26,7 +26,6 @@ import controller.*;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.Window.Type;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.Point;
@@ -62,7 +61,6 @@ public class ExperimentSettings{
 		frmExperimentSettings.setIconImages(Globals.getIcons());
 		frmExperimentSettings.setResizable(false);
 		frmExperimentSettings.setLocation(new Point(500, 500));
-		frmExperimentSettings.setType(Type.UTILITY);
 		frmExperimentSettings.setTitle("Experiment Settings");
 		frmExperimentSettings.setModalExclusionType(ModalExclusionType.TOOLKIT_EXCLUDE);
 		frmExperimentSettings.setAlwaysOnTop(true);

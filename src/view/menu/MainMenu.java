@@ -66,8 +66,6 @@ public class MainMenu extends JMenuBar {
 			}
 		});
 		saveas.setMnemonic('A');
-//		JMenuItem openProject = new JMenuItem("Open project");
-//		openProject.setMnemonic('O');
 		
 		JMenuItem exportProject = new JMenuItem("Export project to CSV");
 		exportProject.setMnemonic('E');
