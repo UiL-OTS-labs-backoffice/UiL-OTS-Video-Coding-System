@@ -345,31 +345,6 @@ public class VLCMediaPlayer implements IMediaPlayer{
 			// TODO Auto-generated method stub
 			
 		}
-
-		@Override
-		public void elementaryStreamAdded(MediaPlayer arg0, int arg1, int arg2) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void elementaryStreamDeleted(MediaPlayer arg0, int arg1, int arg2) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void elementaryStreamSelected(MediaPlayer arg0, int arg1,
-				int arg2) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void scrambledChanged(MediaPlayer arg0, int arg1) {
-			// TODO Auto-generated method stub
-			
-		}
     };
 	
     /* (non-Javadoc)
