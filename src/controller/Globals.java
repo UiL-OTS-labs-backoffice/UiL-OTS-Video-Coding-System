@@ -39,6 +39,7 @@ public class Globals {
 	
 	// Experiment model instance
 	private Experiment experimentModel;
+	private ApplicationPreferences preferences;
 	
 	private static ArrayList<BufferedImage> IconImages = new ArrayList<BufferedImage>();
 	
@@ -53,13 +54,14 @@ public class Globals {
 		controller = new Controller(instance);
 		videoController = new VLCVideoController(instance);
 		experimentModel = new Experiment(instance);
+		preferences = new ApplicationPreferences();
 		
 		readIcons();
 		
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run()
 			{
-				keyCodeModel = model.QuickKeys.getInstance();
+				keyCodeModel = model.QuickKeys.getInstance(preferences);
 				editorView = new Editor(instance);
 				settingsView = new ExperimentSettings(instance);
 				
@@ -161,5 +163,14 @@ public class Globals {
 		if(IconImages == null)
 			readIcons();
 		return IconImages;
+	}
+	
+	/**
+	 * Method to get the preferences model instance
+	 * @return
+	 */
+	public ApplicationPreferences getPreferencesModel()
+	{
+		return preferences;
 	}
 }

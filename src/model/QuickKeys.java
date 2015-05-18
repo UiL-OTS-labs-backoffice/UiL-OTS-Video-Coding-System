@@ -22,6 +22,11 @@ public class QuickKeys implements Serializable {
 	private static QuickKeys instance;
 	
 	/**
+	 * Reference to globals class
+	 */
+	private ApplicationPreferences prefs;
+	
+	/**
 	 * List of available actions
 	 */	
 	private Collection<Tuple> actionMap = Arrays.asList(
@@ -42,10 +47,10 @@ public class QuickKeys implements Serializable {
 	 * Get method for instance
 	 * @return	instance of QuickKeys model
 	 */
-	public static QuickKeys getInstance()
+	public static QuickKeys getInstance(ApplicationPreferences prefs)
 	{
 		if (instance == null)
-			instance = new QuickKeys();
+			instance = new QuickKeys(prefs);
 		return instance;
 	}
 	
@@ -53,14 +58,43 @@ public class QuickKeys implements Serializable {
 	 * Private constructor to ensure singleton
 	 * Sets default keys
 	 */
-	private QuickKeys()
+	private QuickKeys(ApplicationPreferences prefs)
 	{		
-		setKey("play", 32);
-		setKey("prevFrame", 37);
-		setKey("nextFrame", 39);
-		setKey("prevLook", 91);
-		setKey("nextLook", 93);
-		setKey("newLook", 78);
+		this.prefs = prefs;
+		
+		setKey("play", prefs.getKeyTuple("play", 32));
+		setKey("prevFrame", prefs.getKeyTuple("prevFrame", 37));
+		setKey("nextFrame", prefs.getKeyTuple("nextFrame", 39));
+		setKey("prevLook", prefs.getKeyTuple("prevLook", 91));
+		setKey("nextLook", prefs.getKeyTuple("nextLook", 93));
+		setKey("newLook", prefs.getKeyTuple("newLook", 78));
+		
+		isk("play", 32);
+		
+		isk("prevFrame", 37);
+		isk("nextFrame", 39);
+		
+		isk("prevTrial", -1);
+		isk("nextTrial", -1);
+		
+		isk("prevLook", 91);
+		isk("nextLook", 93);
+		
+		isk("newTrial", -1);
+		isk("endTrial", -1);
+		
+		isk("newLook", 78);
+		isk("endLook", -1);
+	}
+	
+	/**
+	 * Internal Set Keys (isk)
+	 * @param ID
+	 * @param key
+	 */
+	private void isk(String ID, int key)
+	{
+		setKey(ID, prefs.getKeyTuple(ID, key));
 	}
 	
 	/**
@@ -106,8 +140,12 @@ public class QuickKeys implements Serializable {
 	{
 		for(Tuple t : actionMap)
 		{
-			if(t.getID() == action) t.setKey(key);
-			else if (t.getKey() == key) t.setKey(0);
+			if(t.getID() == action) {
+				t.setKey(key);
+				prefs.setKeyTuple(action, key);
+			} else if (t.getKey() == key) {
+				t.setKey(0);
+			}
 		}
 	}
 	
