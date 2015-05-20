@@ -27,8 +27,6 @@ public class VLCLibSelector {
 	    
 	    if(returnVal == JFileChooser.APPROVE_OPTION) {
     		  return chooser.getSelectedFile().getPath();
-	    } else if (returnVal == JFileChooser.CANCEL_OPTION) {
-	    	System.exit(1);
 	    }
 
 	    return null;

@@ -6,8 +6,6 @@ import model.ApplicationPreferences;
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 import uk.co.caprica.vlcj.version.LibVlcVersion;
-import view.panels.VLCLibSelector;
-
 
 public class Main {
 	
@@ -20,18 +18,15 @@ public class Main {
 		
 		searchPreferencedPath();
 		
-		while(!vlcFound())
+		if(!vlcFound())
 		{
-			System.out.println("Path not found!\n\n");
-			String newPath = VLCLibSelector.show();
+			view.panels.VLCNotFound vlcError = new view.panels.VLCNotFound(prefs);
+			vlcError.setVisible(true);
 			
-			prefs.setVLCUrl(newPath);
-			searchUserSelectedPath(newPath);
+		} else {
+			// Only starts the main application after VLC has been found
+	        Globals.getInstance();
 		}
-		
-		// Only starts the main application after VLC has been found
-        Globals.getInstance();
-		
 	}
 	
 	/**
@@ -59,19 +54,7 @@ public class Main {
 	 */
 	private static void searchPreferencedPath()
 	{
-		System.out.println(String.format("Trying to add %s", prefs.getVLCUrl()));
 		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), prefs.getVLCUrl());
-	}
-	
-	/**
-	 * Adds the path that was just selected to the preference file
-	 * @param path		Path that was just selected
-	 */
-	private static void searchUserSelectedPath(String path)
-	{
-		System.out.println(NativeLibrary.getProcess());
-		System.out.println(String.format("Trying newly added path %s", path));
-		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), path);
 	}
 	
 	/**
@@ -85,18 +68,12 @@ public class Main {
 			LibVlcVersion.getVersion();
 			found = true;
 		} catch(java.lang.UnsatisfiedLinkError e) {
-			e.printStackTrace();
 		} catch(java.lang.NoClassDefFoundError e){
-			found = true;
-			e.printStackTrace();
 		} catch(Error e) {
-			e.printStackTrace();
 		}
 		
 		return found;
-	}
-	
-	
+	}	
 	
 }
 
