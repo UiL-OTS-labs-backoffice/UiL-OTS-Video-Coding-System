@@ -29,6 +29,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.text.ParseException;
 
 public class projectOpener extends JFrame {
@@ -169,7 +170,7 @@ public class projectOpener extends JFrame {
 		text_projectLocation.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				String text = SaveDialog.show();
+				String text = SaveDialog.show(getDefaultDir());
 				if (text != null)
 				{
 					text_projectLocation.setForeground(Color.black);
@@ -482,6 +483,16 @@ public class projectOpener extends JFrame {
 					.addContainerGap(14, Short.MAX_VALUE))
 		);
 		panel.setLayout(gl_panel);
+	}
+	
+	private File getDefaultDir()
+	{
+		if(text_projectLocation.getText() != "")
+		{
+			return new File(text_projectLocation.getText());
+		} else {
+			return new File(System.getProperty("user.home"));
+		}
 	}
 
 	

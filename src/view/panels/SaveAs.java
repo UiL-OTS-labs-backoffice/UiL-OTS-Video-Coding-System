@@ -8,6 +8,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFormattedTextField;
@@ -41,9 +42,18 @@ public class SaveAs extends JFrame {
 	private boolean nameEntered = false;
 	private boolean saveSet = false;
 	
+	private String saveUrlOld;
+	private String saveNameOld;
+	
 	public SaveAs() {
 		setIconImages(Globals.getIcons());
 		instance = this;
+		
+		File oldUrl = new File(Globals.getInstance().getExperimentModel().getSaveURL());
+
+		saveUrlOld = oldUrl.getParent();
+		saveNameOld = oldUrl.getName();
+		
 		createLayout();
 		try {
 			createTextFields();
@@ -74,7 +84,7 @@ public class SaveAs extends JFrame {
 		// Borders
 		final Border invalid = BorderFactory.createLineBorder(Color.red);
 				
-		text_projectName = new JFormattedTextField();
+		text_projectName = new JFormattedTextField(saveNameOld);
 		final Border valid = text_projectName.getBorder();
 		
 		text_projectName.addKeyListener(new KeyAdapter() {
@@ -91,15 +101,17 @@ public class SaveAs extends JFrame {
 			}
 		});
 		
+//		text_projectName.setText(saveNameOld);
+		
 		text_projectLocation = new JTextField();
 		text_projectLocation.setEditable(false);
 		text_projectLocation.setForeground(Color.GRAY);
-		text_projectLocation.setText(" Click to select a directory where the project should be saved");
+		text_projectLocation.setText(saveUrlOld);
 		
 		text_projectLocation.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				String text = SaveDialog.show();
+				String text = SaveDialog.show(new File(saveUrlOld));
 				if (text != null)
 				{
 					text_projectLocation.setForeground(Color.black);

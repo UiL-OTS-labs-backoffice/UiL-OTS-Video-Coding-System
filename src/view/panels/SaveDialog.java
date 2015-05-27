@@ -1,5 +1,7 @@
 package view.panels;
 
+import java.io.File;
+
 import javax.swing.JFileChooser;
 
 
@@ -32,16 +34,21 @@ public class SaveDialog {
 		return instance;
 	}
 	
+	
+	
 	/**
 	 * Shows a file selector for the video file to be used
 	 * @return	Path of selected file if valid, otherwise null
 	 */
-	public static String show()
+	public static String show(File dir)
 	{
 		JFileChooser chooser = new JFileChooser();
 		
+		System.out.println(dir);
+		
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		chooser.setAcceptAllFileFilterUsed(false);
+		chooser.setCurrentDirectory(new File(dir.getAbsolutePath()));
 	    
 	    int returnVal = chooser.showSaveDialog(chooser);
 	    
