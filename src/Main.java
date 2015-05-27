@@ -35,6 +35,7 @@ public class Main {
 	private static void searchDefaultPaths()
 	{
 		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files\\VideoLAN\\VLC");
+		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files (x86)\\VideoLAN\\VLC");
 		
 		// A settable property: -Dnl.mpi.elan.vlcj=/Applications/VLC.app/Contents/MacOS/lib
     	String path = System.getProperty("nl.mpi.elan.vlcj");

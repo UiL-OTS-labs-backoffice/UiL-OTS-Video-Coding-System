@@ -34,11 +34,11 @@ public class CSVExport {
 		ArrayList<String> csv = new ArrayList<String>();
 		
 		String header = "";
-		if (expName != null) header += "Experiment Name;";
-		if (expID != null) header += "Experiment ID;";
-		if (resID != null) header += "Researcher ID;";
-		if (ppID != null) header += "Participant ID;";
-		header += "Trial;Number of Looks;Total looktime";
+		if (expName != null) header += "\"Experiment Name\";";
+		if (expID != null) header += "\"Experiment ID\";";
+		if (resID != null) header += "\"Researcher ID\";";
+		if (ppID != null) header += "\"Participant ID\";";
+		header += "\"Trial\";\"Number of Looks\";\"Total looktime\"";
 		
 		csv.add(header);
 		
@@ -56,7 +56,7 @@ public class CSVExport {
 			
 			row += Integer.toString(t+1) + ";";
 			row += Integer.toString(trial.getNumberOfItems()) + ";";
-			row += Long.toString(trial.getDuration());
+			row += Long.toString(trial.getTotalTimeForItems());
 			
 			csv.add(row);
 		}

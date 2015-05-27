@@ -1,7 +1,7 @@
 package view;
 
 import java.awt.BorderLayout;
-import java.awt.KeyboardFocusManager;
+//import java.awt.KeyboardFocusManager;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -10,7 +10,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import view.bottombar.BottomBar;
-import view.events.KeyDispatch;
+import view.events.CodingKeyListener;
+//import view.events.KeyDispatch;
 import view.menu.MainMenu;
 import view.player.IMediaPlayer;
 import view.player.VLCMediaPlayer;
@@ -52,8 +53,8 @@ public class Editor {
     	addMenu();
     	addControlBar();
     	addVideoManipulationButtons();
-    	KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        manager.addKeyEventDispatcher(new KeyDispatch(g));
+//    	KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+//        manager.addKeyEventDispatcher(new KeyDispatch(g));
     }
     
     /**
@@ -67,6 +68,8 @@ public class Editor {
         frame.setSize(1024, 768);
         frame.setIconImages(Globals.getIcons());
         frame.getContentPane().setLayout(new BorderLayout(0, 0));
+        frame.addKeyListener(new CodingKeyListener(g));
+        frame.setFocusable(true);
         
         frame.addWindowListener(new WindowListener(){
 

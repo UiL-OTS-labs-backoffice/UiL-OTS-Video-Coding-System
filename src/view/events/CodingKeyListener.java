@@ -1,42 +1,44 @@
 package view.events;
 
-import java.awt.KeyEventDispatcher;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-import controller.Globals;
 import controller.*;
 
 /**
  * Key listeners
  */
-public class KeyDispatch implements KeyEventDispatcher {
+public class CodingKeyListener implements KeyListener {
 	
 	private IVideoControls vc;
 	private Controller qk;
 	
-	public KeyDispatch(Globals g)
+	public CodingKeyListener(Globals g)
 	{
 		vc = g.getVideoController();
 		qk = g.getController();
 	}
 	
-	/** 
-	 * Key Events
-	 * @param e		Key event
-	 * @return		Boolean
-	 */
 	@Override
-	public boolean dispatchKeyEvent(KeyEvent e) {
-		if(e.getID() == KeyEvent.KEY_PRESSED) {
-	    	if(vc.IsLoaded())
-	    	{
-	    		int keycode = e.getKeyCode();
-	    		executeCodeForKey(keycode);
-	    	}
-		} else if (e.getID() == KeyEvent.KEY_RELEASED){
-		} else if (e.getID() == KeyEvent.KEY_TYPED) {
-		}
-		return false;
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		if(vc.IsLoaded())
+    	{
+    		int keycode = e.getKeyCode();
+    		executeCodeForKey(keycode);
+    	}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	/**
@@ -85,5 +87,4 @@ public class KeyDispatch implements KeyEventDispatcher {
 			qk.setEndLook();
 		} 
 	}
-
 }
