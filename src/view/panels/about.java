@@ -21,10 +21,10 @@ public class About extends JFrame {
 		setResizable(false);
 		setTitle("About: UiL OTS Video Coding System");
 		setIconImages(Globals.getIcons());
-		this.setSize(361, 180);
+		this.setSize(361, 220);
 		this.setLocation(600, 400);
 		
-		JLabel lblUilOtsVideo = new JLabel("UiL OTS Video Coding System V0.8.0.0 (Beta)");
+		JLabel lblUilOtsVideo = new JLabel("UiL OTS Video Coding System V0.9.0.0 (Beta)");
 		lblUilOtsVideo.setFont(new Font("Tahoma", Font.BOLD, 14));
 		
 		JLabel lblCreatedByJan = new JLabel("Created by Jan de Mooij");
@@ -36,12 +36,19 @@ public class About extends JFrame {
 		JLabel lblUniversiteitUtrecht = new JLabel("Universiteit Utrecht (http://www.uu.nl/)");
 		
 		JLabel lblajdemooijuunl = new JLabel("(A.J.deMooij@uu.nl)");
+		
+		JLabel lblUses = new JLabel("Uses:");
+		
+		JLabel lblVlcj = new JLabel("VLCj 2.4.0");
+		
+		JLabel lblJna = new JLabel("JNA 3.5.2");
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(24)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblUses)
 						.addComponent(lblCopyrightedBy)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(lblCreatedByJan)
@@ -52,8 +59,13 @@ public class About extends JFrame {
 							.addGap(10)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addComponent(lblUniversiteitUtrecht)
-								.addComponent(lblUilOtsLabs))))
-					.addContainerGap(105, Short.MAX_VALUE))
+								.addComponent(lblUilOtsLabs)))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(10)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblJna)
+								.addComponent(lblVlcj))))
+					.addContainerGap(16, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -70,7 +82,13 @@ public class About extends JFrame {
 					.addComponent(lblUilOtsLabs)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblUniversiteitUtrecht)
-					.addContainerGap(156, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(lblUses)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(lblVlcj)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(lblJna)
+					.addContainerGap(12, Short.MAX_VALUE))
 		);
 		getContentPane().setLayout(groupLayout);
 	}

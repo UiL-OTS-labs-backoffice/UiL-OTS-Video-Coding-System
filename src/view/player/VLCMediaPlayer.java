@@ -125,12 +125,13 @@ public class VLCMediaPlayer implements IMediaPlayer{
 
         mediaLength = hiddenMediaPlayer.getLength();
         hiddenMediaPlayer.pause();
-        hiddenMediaPlayer.setTime(1000);
+        long trytime = hiddenMediaPlayer.getLength() / 2;
+        hiddenMediaPlayer.setTime(trytime);
         try{
         	wait(1000);
         } catch(InterruptedException ex){
         }
-        this.offset = hiddenMediaPlayer.getTime() - 1000;
+        this.offset = hiddenMediaPlayer.getTime() - trytime;
         
         hiddenMediaPlayer.stop();
         hiddenMediaPlayer.release();
@@ -535,15 +536,16 @@ public class VLCMediaPlayer implements IMediaPlayer{
 			if (player.isPlaying()) {
 				stop();
 			}
-	        
+			
 			double msecPerSample = getMilliSecondsPerSample();
-			long curTime = player.getTime();// - 190;
+			long curTime = player.getTime();
 			
         	long newTime = (long) Math.floor(curTime - msecPerSample);
         	
 	        if (newTime < 0) {
 	        	newTime = 0;
 	        }
+	        
 	        setMediaTime(newTime);
 		}
     }
