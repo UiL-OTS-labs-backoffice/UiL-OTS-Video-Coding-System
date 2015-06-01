@@ -54,9 +54,7 @@ public class MainMenu extends JMenuBar {
                 java.awt.Event.CTRL_MASK));
 		save.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				if (!c.save()) {
-					JOptionPane.showMessageDialog(new JPanel(), "Sorry! Looks like the file couldn't be saved!", "Save failed", JOptionPane.ERROR_MESSAGE);
-				}
+				c.save();
 			}
 		});
 		JMenuItem saveas = new JMenuItem("Save As");

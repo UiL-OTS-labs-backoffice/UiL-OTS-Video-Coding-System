@@ -22,6 +22,7 @@ import javax.swing.border.Border;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 
+import model.Experiment;
 import controller.Globals;
 
 public class SaveAs extends JFrame {
@@ -39,20 +40,21 @@ public class SaveAs extends JFrame {
 	private JLabel lblProjectName;
 	private JLabel lblProjectLocation;
 	
-	private boolean nameEntered = false;
+	private boolean nameEntered = true;
 	private boolean saveSet = false;
 	
 	private String saveUrlOld;
 	private String saveNameOld;
 	
+	Experiment exp;
+	
 	public SaveAs() {
 		setIconImages(Globals.getIcons());
 		instance = this;
 		
-		File oldUrl = new File(Globals.getInstance().getExperimentModel().getSaveURL());
-
-		saveUrlOld = oldUrl.getParent();
-		saveNameOld = oldUrl.getName();
+		exp = Globals.getInstance().getExperimentModel();
+		saveUrlOld = exp.getSaveURL();
+		saveNameOld = exp.getSaveName();
 		
 		createLayout();
 		try {
@@ -101,8 +103,6 @@ public class SaveAs extends JFrame {
 			}
 		});
 		
-//		text_projectName.setText(saveNameOld);
-		
 		text_projectLocation = new JTextField();
 		text_projectLocation.setEditable(false);
 		text_projectLocation.setForeground(Color.GRAY);
@@ -111,7 +111,7 @@ public class SaveAs extends JFrame {
 		text_projectLocation.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				String text = SaveDialog.show(new File(saveUrlOld));
+				String text = SaveDialog.show(new File(text_projectLocation.getText()));
 				if (text != null)
 				{
 					text_projectLocation.setForeground(Color.black);
@@ -129,14 +129,12 @@ public class SaveAs extends JFrame {
 		btnSave.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				
-				String saveURL = String.format(
-						"%s\\%s", 
-						text_projectLocation.getText(),
-						text_projectName.getText()
-					);
+				String saveUrl = text_projectLocation.getText();
+				String saveName = text_projectName.getText();
 				
-				if(new java.io.File(
-						saveURL + ".UiL").exists())
+				String uri = controller.serializer.Serializer.getFullPath(saveUrl, saveName);
+				
+				if(new java.io.File(uri).exists())
 				{
 					if(JOptionPane.showConfirmDialog(
 							null, 
@@ -148,9 +146,9 @@ public class SaveAs extends JFrame {
 					}
 				}
 				
-				Globals g = Globals.getInstance();
-				g.getExperimentModel().setSaveURL(saveURL);
-				g.getController().save();
+				exp.setSaveURL(saveUrl);
+				exp.setSaveName(saveName);
+				Globals.getInstance().getController().save();
 				instance.dispose();
 			}
 		});

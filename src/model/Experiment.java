@@ -18,6 +18,11 @@ public class Experiment extends AbstractTimeContainer{
 	 * Project file location
 	 */
 	private String SaveURL;
+	
+	/**
+	 * Project file name
+	 */
+	private String saveName;
 		
 	/**
 	 * Global Experiment Settings
@@ -132,6 +137,24 @@ public class Experiment extends AbstractTimeContainer{
 	public void setSaveURL(String url)
 	{
 		this.SaveURL = url;
+	}
+	
+	/**
+	 * Return the current name of the project file
+	 * @return 		Name of the current file
+	 */
+	public String getSaveName()
+	{
+		return this.saveName;
+	}
+	
+	/**
+	 * Set the new name of the current project file
+	 * @param name		Current name of current project file
+	 */
+	public void setSaveName(String name)
+	{
+		this.saveName = name;
 	}
 	
 	/**

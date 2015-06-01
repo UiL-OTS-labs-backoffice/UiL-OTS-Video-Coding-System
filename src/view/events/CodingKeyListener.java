@@ -22,7 +22,6 @@ public class CodingKeyListener implements KeyListener {
 	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -31,7 +30,11 @@ public class CodingKeyListener implements KeyListener {
 		if(vc.IsLoaded())
     	{
     		int keycode = e.getKeyCode();
-    		executeCodeForKey(keycode);
+    		
+    		try{
+    			executeCodeForKey(keycode);
+    		} catch(Exception exc) {
+    		}
     	}
 	}
 
@@ -47,7 +50,7 @@ public class CodingKeyListener implements KeyListener {
 	 * @param keycode	The keycode of the key that was pressed
 	 */
 	private void executeCodeForKey(int keycode)
-	{
+	{		
 		if(keycode == qk.getKey("play"))
 			vc.play();
 		else if (keycode == qk.getKey("prevFrame"))
@@ -71,11 +74,11 @@ public class CodingKeyListener implements KeyListener {
 			vc.nextLook();
 		}
 		else if (keycode == qk.getKey("newTrial"))
-		{ 
+		{
 			qk.newTrial();
 		} 
 		else if (keycode == qk.getKey("newLook"))
-		{ 
+		{
 			qk.newLook();
 		} 
 		else if (keycode == qk.getKey("endTrial"))

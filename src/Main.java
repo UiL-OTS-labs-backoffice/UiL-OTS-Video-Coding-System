@@ -1,32 +1,47 @@
-import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 
 import controller.Globals;
 import model.ApplicationPreferences;
-import uk.co.caprica.vlcj.binding.LibVlc;
+import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
-import uk.co.caprica.vlcj.version.LibVlcVersion;
 
 public class Main {
+	
+	static boolean debug = false;
 	
 	static ApplicationPreferences prefs;
 	
 	public static void main(String[] args) {
 		prefs = new ApplicationPreferences();
 		
-		searchDefaultPaths();
+		try{
+			searchDefaultPaths();
+			if(debug) System.out.println("Default paths searched");
+		} catch (java.lang.UnsatisfiedLinkError e) {
+			if(debug) System.out.println("Not in default");
+		} catch ( Error e) {
+			if(debug) System.out.println("Invocation exception ofzo");
+		}
 		
-		searchPreferencedPath();
+		try{
+			searchPreferencedPath();
+			if(debug) System.out.println("PreferencedPaths searched");
+		} catch (java.lang.UnsatisfiedLinkError e) {
+			if(debug) System.out.println("Not in prefs");
+		} catch (Error e)
+		{
+			
+		}
 		
 		if(!vlcFound())
 		{
 			view.panels.VLCNotFound vlcError = new view.panels.VLCNotFound(prefs);
 			vlcError.setVisible(true);
-			
 		} else {
 			// Only starts the main application after VLC has been found
 	        Globals.getInstance();
 		}
+		
 	}
 	
 	/**
@@ -34,20 +49,15 @@ public class Main {
 	 */
 	private static void searchDefaultPaths()
 	{
-		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files\\VideoLAN\\VLC");
-		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files (x86)\\VideoLAN\\VLC");
-		
-		// A settable property: -Dnl.mpi.elan.vlcj=/Applications/VLC.app/Contents/MacOS/lib
-    	String path = System.getProperty("nl.mpi.elan.vlcj");
-    	if (path != null) {
-	        NativeLibrary.addSearchPath(
-	                RuntimeUtil.getLibVlcLibraryName(), path);
-    	}
+		if(com.sun.jna.Native.POINTER_SIZE == 8)
+		{
+			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files\\VideoLAN\\VLC");
+		} else {
+			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files (x86)\\VideoLAN");
+		}
     	
     	// Another reasonable default location to install VLC
-        NativeLibrary.addSearchPath(
-                RuntimeUtil.getLibVlcLibraryName(), "/Applications/VLC.app/Contents/MacOS/lib");
-        Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
+        NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "/Applications/VLC.app/Contents/MacOS/lib");
 	}
 	
 	/**
@@ -55,6 +65,7 @@ public class Main {
 	 */
 	private static void searchPreferencedPath()
 	{
+		if(debug) System.out.println(prefs.getVLCUrl());
 		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), prefs.getVLCUrl());
 	}
 	
@@ -66,11 +77,18 @@ public class Main {
 	{
 		boolean found = false;
 		try{
-			LibVlcVersion.getVersion();
+			MediaPlayerFactory fac = new MediaPlayerFactory();
+			fac.release();
 			found = true;
+			if(debug) System.out.println("Media Player Factory started");
 		} catch(java.lang.UnsatisfiedLinkError e) {
+			if(debug) System.out.println("Unsatisfied link");
 		} catch(java.lang.NoClassDefFoundError e){
+			if(debug) System.out.println("No class def found");
+		} catch(java.lang.RuntimeException e){
+			if(debug) System.out.println("Runtime exception (this is good. Means VLC wasn't found at all");
 		} catch(Error e) {
+			if(debug) System.out.println("Other error:");
 		}
 		
 		return found;

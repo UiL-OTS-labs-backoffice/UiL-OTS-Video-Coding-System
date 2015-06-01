@@ -44,8 +44,6 @@ public class SaveDialog {
 	{
 		JFileChooser chooser = new JFileChooser();
 		
-		System.out.println(dir);
-		
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		chooser.setAcceptAllFileFilterUsed(false);
 		chooser.setCurrentDirectory(new File(dir.getAbsolutePath()));

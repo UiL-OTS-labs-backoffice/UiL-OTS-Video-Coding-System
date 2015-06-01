@@ -95,6 +95,7 @@ public class PlayerControlsPanel extends JPanel {
         timeLabel = new JLabel("hh:mm:ss");
         remainingLabel = new JLabel("hh:mm:ss");
         positionSlider = new JSlider();
+        positionSlider.setFocusable(false);
         positionSlider.setMinimum(0);
         positionSlider.setMaximum(10000);
         positionSlider.setValue(0);

@@ -329,14 +329,12 @@ public class projectOpener extends JFrame {
 		button_create.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e)
 			{
-				String saveURL = String.format(
-						"%s\\%s", 
-						text_projectLocation.getText(),
-						text_projectName.getText()
-					);
+				String saveUrl = text_projectLocation.getText();
+				String saveName = text_projectName.getText();
 				
-				if(new java.io.File(
-						saveURL + ".UiL").exists())
+				String uri = controller.serializer.Serializer.getFullPath(saveUrl, saveName);
+				
+				if(new java.io.File(uri).exists())
 				{
 					if(JOptionPane.showConfirmDialog(
 							null, 
@@ -348,10 +346,10 @@ public class projectOpener extends JFrame {
 					}
 				}
 				
-				Globals g = Globals.getInstance();
+				model.Experiment exp = Globals.getInstance().getExperimentModel();
 				
 				// Save the settings
-				g.getExperimentModel().setSettings(
+				exp.setSettings(
 						text_exp_name.getText(), text_exp_id.getText(), 
 						text_res_id.getText(), text_part_id.getText(), 
 						include_exp_name.isSelected(), include_exp_id.isSelected(), 
@@ -360,7 +358,9 @@ public class projectOpener extends JFrame {
 				
 				c.setVideo(text_videoURL.getText());
 				
-				g.getExperimentModel().setSaveURL(saveURL);
+				
+				exp.setSaveURL(saveUrl);
+				exp.setSaveName(saveName);
 				
 				c.save();
 				
