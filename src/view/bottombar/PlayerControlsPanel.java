@@ -30,6 +30,8 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import view.player.IMediaPlayer;
 import controller.Controller;
@@ -61,6 +63,7 @@ public class PlayerControlsPanel extends JPanel {
 	@SuppressWarnings("unused")
 	private boolean mousePressedPlaying = false;
 	private boolean remaining = false;
+	private boolean dragging = false;
     
     /**
      * Constructor method
@@ -134,21 +137,37 @@ public class PlayerControlsPanel extends JPanel {
     
 
     private void registerListeners() {
-        positionSlider.addMouseListener(new MouseAdapter() {@
-            Override
+        positionSlider.addMouseListener(new MouseAdapter() {
+            
+        	@Override
             public void mousePressed(MouseEvent e) {
+        		dragging = true; 
+        		
                 if (c.isPlaying()) {
                     mousePressedPlaying = true;
                     c.play();
                 } else {
                     mousePressedPlaying = false;
                 }
-                setSliderBasedPosition();
-            }@
-            Override
-            public void mouseReleased(MouseEvent e) {
+                
                 setSliderBasedPosition();
             }
+            
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            	dragging = false;
+                setSliderBasedPosition();
+            }
+        });
+        
+        positionSlider.addChangeListener(new ChangeListener(){
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				// TODO Auto-generated method stub
+				if(dragging) setSliderBasedPosition();
+			}
+        	
         });
         
         remainingLabel.addMouseListener(new MouseAdapter() {

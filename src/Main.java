@@ -1,3 +1,6 @@
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import com.sun.jna.NativeLibrary;
 
 import controller.Globals;
@@ -16,21 +19,19 @@ public class Main {
 		
 		try{
 			searchDefaultPaths();
-			if(debug) System.out.println("Default paths searched");
 		} catch (java.lang.UnsatisfiedLinkError e) {
-			if(debug) System.out.println("Not in default");
+			vlcErrorMessage("Not in default");
 		} catch ( Error e) {
-			if(debug) System.out.println("Invocation exception ofzo");
+			vlcErrorMessage("Invocation exception ofzo");
 		}
 		
 		try{
 			searchPreferencedPath();
-			if(debug) System.out.println("PreferencedPaths searched");
 		} catch (java.lang.UnsatisfiedLinkError e) {
-			if(debug) System.out.println("Not in prefs");
+			vlcErrorMessage("Not in prefs");
 		} catch (Error e)
 		{
-			
+			vlcErrorMessage("General error in preference path");
 		}
 		
 		if(!vlcFound())
@@ -92,7 +93,21 @@ public class Main {
 		}
 		
 		return found;
-	}	
+	}
+	
+	private static void vlcErrorMessage(String error)
+	{
+		if(debug) System.out.println(error);
+		JOptionPane.showMessageDialog(new JFrame(),
+			    "An error occured while looking for VLC. \nThis could mean VLC "
+			    + "is not installed on your computer, that VLC could not be \n"
+			    + "found on your computer or, more likely, that something else \n"
+			    + "has gone horribly wrong. \n\n"
+			    + "It would seem this application will not run on your computer.\n"
+			    + "Please try another machine",
+			    "Internal Error",
+			    JOptionPane.ERROR_MESSAGE);
+	}
 	
 }
 
