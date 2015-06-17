@@ -164,9 +164,27 @@ public class Controller {
 			if (!(name.endsWith(".csv") || name.endsWith(".CSV")))
 				name += ".csv";
 			controller.export.CSVExport exporter = new controller.export.CSVExport();
-			return exporter.writeCsv(name);
+			return exporter.exportTotalLookTime(name);
 		}
 		
+	}
+	
+	/**
+	 * Method to export the overview information
+	 * @return
+	 */
+	public boolean exportOverview()
+	{
+		view.panels.CSVExportSelector.getInstance();
+		String name = CSVExportSelector.show();
+		if(name == null)
+			return false;
+		else{
+			if (!(name.endsWith(".csv") || name.endsWith(".CSV")))
+				name += ".csv";
+			controller.export.CSVExport exporter = new controller.export.CSVExport();
+			return exporter.exportExtendedInformation(name);
+		}
 	}
 	
 	/**

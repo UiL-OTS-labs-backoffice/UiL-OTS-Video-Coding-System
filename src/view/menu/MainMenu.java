@@ -67,9 +67,21 @@ public class MainMenu extends JMenuBar {
 		
 		JMenuItem exportProject = new JMenuItem("Export project to CSV");
 		exportProject.setMnemonic('E');
+		exportProject.setToolTipText("This will export all the trials and the total of the time of all the looks in each of those trials");
 		exportProject.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				if (!c.export())
+				{
+					JOptionPane.showMessageDialog(new JPanel(), "Sorry! Looks like the file couldn't exported!", "Exporting failed", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+		
+		JMenuItem exportOverview = new JMenuItem("Export overview to CSV");
+		exportOverview.setToolTipText("This will export an extended overview of the project, including the begin- and end times for all trials and looks");
+		exportOverview.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				if (!c.exportOverview())
 				{
 					JOptionPane.showMessageDialog(new JPanel(), "Sorry! Looks like the file couldn't exported!", "Exporting failed", JOptionPane.ERROR_MESSAGE);
 				}
@@ -81,6 +93,7 @@ public class MainMenu extends JMenuBar {
 //		fileMenu.add(openProject);
 		fileMenu.addSeparator();
 		fileMenu.add(exportProject);
+		fileMenu.add(exportOverview);
 	}
 	
 	/**
