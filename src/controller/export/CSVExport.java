@@ -51,7 +51,7 @@ public class CSVExport {
 		if (expID != null) header += "\"Experiment ID\";";
 		if (resID != null) header += "\"Researcher ID\";";
 		if (ppID != null) header += "\"Participant ID\";";
-		header += "\"Trial\";\"Number of Looks\";\"Total looktime (ms)\"";
+		header += "\"Trial\";\"Number of Looks\";\"Total looktime (ms)\";\"Comment\"";
 		
 		csv.add(header);
 		
@@ -69,7 +69,8 @@ public class CSVExport {
 			
 			row += Integer.toString(t+1) + ";";
 			row += Integer.toString(trial.getNumberOfItems()) + ";";
-			row += Long.toString(trial.getTotalTimeForItems());
+			row += Long.toString(trial.getTotalTimeForItems()) + ";";
+			row += (trial.getComment() != null && trial.getComment().length() > 0) ? trial.getComment() : "";
 			
 			csv.add(row);
 		}
@@ -79,6 +80,7 @@ public class CSVExport {
 	
 	private ArrayList<String> prepareFullList()
 	{
+		model.Experiment em = Globals.getInstance().getExperimentModel();
 		String expName = (exp.getShow_exp_name()) ? exp.getExp_name() : null;
 		String expID = (exp.getShow_exp_id()) ? exp.getExp_id() : null;
 		String resID = (exp.getShow_res_id()) ? exp.getRes_id() : null;
@@ -91,8 +93,13 @@ public class CSVExport {
 		if (expID != null) header += "\"Experiment ID\";";
 		if (resID != null) header += "\"Researcher ID\";";
 		if (ppID != null) header += "\"Participant ID\";";
-		header += String.format("\"%s\";\"%s\";\"%s\";\"%s\";\"%s\"",
-				"Trial", "Look", "Begintime", "Endtime", "(Total) Looktime (ms)");
+		header += String.format("\"%s\";\"%s\";\"%s\";\"%s\";\"%s\";\"%s\"",
+				"Trial", "Look", "Begintime", "Endtime", "(Total) Looktime (ms)", "Comment");
+		
+		if(em.getUseTimeout())
+		{
+			header += ";\"Look validity\"";
+		}
 		
 		csv.add(header);
 		
@@ -121,12 +128,22 @@ public class CSVExport {
 			row += view.bottombar.PlayerControlsPanel.formatTime(trial.getEnd()) + ";";
 			
 			// Total look time
-			row += Long.toString(trial.getTotalTimeForItems());
+			row += Long.toString(trial.getTotalTimeForItems()) + ";";
+			
+			row += (trial.getComment() != null && trial.getComment().length() > 0) ? trial.getComment() : "";
+			
+			// Look validity
+			if(em.getUseTimeout())
+			{
+				row += ";";
+			}
 			
 			csv.add(row);
 			
 			LinkedList<AbstractTimeFrame> looks = trial.getItems();
 			
+			
+			long last_end = -1;
 			for(int l = 0; l < looks.size(); l++)
 			{
 				AbstractTimeFrame look = (AbstractTimeFrame) looks.get(l);
@@ -151,7 +168,15 @@ public class CSVExport {
 				row += view.bottombar.PlayerControlsPanel.formatTime(look.getEnd()) + ";";
 				
 				// Total look time
-				row += Long.toString(look.getDuration());
+				row += Long.toString(look.getDuration()) + ";";
+				
+				row += (look.getComment() != null && look.getComment().length() > 0) ? look.getComment() : "";
+				
+				if(em.getUseTimeout())
+				{
+					row += (look.getBegin() - last_end < em.getTimeout() || last_end < 0) ? ";good" : ";timeout";
+					last_end = look.getEnd();
+				}
 				
 				csv.add(row);
 				

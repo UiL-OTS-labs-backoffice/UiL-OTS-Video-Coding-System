@@ -7,7 +7,7 @@ public class Experiment extends AbstractTimeContainer{
 	/**
 	 * SerialVersion UID
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 
 	/**
 	 * Current video file url
@@ -29,6 +29,8 @@ public class Experiment extends AbstractTimeContainer{
 	 */
 	private String exp_name, exp_id, res_id, pp_id;
 	private boolean show_exp_name, show_exp_id, show_res_id, show_pp_id;
+	private long timeout = 2000;
+	private boolean useTimeout;
 	
 	/**
 	 * Reference to the Globals object
@@ -231,5 +233,25 @@ public class Experiment extends AbstractTimeContainer{
 	public boolean getShow_pp_id()
 	{
 		return show_pp_id;
+	}
+	
+	public void setTimeout(long timeout)
+	{
+		this.timeout = timeout;
+	}
+	
+	public long getTimeout()
+	{
+		return timeout;
+	}
+	
+	public void setUseTimeout(boolean useTimeout)
+	{
+		this.useTimeout = useTimeout;
+	}
+	
+	public boolean getUseTimeout()
+	{
+		return useTimeout;
 	}
 }

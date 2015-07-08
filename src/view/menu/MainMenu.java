@@ -2,8 +2,6 @@ package view.menu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -12,7 +10,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
-import model.Trial;
 import controller.*;
 
 public class MainMenu extends JMenuBar {
@@ -20,14 +17,12 @@ public class MainMenu extends JMenuBar {
 	private static final long serialVersionUID = 5103817458709866267L;
 	
 	private static Controller c;
-	private static IVideoControls vc;
 	
 	private JMenuItem removeTrial, removeLook, removeLooks;
 	
 	public MainMenu(Globals g)
 	{
 		c = g.getController();
-		vc = g.getVideoController();
 		addFileMenu();
 		addTrialMenu();
 		addSettingsMenu();
@@ -184,26 +179,8 @@ public class MainMenu extends JMenuBar {
 			
 		});
 		
-		final JMenu goToTrial = new JMenu("Go to trial");
-		
-		goToTrial.addMouseListener(new MouseListener(){
-			public void mouseClicked(MouseEvent e) {
-			}
-
-			public void mouseEntered(MouseEvent e) {
-				generateTrialMenuItems(goToTrial);
-			}
-
-			public void mouseExited(MouseEvent e) {
-			}
-
-			public void mousePressed(MouseEvent e) {
-			}
-
-			public void mouseReleased(MouseEvent e) {
-			}
-			
-		});
+		final JMenu goToTrial = new TrialNavigator("Go to trial");
+		final JMenu addCommentMenu = new TimeframeCommentEditor("Add a comment");
 		
 		JMenuItem overview = new JMenuItem("Show overview");
 		overview.setToolTipText("Show an overview of the experiment so far");
@@ -218,89 +195,12 @@ public class MainMenu extends JMenuBar {
 		trialMenu.add(removeLook);
 		trialMenu.add(removeLooks);
 		trialMenu.add(goToTrial);
+		trialMenu.add(addCommentMenu);
 		trialMenu.add(overview);
 		
 		removeTrial.setEnabled(false);
 		removeLook.setEnabled(false);
 		removeLooks.setEnabled(false);
-	}
-	
-	private void generateTrialMenuItems(JMenu menu)
-	{
-		while(menu.getItemCount() > 0)
-		{
-			menu.remove(0);
-		}
-		
-		for(int i = 1; i <= c.getNumberOfTrials(); i++)
-		{
-			Trial t = c.getTrial(i);
-			
-			final long time = t.getBegin();
-			String trialText = String.format(
-					"Trial %d (%s)", 
-					i, 
-					view.bottombar.PlayerControlsPanel.formatTime(time)
-				);
-			
-			JMenuItem item;
-			if (t.getNumberOfItems() > 0)
-			{
-				item = new JMenu(trialText);
-				item.addMouseListener(new MouseListener(){
-					public void mouseClicked(MouseEvent e) {
-						vc.setMediaTime(time);
-					}
-
-					public void mouseEntered(MouseEvent e) {
-					}
-
-					public void mouseExited(MouseEvent e) {
-					}
-
-					public void mousePressed(MouseEvent e) {
-					}
-
-					public void mouseReleased(MouseEvent e) {
-					}
-					
-				});
-			}
-			else
-			{
-				item = new JMenuItem(trialText);
-				item.addActionListener(new ActionListener(){
-					public void actionPerformed(ActionEvent e)
-					{
-						vc.setMediaTime(time);
-						c.updateLabels(time);
-					}
-				});
-			}
-			
-			for(int j = 1; j <= t.getNumberOfItems(); j++)
-			{
-				
-				final long ltime = t.getItem(j).getBegin();
-				String lookText = String.format(
-						"Look %d (%s)", 
-						j, 
-						view.bottombar.PlayerControlsPanel.formatTime(ltime)
-					);
-				JMenuItem look = new JMenuItem(lookText);
-				look.addActionListener(new ActionListener(){
-					public void actionPerformed(ActionEvent e)
-					{
-						vc.setMediaTime(ltime);
-						c.updateLabels(ltime);
-					}
-				});
-				
-				item.add(look);
-			}
-			
-			menu.add(item);
-		}
 	}
 	
 	

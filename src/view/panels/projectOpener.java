@@ -17,6 +17,7 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JSeparator;
 import javax.swing.JCheckBox;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.Border;
 
 import controller.Controller;
@@ -32,6 +33,8 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.text.ParseException;
 
+import javax.swing.JSpinner;
+
 public class projectOpener extends JFrame {
 	/**
 	 * 
@@ -39,6 +42,8 @@ public class projectOpener extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
 	private Controller c;
+	
+	private static final int DEFAULT_TIMEOUT_TIME = 2000;
 	
 	private JTextField text_videoURL;
 	private JFormattedTextField text_projectName;
@@ -72,6 +77,13 @@ public class projectOpener extends JFrame {
 	private boolean saveSet = false;
 	
 	private boolean exp_name_checked, exp_id_checked, res_id_checked, pp_id_checked;
+	private JLabel lblTimeoutAfterMilliseconds;
+	private JSpinner spinner_timeout;
+	private JSeparator separator_2;
+
+	private JLabel lblIndicatesA;
+
+	private JCheckBox use_timeout;
 	
 	/**
 	 * Constructor of the project opener frame
@@ -83,7 +95,7 @@ public class projectOpener extends JFrame {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
 		setTitle("New Project");
-		this.setSize(700, 310);
+		this.setSize(742, 373);
 		this.setLocation(450, 200);
 		
 		panel = new JPanel();
@@ -117,6 +129,8 @@ public class projectOpener extends JFrame {
 		lblVideo = new JLabel("Video: *");
 		lblProjectLocation = new JLabel("Project location: *");
 		lblProjectName = new JLabel("Project name: *");
+		lblIndicatesA = new JLabel("* indicates a required field");
+		lblTimeoutAfterMilliseconds = new JLabel("Timeout after milliseconds:");
 	}
 	
 	/**
@@ -256,6 +270,12 @@ public class projectOpener extends JFrame {
 				}
 			}
 		});
+		
+		spinner_timeout = new JSpinner();
+		spinner_timeout.setModel(new SpinnerNumberModel());
+		spinner_timeout.getModel().setValue(DEFAULT_TIMEOUT_TIME);
+		spinner_timeout.setEnabled(false);
+		
 	}
 	
 	/**
@@ -299,6 +319,13 @@ public class projectOpener extends JFrame {
 			}
 		});
 		
+		use_timeout = new JCheckBox("Use timeout");
+		use_timeout.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				spinner_timeout.setEnabled(use_timeout.isSelected());				
+			}
+		});
 	}
 	
 	/**
@@ -355,9 +382,10 @@ public class projectOpener extends JFrame {
 						include_exp_name.isSelected(), include_exp_id.isSelected(), 
 						include_res_id.isSelected(), include_part_id.isSelected()
 					);
+				exp.setUseTimeout(use_timeout.isSelected());
+				exp.setTimeout((Integer) spinner_timeout.getModel().getValue());
 				
 				c.setVideo(text_videoURL.getText());
-				
 				
 				exp.setSaveURL(saveUrl);
 				exp.setSaveName(saveName);
@@ -381,21 +409,24 @@ public class projectOpener extends JFrame {
 		JSeparator separator = new JSeparator();
 		JSeparator separator_1 = new JSeparator();
 		
-		JLabel lblIndicatesA = new JLabel("* indicates a required field");
+		
+		separator_2 = new JSeparator();
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
+			gl_panel.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel.createSequentialGroup()
-					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+						.addComponent(separator_2, GroupLayout.DEFAULT_SIZE, 716, Short.MAX_VALUE)
 						.addGroup(gl_panel.createSequentialGroup()
 							.addContainerGap()
-							.addComponent(separator, GroupLayout.DEFAULT_SIZE, 617, Short.MAX_VALUE))
+							.addComponent(separator, GroupLayout.DEFAULT_SIZE, 706, Short.MAX_VALUE))
 						.addGroup(gl_panel.createSequentialGroup()
 							.addContainerGap()
-							.addComponent(separator_1, GroupLayout.DEFAULT_SIZE, 617, Short.MAX_VALUE))
+							.addComponent(separator_1, GroupLayout.DEFAULT_SIZE, 706, Short.MAX_VALUE))
 						.addGroup(gl_panel.createSequentialGroup()
-							.addGap(59)
+							.addGap(105)
 							.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
+								.addComponent(lblIndicatesA)
 								.addComponent(lblParticipantId)
 								.addComponent(lblResearcherId)
 								.addComponent(lblExperimentId)
@@ -403,8 +434,8 @@ public class projectOpener extends JFrame {
 								.addComponent(lblVideo)
 								.addComponent(lblProjectLocation)
 								.addComponent(lblProjectName)
-								.addComponent(lblIndicatesA))
-							.addPreferredGap(ComponentPlacement.UNRELATED)
+								.addComponent(lblTimeoutAfterMilliseconds))
+							.addPreferredGap(ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
 							.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
 								.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 									.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
@@ -412,18 +443,21 @@ public class projectOpener extends JFrame {
 										.addComponent(text_projectName, GroupLayout.PREFERRED_SIZE, 432, GroupLayout.PREFERRED_SIZE)
 										.addComponent(text_projectLocation, GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE))
 									.addGroup(gl_panel.createSequentialGroup()
-										.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING, false)
-											.addComponent(text_part_id, Alignment.LEADING)
-											.addComponent(text_res_id, Alignment.LEADING)
-											.addComponent(text_exp_id, Alignment.LEADING)
-											.addComponent(text_exp_name, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE))
+										.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+											.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING, false)
+												.addComponent(text_part_id, Alignment.LEADING)
+												.addComponent(text_res_id, Alignment.LEADING)
+												.addComponent(text_exp_id, Alignment.LEADING)
+												.addComponent(text_exp_name, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE))
+											.addComponent(spinner_timeout, GroupLayout.PREFERRED_SIZE, 174, GroupLayout.PREFERRED_SIZE))
 										.addPreferredGap(ComponentPlacement.UNRELATED)
 										.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+											.addComponent(use_timeout)
 											.addComponent(include_part_id)
 											.addComponent(include_res_id)
 											.addComponent(include_exp_id)
 											.addComponent(include_exp_name))))
-								.addGroup(gl_panel.createSequentialGroup()
+								.addGroup(Alignment.LEADING, gl_panel.createSequentialGroup()
 									.addComponent(button_create)
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(button_open)
@@ -470,17 +504,20 @@ public class projectOpener extends JFrame {
 						.addComponent(lblParticipantId)
 						.addComponent(text_part_id, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(include_part_id))
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panel.createSequentialGroup()
-							.addGap(18)
-							.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-								.addComponent(button_cancel)
-								.addComponent(button_create)
-								.addComponent(button_open)))
-						.addGroup(gl_panel.createSequentialGroup()
-							.addGap(18)
-							.addComponent(lblIndicatesA)))
-					.addContainerGap(14, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(separator_2, GroupLayout.PREFERRED_SIZE, 2, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(spinner_timeout, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblTimeoutAfterMilliseconds)
+						.addComponent(use_timeout))
+					.addGap(45)
+					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblIndicatesA)
+						.addComponent(button_create)
+						.addComponent(button_open)
+						.addComponent(button_cancel))
+					.addContainerGap())
 		);
 		panel.setLayout(gl_panel);
 	}
@@ -494,6 +531,4 @@ public class projectOpener extends JFrame {
 			return new File(System.getProperty("user.home"));
 		}
 	}
-
-	
 }

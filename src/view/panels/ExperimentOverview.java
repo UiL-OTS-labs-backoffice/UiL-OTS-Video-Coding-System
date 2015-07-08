@@ -33,8 +33,8 @@ public class ExperimentOverview extends JFrame {
 	private static final int COL_WIDTH = 50;
 	
 	private static final Color HEADER_COLOR = new Color(79,129,189);
-	private static final Color ROW1_COLOR = new Color(220, 230, 241);
-	private static final Color ROW2_COLOR = new Color(255,255,255);
+	private static final Color[] ROW1_COLOR = {new Color(220, 230, 241), new Color(255,191,191)};
+	private static final Color[] ROW2_COLOR = {new Color(255,255,255),new Color(250,215,215)};
 	
 	private GridBagLayout gridBagLayout;
 	
@@ -108,6 +108,7 @@ public class ExperimentOverview extends JFrame {
 	private void addOverview()
 	{
 		int row = 1;
+		Color[] row_color = ROW1_COLOR;
 		
 		for(int i = 1; i <= c.getNumberOfTrials(); i++)
 		{
@@ -122,17 +123,35 @@ public class ExperimentOverview extends JFrame {
 			addLabel(timeToString(t.getEnd()), row, 3, HEADER_COLOR);
 			addLabel(t.getTotalTimeForItems() + " ms", row, 4, HEADER_COLOR);
 			row++;
+			if(t.getComment() != null && t.getComment().length() > 0)
+			{
+				addComment(t.getComment(), row, HEADER_COLOR);
+				row++;
+			}
 			
+			model.Experiment em = Globals.getInstance().getExperimentModel();
+			long last_end = -1;
 			for(int j = 1; j <= t.getNumberOfItems(); j++)
 			{
 				model.Look l = (model.Look) t.getItem(j);
-				Color color = (row % 2 == 0) ? ROW1_COLOR : ROW2_COLOR;
+				int index = (!em.getUseTimeout() || l.getBegin() - last_end < em.getTimeout() || last_end < 0) ? 0 : 1;
+				last_end = l.getEnd();
+				Color color = row_color[index];
+				
 				addLabel(" ", row, 0, color);
 				addLabel("Look " + j, row, 1, color);
 				addLabel(timeToString(l.getBegin()), row, 2, color);
 				addLabel(timeToString(l.getEnd()), row, 3, color);
 				addLabel(l.getDuration() + " ms", row, 4, color);
 				row++;
+				
+				if(l.getComment() != null && l.getComment().length() > 0)
+				{
+					addComment(l.getComment(), row, color);
+					row++;
+				}
+				
+				row_color = (row_color == ROW1_COLOR) ? ROW2_COLOR : ROW1_COLOR;
 			}
 		}
 	}
@@ -194,11 +213,30 @@ public class ExperimentOverview extends JFrame {
 		{
 			// Title row
 			l.setFont(new Font("Tahoma", Font.BOLD, 14));
-			l.setForeground(ROW2_COLOR);
+			l.setForeground(ROW2_COLOR[0]);
 		}
 		l.setOpaque(true);
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = col;
+		c.gridy = row;
+		c.anchor = GridBagConstraints.NORTH;
+		c.weighty = 1;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		container.add(l, c);
+	}
+	
+	private void addComment(String comment, int row, Color color)
+	{
+		JLabel l = new JLabel(String.format("<html><body><p style=\"width: 500px; margin-left: 10px; margin-right: 10px;\">%s</p></body></html>", comment));
+		l.setBackground(color);
+		if(color == HEADER_COLOR)
+		{
+			l.setForeground(ROW2_COLOR[0]);
+		}
+		l.setOpaque(true);
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridwidth = COLUMNS;
+		c.gridx = 0;
 		c.gridy = row;
 		c.anchor = GridBagConstraints.NORTH;
 		c.weighty = 1;

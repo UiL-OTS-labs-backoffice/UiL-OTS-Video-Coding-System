@@ -244,6 +244,11 @@ public class Editor {
     	playButtons.setPlay(state);
     }
     
+    public void setTimeoutText(boolean state)
+    {
+    	playButtons.setTimeoutText(state);
+    }
+    
     
     
 }

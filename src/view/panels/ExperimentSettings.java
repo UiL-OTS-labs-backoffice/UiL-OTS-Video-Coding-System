@@ -3,6 +3,7 @@ package view.panels;
 import java.awt.BorderLayout;
 //import java.awt.EventQueue;
 
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -22,6 +23,8 @@ import javax.swing.JCheckBox;
 
 
 
+import javax.swing.SpinnerNumberModel;
+
 import controller.*;
 
 import java.awt.event.ActionListener;
@@ -29,6 +32,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.Point;
+
+import javax.swing.JSpinner;
 
 /**
  * JFrame containing settings menu for the experiment
@@ -51,6 +56,9 @@ public class ExperimentSettings{
 	// Keeps track if checkbox should be enabled automatically on text change
 	private boolean exp_name_checked = false, exp_id_checked = false, 
 		res_id_checked = false, pp_id_checked = false;
+	private JLabel lblTimeoutms;
+	private JCheckBox use_timeout;
+	private JSpinner spinner_timeout;
 
 	/**
 	 * Create the frame.
@@ -64,7 +72,7 @@ public class ExperimentSettings{
 		frmExperimentSettings.setTitle("Experiment Settings");
 		frmExperimentSettings.setModalExclusionType(ModalExclusionType.TOOLKIT_EXCLUDE);
 		frmExperimentSettings.setAlwaysOnTop(true);
-		frmExperimentSettings.setBounds(100, 100, 450, 204);
+		frmExperimentSettings.setBounds(100, 100, 450, 254);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -73,10 +81,10 @@ public class ExperimentSettings{
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.CENTER);
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.rowHeights = new int[] {0, 0, 0, 0};
+		gbl_panel.rowHeights = new int[] {0, 0, 0, 0, 0};
 		gbl_panel.columnWidths = new int[]{0, 0, 0, 0};
 		gbl_panel.columnWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0};
+		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0};
 		panel.setLayout(gbl_panel);
 		
 		JLabel lblExperimentName = new JLabel("Experiment name");
@@ -270,6 +278,38 @@ public class ExperimentSettings{
 		gbc_show_pp_id.gridy = 3;
 		panel.add(show_pp_id, gbc_show_pp_id);
 		
+		lblTimeoutms = new JLabel("Timeout (ms)");
+		GridBagConstraints gbc_lblTimeoutms = new GridBagConstraints();
+		gbc_lblTimeoutms.anchor = GridBagConstraints.EAST;
+		gbc_lblTimeoutms.insets = new Insets(0, 0, 0, 5);
+		gbc_lblTimeoutms.gridx = 0;
+		gbc_lblTimeoutms.gridy = 4;
+		panel.add(lblTimeoutms, gbc_lblTimeoutms);
+		
+		use_timeout = new JCheckBox("Use timeout   ");
+		use_timeout.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				spinner_timeout.setEnabled(use_timeout.isSelected());
+			}
+		});
+		use_timeout.setSelected(Globals.getInstance().getExperimentModel().getUseTimeout());
+		
+		spinner_timeout = new JSpinner();
+		GridBagConstraints gbc_spinner = new GridBagConstraints();
+		gbc_spinner.fill = GridBagConstraints.HORIZONTAL;
+		gbc_spinner.insets = new Insets(0, 0, 0, 5);
+		gbc_spinner.gridx = 1;
+		gbc_spinner.gridy = 4;
+		spinner_timeout.setEnabled(Globals.getInstance().getExperimentModel().getUseTimeout());
+		spinner_timeout.setModel(new SpinnerNumberModel());
+		spinner_timeout.getModel().setValue(Globals.getInstance().getExperimentModel().getTimeout());
+		panel.add(spinner_timeout, gbc_spinner);
+		GridBagConstraints gbc_chckbxDontUse = new GridBagConstraints();
+		gbc_chckbxDontUse.gridx = 2;
+		gbc_chckbxDontUse.gridy = 4;
+		panel.add(use_timeout, gbc_chckbxDontUse);
+		
 		JPanel buttons = new JPanel();
 		contentPane.add(buttons, BorderLayout.SOUTH);
 		
@@ -343,6 +383,15 @@ public class ExperimentSettings{
 		return pp_id.getText();
 	}
 	
+	public boolean getUseTimeout()
+	{
+		return use_timeout.isSelected();
+	}
+	
+	public long getTimeout()
+	{
+		return (Integer) spinner_timeout.getValue();
+	}
 	
 	public boolean getShow_exp_name()
 	{
@@ -363,7 +412,6 @@ public class ExperimentSettings{
 	{
 		return show_pp_id.isSelected();
 	}
-	
 	
 	/**
 	 * Sets the settings as provided to the view
@@ -388,6 +436,18 @@ public class ExperimentSettings{
 		this.show_exp_id.setSelected(show_exp_id);
 		this.show_res_id.setSelected(show_res_id);
 		this.show_pp_id.setSelected(show_pp_id);
+	}
+	
+	/**
+	 * Sets the timeout settings as provided to the view
+	 * @param useTimeout 	Wether or not to use the timeout variable
+	 * @param timeout		The number of ms after which a look times out
+	 */
+	public void setTimeout(Boolean useTimeout, Long timeout)
+	{
+		this.use_timeout.setSelected(useTimeout);
+		this.spinner_timeout.setValue(timeout.intValue());
+		this.spinner_timeout.setEnabled(useTimeout);
 	}
 
 }

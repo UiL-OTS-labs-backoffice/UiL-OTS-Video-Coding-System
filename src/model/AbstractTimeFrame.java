@@ -11,7 +11,7 @@ public abstract class AbstractTimeFrame implements Serializable
 	/**
 	 * SerialVersion UID
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 	
 	/**
 	 * Fields for begin- and end time, and duration
@@ -19,6 +19,8 @@ public abstract class AbstractTimeFrame implements Serializable
 	 * media player time and given in milliseconds
 	 */
 	protected long duration, begintime, endtime = -1L;
+	
+	protected String comment;
 	
 	/**
 	 * Constructor for this class
@@ -146,5 +148,23 @@ public abstract class AbstractTimeFrame implements Serializable
 	public long getDuration()
 	{
 		return duration;
+	}
+	
+	/**
+	 * Method to get the user comment for this time frame
+	 * @return		User comment
+	 */
+	public String getComment()
+	{
+		return comment;
+	}
+	
+	/**
+	 * Method to change the user comment for this time frame
+	 * @param comment	The new user comment
+	 */
+	public void setComment(String comment)
+	{
+		this.comment = comment;
 	}
 }

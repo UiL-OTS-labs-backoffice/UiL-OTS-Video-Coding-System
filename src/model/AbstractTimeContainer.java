@@ -2,6 +2,7 @@ package model;
 
 import java.util.LinkedList;
 
+import controller.Globals;
 import model.AbstractTimeFrame;
 
 /**
@@ -231,7 +232,7 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame
 				);
 			throw new IllegalStateException(e);
 		} else {
-			if(canAdd > 0 && items.get(canAdd-1).getEnd() >= tf.getBegin())
+			if(canAdd > 0 && (items.get(canAdd-1).getEnd() >= tf.getBegin() || items.get(canAdd-1).getEnd() < 0))
 			{
 				items.get(canAdd-1).setEnd(tf.getBegin()-1);
 			}
@@ -314,11 +315,33 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame
 	 */
 	public long getTotalTimeForItems()
 	{
+		model.Experiment em = Globals.getInstance().getExperimentModel();
 		long time = 0L;
+		long last_end = -1;
 		for(AbstractTimeFrame tf : items)
 		{
-			time += tf.getDuration();
+			if(!em.getUseTimeout() || tf.getBegin() - last_end < em.getTimeout() || last_end < 0)
+			{
+				time += tf.getDuration();
+				last_end = tf.getEnd();
+			} else if(em.getUseTimeout()) {
+				break;
+			}
 		}
 		return time;
+	}
+	
+	@Override
+	public void setEnd(long time)
+	{
+		if(canEnd(time) && items.size() > 0)
+		{
+			AbstractTimeFrame it = items.getLast();
+			if (it.getEnd() > time || it.getEnd() < 0)
+			{
+				it.setEnd(time);
+			}
+		}
+		super.setEnd(time);
 	}
 }

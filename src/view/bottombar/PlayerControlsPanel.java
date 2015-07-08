@@ -176,6 +176,17 @@ public class PlayerControlsPanel extends JPanel {
         		runnable.update();
         	}
         });
+        
+        timeLabel.addMouseListener(new MouseAdapter() {
+        	public void mousePressed(MouseEvent e) {
+        		if(c.isPlaying())
+        		{
+        			c.play();
+        		}
+        		
+        		new view.panels.TimeSelector(c.getMediaTime());
+        	}
+        });
     }
     
     /**
@@ -206,11 +217,9 @@ public class PlayerControlsPanel extends JPanel {
             SwingUtilities.invokeLater(new Runnable() {@
                 Override
                 public void run() {
-                    if (mediaPlayer.isPlaying()) {
-                        updateTime(time, end);
-                        updatePosition(position);
-                        controller.updateLabels(time);
-                    }
+                    updateTime(time, end);
+                    updatePosition(position);
+                    controller.updateLabels(time);
                 }
             });
         }

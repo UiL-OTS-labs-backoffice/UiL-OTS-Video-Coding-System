@@ -53,6 +53,7 @@ public class Controller {
 				ex.getShow_res_id(),
 				ex.getShow_pp_id()
 				);
+		e.setTimeout(ex.getUseTimeout(), ex.getTimeout());
 		e.show();
 	}
 	
@@ -73,6 +74,8 @@ public class Controller {
 				s.getShow_res_id(),
 				s.getShow_pp_id()
 			);
+		g.getExperimentModel().setUseTimeout(s.getUseTimeout());
+		g.getExperimentModel().setTimeout(s.getTimeout());
 	}
 	
 	/**
@@ -245,24 +248,27 @@ public class Controller {
 	 */
 	private void updateButtons(int tnr, long time)
 	{
-		boolean nt = g.getExperimentModel().canAddItem(time) >= 0;
+		boolean nt = g.getExperimentModel().canAddItem(time) >= 0 & tnr <= 0;
 		boolean et = false, nl = false, el = false;
+		boolean tm = false; // Timeout?
 		int lnr = 0;
 		if(tnr != 0)
 		{
 			Trial t = (Trial) g.getExperimentModel().getItem(Math.abs(tnr));
 			lnr = t.getItemForTime(time);
-			et = t.canEnd(time);
-			nl = t.canAddItem(time) >= 0;
+			et = t.canEnd(time) && lnr <= 0;
+			nl = t.canAddItem(time) >= 0 && lnr <= 0;
 			
 			if(lnr != 0)
 			{
 				Look l = (Look) t.getItem(Math.abs(lnr));
+				tm = l.getEnd() > -1 && time - l.getEnd() > g.getExperimentModel().getTimeout();
 				el = tnr > 0 && l.canEnd(time);
 			}
 		}
 		
 		g.getEditor().updateButtons(endOrExtend(tnr, "trial"), endOrExtend(lnr, "look"), nt, et, nl, el, tnr > 0, lnr > 0);
+		g.getEditor().setTimeoutText(tm);
 	}
 	
 	/**
