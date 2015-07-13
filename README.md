@@ -21,7 +21,7 @@ The amount of trials and looks it not set, so any amount can be used, but before
 
 ## Requires:
  * [VLC](http://www.videolan.org/vlc/)
- * [Java](https://www.java.com/en/download/) 1.6 or later
+ * [Java Runtime Environment (JRE)](https://www.java.com/en/download/) 1.6 or later
 
 Please use the issues tracker if you encounter any problems
 
