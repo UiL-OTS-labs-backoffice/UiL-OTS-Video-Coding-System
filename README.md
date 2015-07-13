@@ -12,6 +12,7 @@ The amount of trials and looks it not set, so any amount can be used, but before
 * Add any number of trials
 * Add any number of looks in any trial
 * Automatically check for timeouts
+* Add comments to trials and looks
 * Add research meta information about researcher, participant, etc
 * Use quickeys for easy navigation
 * Frame-by-frame step-through (also backwards possible)
