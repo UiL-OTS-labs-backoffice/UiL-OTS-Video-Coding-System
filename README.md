@@ -19,4 +19,10 @@ The amount of trials and looks it not set, so any amount can be used, but before
 * Exports to csv
 * Projects can be saved for later continuation
 
+## Requires:
+ * [VLC](http://www.videolan.org/vlc/)
+ * [Java](https://www.java.com/en/download/) 1.6 or later
+
 Please use the issues tracker if you encounter any problems
+
+
