@@ -1,6 +1,7 @@
 package view.bottombar;
 
 import java.awt.BorderLayout;
+
 import controller.*;
 
 import javax.swing.JPanel;
@@ -45,13 +46,15 @@ public class BottomBar extends JPanel {
      * @param et		The state of the end trial button
      * @param nl		The state of the new look button
      * @param el		The state of the end look button
+     * @param lookComment 
+     * @param trialComment 
      */
     public void updateButtons(
 			String endTrial, String endLook,
-			boolean nt, boolean et, boolean nl, boolean el
+			boolean nt, boolean et, boolean nl, boolean el, String trialComment, String lookComment
 		)
 	{
-    	trial_controls.update(endTrial, endLook, nt, et, nl, el);
+    	trial_controls.update(endTrial, endLook, nt, et, nl, el, trialComment, lookComment);
 	}
     
     /**

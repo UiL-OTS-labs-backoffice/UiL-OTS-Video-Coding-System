@@ -5,16 +5,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
-
-import java.awt.GridBagLayout;
-
 import javax.swing.JLabel;
-
+import net.miginfocom.swing.MigLayout;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.GridBagConstraints;
 import java.awt.Font;
-import java.awt.Insets;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
@@ -35,8 +30,6 @@ public class ExperimentOverview extends JFrame {
 	private static final Color HEADER_COLOR = new Color(79,129,189);
 	private static final Color[] ROW1_COLOR = {new Color(220, 230, 241), new Color(255,191,191)};
 	private static final Color[] ROW2_COLOR = {new Color(255,255,255),new Color(250,215,215)};
-	
-	private GridBagLayout gridBagLayout;
 	
 	private JPanel container;
 
@@ -60,21 +53,14 @@ public class ExperimentOverview extends JFrame {
 		JScrollPane scrPane = new JScrollPane(container,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		add(scrPane, BorderLayout.CENTER);
 		
-		gridBagLayout = new GridBagLayout();
-		int[] columnWidths = new int[COLUMNS];
+		String layout = "";
 		for(int i = 0; i < COLUMNS; i++)
 		{
-			columnWidths[i] = COL_WIDTH;
+			layout += String.format("[%d,grow,fill]", COL_WIDTH);
 		}
-		gridBagLayout.columnWidths = columnWidths;
-		gridBagLayout.columnWeights = new double[]{1.0, 1.0, 1.0, 1.0, Double.MIN_VALUE};
 		
-		GridBagConstraints layoutConstraint = new GridBagConstraints();
-		layoutConstraint.anchor = GridBagConstraints.NORTH;
-		layoutConstraint.fill = GridBagConstraints.NONE;
-		layoutConstraint.weighty = 1d;
-		
-		container.setLayout(gridBagLayout);
+		MigLayout migLayout = new MigLayout("gap 0 0",layout);
+		container.setLayout(migLayout);
 		
 		JLabel lblH1 = new JLabel("Trial");
 		JLabel lblH2 = new JLabel("Look");
@@ -89,14 +75,7 @@ public class ExperimentOverview extends JFrame {
 		{
 			l.setFont(new Font("Tahoma", Font.BOLD, 18));
 			l.setHorizontalAlignment(SwingConstants.LEFT);
-			GridBagConstraints c = new GridBagConstraints();
-			c.insets = new Insets(0,0,0,0);
-			c.gridx = col;
-			c.gridy = 0;
-			c.anchor = GridBagConstraints.NORTH;
-			c.weighty = 1;
-			c.fill = 2;
-			container.add(l, c);
+			container.add(l, String.format("cell %d 0", col));
 			col++;
 		}
 		
@@ -165,13 +144,7 @@ public class ExperimentOverview extends JFrame {
 	private int addSeparator(int row)
 	{
 		JSeparator s = new JSeparator();
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridy = row;
-		c.weightx = 1;
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.insets = new Insets(5,0,5,0);
-		container.add(s, c);
+		container.add(s, String.format("gap 0 0 5 0, cell 0 %d %d 1", row, COLUMNS));
 		return row + 1;
 	}
 	
@@ -216,32 +189,27 @@ public class ExperimentOverview extends JFrame {
 			l.setForeground(ROW2_COLOR[0]);
 		}
 		l.setOpaque(true);
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = col;
-		c.gridy = row;
-		c.anchor = GridBagConstraints.NORTH;
-		c.weighty = 1;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		container.add(l, c);
+		container.add(l, String.format("cell %d %d", col, row));
+		
 	}
 	
 	private void addComment(String comment, int row, Color color)
 	{
-		JLabel l = new JLabel(String.format("<html><body><p style=\"width: 500px; margin-left: 10px; margin-right: 10px;\">%s</p></body></html>", comment));
+		JLabel l = new JLabel(String.format("<html><body><p style=\"margin-right: 10px;\">%s</p></body></html>", comment));
 		l.setBackground(color);
+		
+		JLabel commentLabel = new JLabel(" ");
+		commentLabel.setBackground(color);
+		
 		if(color == HEADER_COLOR)
 		{
 			l.setForeground(ROW2_COLOR[0]);
 		}
 		l.setOpaque(true);
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridwidth = COLUMNS;
-		c.gridx = 0;
-		c.gridy = row;
-		c.anchor = GridBagConstraints.NORTH;
-		c.weighty = 1;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		container.add(l, c);
+		commentLabel.setOpaque(true);
+		
+		container.add(commentLabel, String.format("cell 0 %d 2 1", row));
+		container.add(l, String.format("cell %d %d %d 1", 2, row, COLUMNS - 2));
 	}
 	
 

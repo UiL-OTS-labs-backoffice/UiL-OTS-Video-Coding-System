@@ -9,28 +9,38 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import model.AbstractTimeFrame;
+import model.Trial;
+import view.panels.CommentEditor;
 import controller.Controller;
 import controller.Globals;
+import controller.IVideoControls;
 
 public class TrialControls extends JPanel {
 	
 	private static final long serialVersionUID = -2015592156911727320L;
 	
+	private Globals g;
 	private Controller c;
+	private IVideoControls v;
 	
 	// Buttons
-	private JButton newTrial, endTrial, newLook, endLook;
+	private JButton newTrial, endTrial, newLook, endLook, trialComment,lookComment;
 	
 	private static final Dimension BUTTON_SIZE = new Dimension(150, 25);
 
 	public TrialControls(Globals g)
 	{
+		this.g = g;
 		c = g.getController();
+		v = g.getVideoController();
+		
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		addNewTrialButton();
 		addEndTrialButton();
 		addNewLookButton();
 		addEndLookButton();
+		addCommentsButtons();
 	}
 	
 	/**
@@ -43,21 +53,28 @@ public class TrialControls extends JPanel {
 	 * @param et			end trial enabled state
 	 * @param nl			new look enabled sate 
 	 * @param el			end look enabled state
+	 * @param lookComment 
+	 * @param trialComment 
 	 */
 	public void update(
 			String endTrial,String endLook,
-			boolean nt, boolean et, boolean nl, boolean el
+			boolean nt, boolean et, boolean nl, boolean el, String trialComment, String lookComment
 		)
 	{
 		this.newTrial.setEnabled(nt);
 		
 		this.endTrial.setText(endTrial);
 		this.endTrial.setEnabled(et);
+		this.trialComment.setEnabled(et || nl || el);
+		this.trialComment.setText(trialComment);
 		
 		this.newLook.setEnabled(nl);
 		
 		this.endLook.setText(endLook);
 		this.endLook.setEnabled(el);
+		
+		this.lookComment.setEnabled(el);
+		this.lookComment.setText(lookComment);
 	}
 
 	private void addNewTrialButton()
@@ -133,5 +150,37 @@ public class TrialControls extends JPanel {
 		endLook.setFocusable(false);
 	}
 	
+	private void addCommentsButtons()
+	{
+		trialComment = new JButton("Trial comment");
+		trialComment.addActionListener(new ActionListener(){
+			
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				int tn = Math.abs(g.getExperimentModel().getItemForTime(v.getMediaTime()));
+				Trial t = c.getTrial(tn);
+				new CommentEditor(t.getBegin(), t, String.format("Trial %d",tn));
+			}
+		});
+		
+		lookComment = new JButton("Look comment");
+		lookComment.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent event) {
+				int tn = Math.abs(g.getExperimentModel().getItemForTime(v.getMediaTime()));
+				Trial t = c.getTrial(tn);
+				int ln = Math.abs(t.getItemForTime(v.getMediaTime()));
+				AbstractTimeFrame l = t.getItem(ln);
+				new CommentEditor(t.getBegin(), l, String.format("Trial %d look %d",tn, ln));
+			}
+		});
+		
+		add(trialComment, Component.LEFT_ALIGNMENT);
+		trialComment.setMaximumSize(BUTTON_SIZE);
+		trialComment.setFocusable(false);
+		
+		add(lookComment, Component.RIGHT_ALIGNMENT);
+		lookComment.setMaximumSize(BUTTON_SIZE);
+		lookComment.setFocusable(false);
+	}
 	
 }

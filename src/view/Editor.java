@@ -228,14 +228,16 @@ public class Editor {
      * @param el			State of end look button
      * @param rmt			Currently in trial
      * @param rml			Currently in look
+     * @param lookComment 
+     * @param trialComment 
      */
     public void updateButtons(
 			String endTrial, String endLook,
 			boolean nt, boolean et, boolean nl, boolean el,
-			boolean rmt, boolean rml
+			boolean rmt, boolean rml, String trialComment, String lookComment
 		)
     {
-    	bottom_bar.updateButtons(endTrial, endLook,	nt, et, nl, el);
+    	bottom_bar.updateButtons(endTrial, endLook,	nt, et, nl, el, trialComment, lookComment);
     	menu.updateButtons(rmt, rml);
     }
     

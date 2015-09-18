@@ -267,7 +267,10 @@ public class Controller {
 			}
 		}
 		
-		g.getEditor().updateButtons(endOrExtend(tnr, "trial"), endOrExtend(lnr, "look"), nt, et, nl, el, tnr > 0, lnr > 0);
+		g.getEditor().updateButtons(endOrExtend(tnr, "trial"), endOrExtend(lnr, "look"), 
+				nt, et, nl, el, tnr > 0, lnr > 0, 
+				String.format("Comment trial %d", Math.abs(tnr)), String.format("Comment look %d", Math.abs(lnr))
+			);
 		g.getEditor().setTimeoutText(tm);
 	}
 	
