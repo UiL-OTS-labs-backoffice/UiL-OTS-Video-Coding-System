@@ -21,10 +21,10 @@ public class About extends JFrame {
 		setResizable(false);
 		setTitle("About: UiL OTS Video Coding System");
 		setIconImages(Globals.getIcons());
-		this.setSize(361, 250);
+		this.setSize(371, 250);
 		this.setLocation(600, 400);
 		
-		JLabel lblUilOtsVideo = new JLabel("UiL OTS Video Coding System V1.0.0.0");
+		JLabel lblUilOtsVideo = new JLabel("UiL OTS Video Coding System V1.1.0.0 (Solaria)");
 		lblUilOtsVideo.setFont(new Font("Tahoma", Font.BOLD, 14));
 		
 		JLabel lblCreatedByJan = new JLabel("Created by Jan de Mooij");
