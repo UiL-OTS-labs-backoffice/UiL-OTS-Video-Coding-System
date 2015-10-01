@@ -57,7 +57,10 @@ public class Main {
 			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "C:\\Program Files (x86)\\VideoLAN");
 		}
     	
-    	// Another reasonable default location to install VLC
+		// Best guess for Ubuntu. Doesn't read the path, except when in preferences.
+		if(prefs.getVLCUrl() == null) prefs.setVLCUrl("usr/bin/vlc");
+		
+    	// Best guess for OSX
         NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), "/Applications/VLC.app/Contents/MacOS/lib");
 	}
 	
