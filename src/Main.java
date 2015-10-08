@@ -34,14 +34,14 @@ public class Main {
 			vlcErrorMessage("General error in preference path");
 		}
 		
-		if(!vlcFound())
+		if(vlcFound())
 		{
-			view.panels.VLCNotFound vlcError = new view.panels.VLCNotFound(prefs);
-			vlcError.setVisible(true);
-		} else {
 			// Only starts the main application after VLC has been found
 	        Globals.getInstance();
-		}
+		} else {
+			view.panels.VLCNotFound vlcError = new view.panels.VLCNotFound(prefs);
+			vlcError.setVisible(true);
+		} 
 		
 	}
 	

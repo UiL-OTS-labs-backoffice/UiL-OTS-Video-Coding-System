@@ -1,6 +1,7 @@
 package controller;
 
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -135,7 +136,7 @@ public class Controller {
 						+ "altered, the coding results will no longer be correct", 
 						"Video doesn't exist",
 						JOptionPane.ERROR_MESSAGE);
-				String newURL = VideoSelector.show();
+				String newURL = VideoSelector.show(new File(g.getPreferencesModel().getLastVideoDirectory(System.getProperty("user.home"))));
 				if (newURL == null)
 					return false;
 				exp.setUrl(newURL);

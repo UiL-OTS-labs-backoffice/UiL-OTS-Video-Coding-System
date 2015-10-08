@@ -42,7 +42,7 @@ public class ProjectSelector {
 	 * Shows a file selector for the video file to be used
 	 * @return	Path of selected file if valid, otherwise null
 	 */
-	public static String show()
+	public static String show(File dir)
 	{
 		JFileChooser chooser = new JFileChooser();
 		
@@ -51,6 +51,7 @@ public class ProjectSelector {
 	    
 	    chooser.setFileFilter(filter);
 	    chooser.addChoosableFileFilter(filter);
+	    chooser.setCurrentDirectory(dir);
 	    
 	    int returnVal = chooser.showOpenDialog(chooser);
 	    

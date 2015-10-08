@@ -108,7 +108,7 @@ public class VLCNotFound extends JFrame{
 		btnSpecifyVlcPath.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String newPath = VLCLibSelector.show();
+				String newPath = VLCLibSelector.show(prefs);
 				prefs.setVLCUrl(newPath);
 			}
 		});

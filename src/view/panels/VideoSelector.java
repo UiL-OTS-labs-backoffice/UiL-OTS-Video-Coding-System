@@ -43,7 +43,7 @@ public class VideoSelector {
 	 * Shows a file selector for the video file to be used
 	 * @return	Path of selected file if valid, otherwise null
 	 */
-	public static String show()
+	public static String show(File default_url)
 	{
 		JFileChooser chooser = new JFileChooser();
 		
@@ -52,6 +52,7 @@ public class VideoSelector {
 	    
 	    chooser.setFileFilter(filter);
 	    chooser.addChoosableFileFilter(filter);
+	    chooser.setCurrentDirectory(default_url);
 	    
 	    int returnVal = chooser.showOpenDialog(chooser);
 	    

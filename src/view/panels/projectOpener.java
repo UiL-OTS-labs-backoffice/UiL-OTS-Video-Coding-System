@@ -35,6 +35,8 @@ import java.text.ParseException;
 
 import javax.swing.JSpinner;
 
+import model.ApplicationPreferences;
+
 public class projectOpener extends JFrame {
 	/**
 	 * 
@@ -42,6 +44,7 @@ public class projectOpener extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
 	private Controller c;
+	private ApplicationPreferences prefs;
 	
 	private static final int DEFAULT_TIMEOUT_TIME = 2000;
 	private static final int MIN_NAME_LENGTH = 1;
@@ -94,6 +97,7 @@ public class projectOpener extends JFrame {
 	{
 		setIconImages(Globals.getIcons());
 		c = g.getController();
+		prefs = g.getPreferencesModel();
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
 		setTitle("New Project");
@@ -150,9 +154,10 @@ public class projectOpener extends JFrame {
 		text_videoURL.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				String url = VideoSelector.show();
+				String url = VideoSelector.show(new File(prefs.getLastVideoDirectory(System.getProperty("user.home"))));
 				if(url != null)
 				{
+					prefs.setLastVideoDirectory(new File(url).getAbsolutePath());
 					text_videoURL.setForeground(Color.black);
 					text_videoURL.setText(url);
 					videoSelected = true;
@@ -185,9 +190,10 @@ public class projectOpener extends JFrame {
 		text_projectLocation.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				String text = SaveDialog.show(getDefaultDir());
+				String text = SaveDialog.show(new File(prefs.getLastProjectDirectory(getDefaultDir().getAbsolutePath())));
 				if (text != null)
 				{
+					prefs.setLastProjectDirectory(text);
 					text_projectLocation.setForeground(Color.black);
 					text_projectLocation.setText(text);
 					saveSet = true;
@@ -338,7 +344,7 @@ public class projectOpener extends JFrame {
 		button_open.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e)
 			{
-				String url = view.panels.ProjectSelector.show();
+				String url = view.panels.ProjectSelector.show(new File(prefs.getLastProjectDirectory(System.getProperty("user.home"))));
 				
 				if (url != null)
 				{

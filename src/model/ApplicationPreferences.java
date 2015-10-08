@@ -65,4 +65,69 @@ public class ApplicationPreferences {
 	{
 		return String.format("ActionKey_%s", TupleID); 
 	}
+	
+	/**
+	 * Method to get the last visited video directory
+	 * @param default_dir	Directory to use if no video dir was used 
+	 * 						before
+	 * @return				Last used video dir if available, otherwise
+	 * 						default
+	 */
+	public String getLastVideoDirectory(String default_dir)
+	{
+		return prefs.get("lastVideoDir", default_dir);
+	}
+	
+	/**
+	 * Set method for last visited video directory
+	 * @param lastVideoDirectory 	Directory
+	 */
+	public void setLastVideoDirectory(String lastVideoDirectory)
+	{
+		prefs.put("lastVideoDir", lastVideoDirectory);
+	}
+	
+	/**
+	 * Get method for last visited CSV directory
+	 * @param default_dir	Directory to use if no CSV dir was used 
+	 * 						before
+	 * @return				Last used CSV dir if available, otherwise
+	 * 						default
+	 */
+	public String getLastCSVDirectory(String default_dir)
+	{
+		return prefs.get("lastCSVDir", default_dir);
+	}
+	
+	/**
+	 * Set method for last visited CSV dir
+	 * @param LastCsvDirectory 		directory
+	 */
+	public void setLastCSVDirectory(String LastCsvDirectory)
+	{
+		prefs.put("lastCSVDir", LastCsvDirectory);
+	}
+	
+	/**
+	 * Get method for last visited project directory
+	 * @param default_dir	Directory to use if no project dir was used 
+	 * 						before
+	 * @return				Last used project dir if available, otherwise
+	 * 						default
+	 */
+	public String getLastProjectDirectory(String default_dir)
+	{
+		return prefs.get("lastProjectDir", default_dir);
+	}
+	
+	/**
+	 * Set method for last visited project dir
+	 * @param LastCsvDirectory 		directory
+	 */
+	public void setLastProjectDirectory(String LastCsvDirectory)
+	{
+		prefs.put("lastProjectDir", LastCsvDirectory);
+	}
+	
+	
 }
