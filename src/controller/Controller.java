@@ -262,7 +262,7 @@ public class Controller {
 			if(lnr != 0)
 			{
 				Look l = (Look) t.getItem(Math.abs(lnr));
-				tm = l.getEnd() > -1 && time - l.getEnd() > g.getExperimentModel().getTimeout();
+				tm = l.getEnd() > -1 && time - l.getEnd() > g.getExperimentModel().getTimeout() && g.getExperimentModel().getUseTimeout();
 				el = tnr > 0 && l.canEnd(time);
 			}
 		}

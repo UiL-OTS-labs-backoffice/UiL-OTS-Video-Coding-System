@@ -24,7 +24,7 @@ public class About extends JFrame {
 		this.setSize(371, 250);
 		this.setLocation(600, 400);
 		
-		JLabel lblUilOtsVideo = new JLabel("UiL OTS Video Coding System V1.1.0.0 (Solaria)");
+		JLabel lblUilOtsVideo = new JLabel("UiL OTS Video Coding System V1.1.2.0 (Solaria)");
 		lblUilOtsVideo.setFont(new Font("Tahoma", Font.BOLD, 14));
 		
 		JLabel lblCreatedByJan = new JLabel("Created by Jan de Mooij");

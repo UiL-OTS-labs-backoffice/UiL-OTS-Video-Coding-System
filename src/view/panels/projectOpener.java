@@ -44,6 +44,8 @@ public class projectOpener extends JFrame {
 	private Controller c;
 	
 	private static final int DEFAULT_TIMEOUT_TIME = 2000;
+	private static final int MIN_NAME_LENGTH = 1;
+	private static final int MAX_NAME_LENGTH = 55;
 	
 	private JTextField text_videoURL;
 	private JFormattedTextField text_projectName;
@@ -167,10 +169,9 @@ public class projectOpener extends JFrame {
 			public void keyReleased(KeyEvent arg0) {
 				String text = text_projectName.getText();
 				text = text.replaceFirst("^\\W", "")
-						.replaceAll("\\W", "_")
-						.replaceAll("_{2,}", "_");
+						.replaceAll("[^\\w-.]", "_");
 				text_projectName.setText(text);
-				nameEntered = text.length() >= 5 && text.length() <= 55;
+				nameEntered = text.length() >= MIN_NAME_LENGTH && text.length() <= MAX_NAME_LENGTH;
 				text_projectName.setBorder(nameEntered ? valid : invalid);
 				enableCreateButton();
 			}
