@@ -57,6 +57,11 @@ public class Editor {
 //        manager.addKeyEventDispatcher(new KeyDispatch(g));
     }
     
+    public void videoInstantiated()
+    {
+    	bottom_bar.videoInstantiated();
+    }
+    
     /**
      * Constructs the JFrame
      */
@@ -205,7 +210,8 @@ public class Editor {
      */
     public void updateSlider()
     {
-    	bottom_bar.getTimeCodes().updateSlider();
+    	bottom_bar.mediaTimeChanged();
+//    	getTimeCodes().updateSlider();
     }
     
     /**
@@ -250,6 +256,10 @@ public class Editor {
     {
     	playButtons.setTimeoutText(state);
     }
+
+	public void mediaTimeChanged() {
+		bottom_bar.mediaTimeChanged();
+	}
     
     
     

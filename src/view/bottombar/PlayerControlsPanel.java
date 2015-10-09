@@ -203,9 +203,9 @@ public class PlayerControlsPanel extends JPanel {
         private final IMediaPlayer mediaPlayer;
         private UpdateRunnable(IMediaPlayer mediaPlayer) {
             this.mediaPlayer = mediaPlayer;
-        }@
+        }
         
-        Override
+        @Override
         public void run() {
             final long time = mediaPlayer.getMediaTime();
             final long end = mediaPlayer.getMediaDuration();
@@ -214,8 +214,8 @@ public class PlayerControlsPanel extends JPanel {
             // Updates to user interface components must be executed on 
             // the Event
             // Dispatch Thread
-            SwingUtilities.invokeLater(new Runnable() {@
-                Override
+            SwingUtilities.invokeLater(new Runnable() {
+            	@Override
                 public void run() {
                     updateTime(time, end);
                     updatePosition(position);

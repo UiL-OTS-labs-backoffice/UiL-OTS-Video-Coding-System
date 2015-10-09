@@ -6,6 +6,8 @@ import controller.*;
 
 import javax.swing.JPanel;
 
+import view.navbar.Navbar;
+
 public class BottomBar extends JPanel {
 	
 	private static final long serialVersionUID = 8873779601345831556L;
@@ -14,6 +16,8 @@ public class BottomBar extends JPanel {
 	private TrialInformation trialInformation;
 	private TrialControls trial_controls;
 	private PlayerControlsPanel timecodes;
+	private JPanel controlPanel;
+	private Navbar navbar;
 	
 	private Globals g;
 	
@@ -22,8 +26,12 @@ public class BottomBar extends JPanel {
 		this.g = g;
 		setLayout(new BorderLayout(0, 0));
 		addTimeBar();
-		addTrialControls();
-		AddTrialInformation();
+		addControlPanel();
+		addDetailBar();
+	}
+	
+	public void videoInstantiated(){
+		navbar.videoInstantiated();
 	}
 	
 	/**
@@ -84,13 +92,22 @@ public class BottomBar extends JPanel {
 		add(timecodes, BorderLayout.NORTH);
 	}
 	
+	private void addControlPanel()
+	{
+		controlPanel = new JPanel();
+		controlPanel.setLayout(new BorderLayout(0,0));
+		add(controlPanel, BorderLayout.NORTH);
+		addTrialControls();
+		AddTrialInformation();
+	}
+	
 	/**
      * Function to add trial control buttons to view
      */
     private void addTrialControls()
     {
     	trial_controls = new TrialControls(g);
-        add(trial_controls, BorderLayout.EAST);
+        controlPanel.add(trial_controls, BorderLayout.EAST);
     }
     
     /**
@@ -99,8 +116,17 @@ public class BottomBar extends JPanel {
     private void AddTrialInformation()
     {
     	trialInformation = new TrialInformation();
-    	add(trialInformation, BorderLayout.WEST);
+    	controlPanel.add(trialInformation, BorderLayout.WEST);
     }
 	
+    private void addDetailBar()
+    {
+    	navbar = new Navbar(g);
+    	add(navbar, BorderLayout.SOUTH);
+    }
+
+	public void mediaTimeChanged() {
+		navbar.mediaTimeChanged();		
+	}
 	
 }
