@@ -8,6 +8,7 @@ import java.awt.event.WindowListener;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import view.bottombar.BottomBar;
 import view.events.CodingKeyListener;
@@ -77,19 +78,6 @@ public class Editor {
         frame.setFocusable(true);
         
         frame.addWindowListener(new WindowListener(){
-
-			@Override
-			public void windowActivated(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void windowClosed(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
 			@Override
 			public void windowClosing(WindowEvent e) {
 				int result = JOptionPane.showConfirmDialog(frame, "Do you want to save before closing?", "alert", JOptionPane.YES_NO_CANCEL_OPTION);
@@ -111,30 +99,12 @@ public class Editor {
 				}
 			}
 
-			@Override
-			public void windowDeactivated(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void windowDeiconified(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void windowIconified(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void windowOpened(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-        	
+			public void windowActivated(WindowEvent e) { }
+			public void windowClosed(WindowEvent e) { }
+			public void windowDeactivated(WindowEvent e) { }
+			public void windowDeiconified(WindowEvent e) { }
+			public void windowIconified(WindowEvent e) { }
+			public void windowOpened(WindowEvent e) { }
         });
     }
     
@@ -201,6 +171,12 @@ public class Editor {
      */
     public void setInfo(String trial, String look, String time)
     {
+    	SwingUtilities.invokeLater(new Runnable(){
+    		public void run()
+    		{
+    			
+    		}
+    	});
     	bottom_bar.setInfo(trial, look, time);
     }
     
@@ -210,6 +186,12 @@ public class Editor {
      */
     public void updateSlider()
     {
+    	SwingUtilities.invokeLater(new Runnable(){
+    		public void run()
+    		{
+    			
+    		}
+    	});
     	bottom_bar.mediaTimeChanged();
 //    	getTimeCodes().updateSlider();
     }
@@ -219,9 +201,14 @@ public class Editor {
      * by passing the argument to the bottom bar
      * @param file		Name of the file to be set
      */
-    public void setFile(String file)
+    public void setFile(final String file)
     {
-    	bottom_bar.setFile(file);
+    	SwingUtilities.invokeLater(new Runnable(){
+    		public void run()
+    		{
+    			bottom_bar.setFile(file);
+    		}
+    	});
     }
     
     /**
@@ -238,27 +225,47 @@ public class Editor {
      * @param trialComment 
      */
     public void updateButtons(
-			String endTrial, String endLook,
-			boolean nt, boolean et, boolean nl, boolean el,
-			boolean rmt, boolean rml, String trialComment, String lookComment
+			final String endTrial, final String endLook,
+			final boolean nt, final boolean et, final boolean nl, final boolean el,
+			final boolean rmt, final boolean rml, final String trialComment, final String lookComment
 		)
     {
-    	bottom_bar.updateButtons(endTrial, endLook,	nt, et, nl, el, trialComment, lookComment);
-    	menu.updateButtons(rmt, rml);
+    	SwingUtilities.invokeLater(new Runnable(){
+    		public void run()
+    		{
+    			bottom_bar.updateButtons(endTrial, endLook,	nt, et, nl, el, trialComment, lookComment);
+    	    	menu.updateButtons(rmt, rml);
+    		}
+    	});
     }
     
-    public void setPlayState(boolean state)
+    public void setPlayState(final boolean state)
     {
-    	playButtons.setPlay(state);
-    }
+    	SwingUtilities.invokeLater(new Runnable(){
+    		public void run()
+    		{
+    			playButtons.setPlay(state);
+    		}
+    	});
+    	}
     
-    public void setTimeoutText(boolean state)
+    public void setTimeoutText(final boolean state)
     {
-    	playButtons.setTimeoutText(state);
+    	SwingUtilities.invokeLater(new Runnable(){
+    		public void run()
+    		{
+    			playButtons.setTimeoutText(state);
+    		}
+    	});
     }
 
 	public void mediaTimeChanged() {
-		bottom_bar.mediaTimeChanged();
+		SwingUtilities.invokeLater(new Runnable(){
+    		public void run()
+    		{
+    			bottom_bar.mediaTimeChanged();
+    		}
+    	});
 	}
     
     

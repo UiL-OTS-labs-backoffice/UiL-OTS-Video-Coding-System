@@ -1,5 +1,7 @@
 package view.menu;
 
+import javax.swing.SwingUtilities;
+
 import view.panels.CommentEditor;
 import model.AbstractTimeFrame;
 
@@ -14,8 +16,13 @@ public class TimeframeCommentEditor extends AbstractTrialListMenu {
 	}
 
 	@Override
-	public void actionPerformer(long ltime, AbstractTimeFrame fr, String trialText) {
-		new CommentEditor(ltime, fr, trialText);	
+	public void actionPerformer(final long ltime, final AbstractTimeFrame fr, final String trialText) {
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run()
+			{
+				new CommentEditor(ltime, fr, trialText);	
+			}
+		});
 	}
 
 }

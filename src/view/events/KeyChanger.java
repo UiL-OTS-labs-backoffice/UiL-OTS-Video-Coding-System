@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import view.panels.QuickKeys;
 import controller.*;
@@ -25,10 +26,21 @@ public class KeyChanger implements KeyListener {
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
-		int code = e.getKeyCode();
-		field.setText(KeyEvent.getKeyText(code));
-		c.setKey(action, code);
-		quickKeys.update();
+		final int code = e.getKeyCode();
+		
+		Thread setActionCodeThread = new Thread(){
+			public void run(){
+				c.setKey(action, code);
+			}
+		};
+		setActionCodeThread.start();
+		
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				field.setText(KeyEvent.getKeyText(code));
+				quickKeys.update();
+			}
+		});
 	}
 
 	@Override

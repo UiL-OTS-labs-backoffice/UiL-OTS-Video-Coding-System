@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import controller.*;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import view.navbar.Navbar;
 
@@ -41,9 +42,15 @@ public class BottomBar extends JPanel {
      * @param look		Look Number at current play position
      * @param time		Total look time at current play position
      */
-    public void setInfo(String trial, String look, String time)
+    public void setInfo(final String trial, final String look, final String time)
     {
-    	trialInformation.setInfo(trial, look, time);
+    	SwingUtilities.invokeLater(new Runnable(){
+    		public void run()
+    		{
+    			trialInformation.setInfo(trial, look, time);
+    		}
+    	});
+    	
     }
     
     /**

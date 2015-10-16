@@ -6,6 +6,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import controller.Controller;
 import controller.Globals;
@@ -56,7 +57,12 @@ public class ChangeKeyListener implements FocusListener {
 
 	@Override
 	public void focusGained(FocusEvent arg0) {
-		field.setText("");
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				field.setText("");
+			}
+		});
+		
 		keyChanger = new KeyChanger(action, field, quickKeys);
 		field.addKeyListener(keyChanger);
 		field.setBackground(Color.WHITE);
@@ -64,8 +70,12 @@ public class ChangeKeyListener implements FocusListener {
 
 	@Override
 	public void focusLost(FocusEvent arg0) {
-		int key = c.getKey(action);
-		field.setText((key > 0) ? KeyEvent.getKeyText(key) : "");
+		final int key = c.getKey(action);
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				field.setText((key > 0) ? KeyEvent.getKeyText(key) : "");
+			}
+		});
 		field.removeKeyListener(keyChanger);
 	}
 

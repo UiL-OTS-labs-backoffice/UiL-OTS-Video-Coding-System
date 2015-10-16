@@ -7,6 +7,7 @@ import java.util.LinkedList;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import view.panels.CSVExportSelector;
 import view.panels.ExperimentSettings;
@@ -145,6 +146,7 @@ public class Controller {
 			
 			exp.setGlobals(g);
 			g.setExperimentModel(exp);
+			
 			g.getEditor();
 			g.getEditor().show();
 			setVideo(exp.getUrl());
@@ -196,12 +198,17 @@ public class Controller {
 	 * Updates the buttons and labels for the trials and looks
 	 * @param time	The current time stamp.
 	 */
-	public void updateLabels(long time)
+	public void updateLabels(final long time)
 	{	
-		int tnr = g.getExperimentModel().getItemForTime(time);
-		updateButtons(tnr, time);
-		generateInfo(tnr, time);
-		g.getEditor().updateSlider();
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				int tnr = g.getExperimentModel().getItemForTime(time);
+				updateButtons(tnr, time);
+				generateInfo(tnr, time);
+				g.getEditor().updateSlider();
+			}
+		});
+		
 	}
 	
 	/**

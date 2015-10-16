@@ -6,13 +6,18 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import controller.Globals;
 import controller.IVideoControls;
+
 import java.awt.BorderLayout;
+
 import javax.swing.SwingConstants;
+
 import java.awt.Font;
 import java.awt.Color;
+
 import javax.swing.JLabel;
 
 /**
@@ -67,12 +72,16 @@ public class VideoManipulationButtons extends JPanel {
 	
 	private void addTimeoutText()
 	{
-		lblTimeout = new JLabel("Timeout");
-		lblTimeout.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTimeout.setFont(new Font("Tahoma", Font.PLAIN, 35));
-		lblTimeout.setForeground(Color.RED);
-		lblTimeout.setVisible(false);
-		add(lblTimeout, BorderLayout.CENTER);
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				lblTimeout = new JLabel("Timeout");
+				lblTimeout.setHorizontalAlignment(SwingConstants.CENTER);
+				lblTimeout.setFont(new Font("Tahoma", Font.PLAIN, 35));
+				lblTimeout.setForeground(Color.RED);
+				lblTimeout.setVisible(false);
+				add(lblTimeout, BorderLayout.CENTER);
+			}
+		});
 	}
 	
 	/**
@@ -83,16 +92,27 @@ public class VideoManipulationButtons extends JPanel {
 	private void addPrevTrialButton()
 	{
 		prevTrial = new JButton("<<");
-		panel.add(prevTrial);
+		
 		prevTrial.setToolTipText("Previous trial");
 		
 		prevTrial.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		c.prevTrial();
+        		Thread prevTrialThread = new Thread(){
+        			public void run(){
+        				c.prevTrial();
+        			}
+        		};
+        		prevTrialThread.start();
         	}
         });
 		prevTrial.setFocusable(false);
 		prevTrial.setEnabled(false);
+		
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				panel.add(prevTrial);
+			}
+		});
 	}
 	
 	/**
@@ -103,16 +123,27 @@ public class VideoManipulationButtons extends JPanel {
 	private void addNextTrialButton()
 	{
 		nextTrial = new JButton(">>");
-		panel.add(nextTrial);
+		
 		nextTrial.setToolTipText("Next trial");
 		
 		nextTrial.addActionListener(new ActionListener() {
     	public void actionPerformed(ActionEvent e) {
-        		c.nextTrial();
+    			Thread nextTrialThread = new Thread(){
+    				public void run(){
+    					c.nextTrial();
+    				}
+    			};
+    			nextTrialThread.start();
         	}
         });
 		nextTrial.setFocusable(false);
 		nextTrial.setEnabled(false);
+		
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				panel.add(nextTrial);
+			}
+		});
 	}
 	
 	/**
@@ -122,16 +153,27 @@ public class VideoManipulationButtons extends JPanel {
 	private void addPrevFrameButton()
 	{
 		prevFrame = new JButton("<");
-		panel.add(prevFrame);
+		
 		prevFrame.setToolTipText("Previous frame");
 		
 		prevFrame.addActionListener(new ActionListener() {
     	public void actionPerformed(ActionEvent e) {
-        		c.prevFrame();
+    			Thread prevFrameThread = new Thread(){
+    				public void run(){
+    					c.prevFrame();
+    				}
+    			};
+        		prevFrameThread.start();
         	}
         });
 		prevFrame.setFocusable(false);
 		prevFrame.setEnabled(false);
+		
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				panel.add(prevFrame);
+			}
+		});
 	}
 	
 	/**
@@ -141,16 +183,27 @@ public class VideoManipulationButtons extends JPanel {
 	private void addNextFrameButton()
 	{
 		nextFrame = new JButton(">");
-		panel.add(nextFrame);
+		
 		nextFrame.setToolTipText("Next frame");
 		
 		nextFrame.addActionListener(new ActionListener() {
     	public void actionPerformed(ActionEvent e) {
-        		c.nextFrame();
+        		Thread nextFrameThread = new Thread(){
+        			public void run(){
+        				c.nextFrame();
+        			}
+        		};
+        		nextFrameThread.start();
         	}
         });
 		nextFrame.setFocusable(false);
 		nextFrame.setEnabled(false);
+		
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				panel.add(nextFrame);
+			}
+		});
 	}
 	
 	/**
@@ -161,25 +214,46 @@ public class VideoManipulationButtons extends JPanel {
 	private void addPauseButton()
 	{
 		playPause = new JButton("\u25b6");
-		panel.add(playPause);
+		
 		playPause.setToolTipText("Play or pause video");
 		playPause.setPreferredSize(new Dimension(45,26));
 		
 		playPause.addActionListener(new ActionListener() {
     	public void actionPerformed(ActionEvent e) {
-        		c.play();
+        		Thread togglePlayThread = new Thread(){
+        			public void run(){
+        				c.play();
+        			}
+        		};
+    			togglePlayThread.start();
         	}
         });
 		playPause.setFocusable(false);
 		playPause.setEnabled(false);
+		
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				panel.add(playPause);
+			}
+		});
 	}
 	
 	public void setPlay(boolean state)
 	{
-		if (state)
-			playPause.setText("\u25b6");
-		else
-			playPause.setText("||");
+		if (state) {
+			SwingUtilities.invokeLater(new Runnable(){
+				public void run(){
+					playPause.setText("\u25b6");
+				}
+			});
+		}
+		else {
+			SwingUtilities.invokeLater(new Runnable(){
+				public void run(){
+					playPause.setText("||");
+				}
+			});
+		}	
 	}
 	
 	/**

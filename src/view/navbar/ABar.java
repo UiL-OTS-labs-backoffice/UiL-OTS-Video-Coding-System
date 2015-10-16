@@ -80,7 +80,6 @@ public abstract class ABar extends JPanel {
 				indicator.setBounds(getIndicatorRectangle());
 			}
 		});
-		
 	}
 	
 	/**
