@@ -5,6 +5,7 @@ import java.awt.Rectangle;
 import java.awt.SystemColor;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import view.navbar.ABar;
 import model.AbstractTimeFrame;
@@ -20,24 +21,32 @@ public class PanelTimeframe
 	private JPanel panel, smallPanel;
 	private int type;
 	
-	public PanelTimeframe(AbstractTimeFrame tf, int type, ABar pane)
+	public PanelTimeframe(AbstractTimeFrame tf, final int type, final ABar pane)
 	{
 		this.tf = tf;
 		this.type = type;
-		
 		this.panel = new JPanel();
 		
-		panel.setBackground((type == view.navbar.InformationPanel.TYPE_LOOK) ? SystemColor.inactiveCaption : SystemColor.activeCaption);
-		
-		this.smallPanel = new JPanel();
-		smallPanel.setBackground((type == view.navbar.InformationPanel.TYPE_LOOK) ? LOOK_COLOR : TRIAL_COLOR);
-		
-		pane.add(panel);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				panel.setBackground((type == view.navbar.InformationPanel.TYPE_LOOK) ? SystemColor.inactiveCaption
+						: SystemColor.activeCaption);
+				PanelTimeframe.this.smallPanel = new JPanel();
+				smallPanel
+						.setBackground((type == view.navbar.InformationPanel.TYPE_LOOK) ? LOOK_COLOR
+								: TRIAL_COLOR);
+				pane.add(panel);
+			}
+		});
 	}
 	
-	public void setSize(Rectangle size)
+	public void setSize(final Rectangle size)
 	{
-		panel.setBounds(size);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				panel.setBounds(size);
+			}
+		});
 	}
 	
 	public long getStart()

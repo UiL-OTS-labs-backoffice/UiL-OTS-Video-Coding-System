@@ -1,6 +1,8 @@
 package view.navbar;
 
 import java.awt.BorderLayout;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -8,11 +10,14 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import model.AbstractTimeFrame;
 import view.player.IMediaPlayer;
 import controller.Globals;
 import controller.IVideoControls;
-import model.AbstractTimeFrame;
 
+/**
+ * Navbar is the controller class for all the time bar elements in the view
+ */
 public class Navbar extends JPanel {
 
 	private static final long serialVersionUID = 1L;
@@ -33,13 +38,62 @@ public class Navbar extends JPanel {
 	
 	private UpdateScrollable updateScrollable;
 	
+	/**
+	 * Constructor
+	 * @param g 	Reference to Globals instance
+	 */
 	public Navbar(Globals g)
 	{
 		this.g = g;
-		createLayout(g);
+		createLayout();
 		this.currentStartVisibleTime = 0;
 	}
 	
+	/**
+	 * Private method that creates the layout of the component
+	 * @param g
+	 */
+	private void createLayout()
+	{
+		information = new InformationPanel(this, g);
+		controls = new ControlBar(this, g);
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				setLayout(new BorderLayout(0, 0));
+				add(information, BorderLayout.CENTER);
+				add(controls, BorderLayout.SOUTH);
+				addComponentListener(new ComponentListener(){
+					@Override
+					public void componentResized(ComponentEvent e) {
+						final Navbar com = (Navbar) e.getComponent();
+						new Thread(){
+							public void run()
+							{
+								com.componentResized();
+							}
+						}.start();
+					}
+
+					@Override
+					public void componentMoved(ComponentEvent e) { }
+
+					@Override
+					public void componentShown(ComponentEvent e) { }
+
+					@Override
+					public void componentHidden(ComponentEvent e) { }
+					
+				});
+			}
+		});
+	}
+	
+	/**
+	 * Method to call after the video player is loaded, which then
+	 * creates references to the video player and starts the single
+	 * thread executor
+	 */
 	public void videoInstantiated()
 	{
 		this.player = g.getVideoController().getPlayer();
@@ -54,93 +108,145 @@ public class Navbar extends JPanel {
 		
 		this.visibleTime = player.getMediaDuration();
 		this.currentEndVisibleTime = player.getMediaDuration();
+		
 		information.videoInstantiated();
 		controls.videoInstantiated();
 	}
 	
-	private void createLayout(Globals g)
-	{
-		setLayout(new BorderLayout(0, 0));
-		
-		information = new InformationPanel(this, g);
-		add(information, BorderLayout.CENTER);
-		
-		controls = new ControlBar(this, g);
-		add(controls, BorderLayout.SOUTH);
-	}
-
-	public void addTimeFrame(AbstractTimeFrame tf, int type) {
-		// TODO remove
-		information.addTimeFrame(tf, type);		
-	}
-	
+	/**
+	 * Method to call if the component was resized, because sub-panels don't
+	 * always listen to this correctly.
+	 * The method makes sure all panels are redrawn in the correct proportions
+	 */
 	public void componentResized()
 	{
 		information.componentResized();
 	}
 	
+	/**
+	 * Method to call if the media time has changed
+	 */
 	public void mediaTimeChanged()
 	{
-		redraw();
+		information.mediaTimeChanged();
 	}
 	
+	/**
+	 * Method to call if the visible area changed
+	 */
+	public void visibleAreaChanged()
+	{
+		information.visibleAreaChanged();
+		controls.visibleAreaChanged();
+	}
+	
+	/**
+	 * Method to call if a single AbstractTimeFrame changed
+	 * @param tf 	AbstractTimeFrame that changed
+	 */
+	public void updateATF(AbstractTimeFrame tf)
+	{
+		// TODO handle this
+//		information
+	}
+	
+	/**
+	 * Method to change the first time point of the video that
+	 * is currently visible in the detail view bar
+	 * @param time	New start point for visible time
+	 */
 	public void setCurrentStartVisibleTime(long time)
 	{
 		this.currentStartVisibleTime = time;
 		this.currentEndVisibleTime = time + visibleTime;
-		redraw();
+		visibleAreaChanged();
 	}
 	
+	/**
+	 * Get method for the first point in the time of the video that is
+	 * visible in the detail view bar
+	 * @return 	long 	first visible point in time in detail view bar
+	 */
 	public long getCurrentStartVisibleTime()
 	{
 		return currentStartVisibleTime;
 	}
 	
+	/**
+	 * Method to change the last time point of the video that is visible
+	 * in the detail view bar
+	 * @param time 	The new current time point of the video that is the last
+	 * 				visible time point
+	 */
 	public void setCurrentEndVisibleTime(long time)
 	{
 		this.currentEndVisibleTime = time;
 		this.visibleTime = this.currentEndVisibleTime - this.currentStartVisibleTime;
 		calculateVisiblePercentage();
-		redraw();
+		visibleAreaChanged();
 	}
 	
+	/**
+	 * Get method for the last point in the time of the video that is
+	 * visible in the detail view bar
+	 * @return 	long 	last visible point in time in detail view bar
+	 */
 	public long getCurrentEndVisibleTime()
 	{
 		return this.currentEndVisibleTime;
 	}
 	
+	/**
+	 * Method to change the amount of time that is visible from the current start
+	 * point (i.e. when zooming in or out occurs)
+	 * @param time	amount of visible time in the detail view bar
+	 */
 	public void setVisibleTime(long time)
 	{
 		this.visibleTime = time;
 		this.currentEndVisibleTime = this.currentStartVisibleTime + time;
 		calculateVisiblePercentage();
-		redraw();
+		visibleAreaChanged();
 	}
 	
+	/**
+	 * Get method for the total time that is visible in the detail view bar
+	 * @return long 	amount of time that is visible in the detail view bar
+	 */
 	public long getVisibleTime()
 	{
 		return this.visibleTime;
 	}
 	
+	/**
+	 * Get method for the percentage of time of the total video duration that
+	 * is currently visible in the detail view bar
+	 * @return	float 	percentage of total time that is visible in detail view
+	 * 					bar
+	 */
 	public float getVisiblePercentage()
 	{
 		return visiblePercentage;
 	}
 	
+	/**
+	 * Private method that calculates the percentage of visible time out of the total
+	 * media duration from the amount of time that is visible
+	 */
 	private void calculateVisiblePercentage()
 	{
 		visiblePercentage = (float) visibleTime / (float) player.getMediaDuration() * 100f;
 	}
 	
-	private void redraw()
-	{
-		if(updateScrollable != null) updateScrollable.update();
-	}
 	
+	/**
+	 * Single Thread Executor class scrolls the visible area based on current media
+	 * time
+	 */
 	private final class UpdateScrollable implements Runnable
 	{
 		
-		Navbar navbar;
+		private final Navbar navbar;
 		
 		private UpdateScrollable(Navbar navbar)
 		{
@@ -172,21 +278,27 @@ public class Navbar extends JPanel {
 				}
 			});
 		}
-		
-		public void update(){
-			controls.visibleAreaChanged();
-			information.repaintDetails();
-		}
 	}
 	
-	protected void setIsDragging(boolean isDragging)
+	/**
+	 * If the overview bar is used to change the part of the video that is visible
+	 * in the detail view bar, isDragging should be true
+	 * @param isDragging 	Weather or not this is the case
+	 */
+	public void setIsDragging(boolean isDragging)
 	{
 		this.isDragging = isDragging;
 	}
 	
-	protected boolean isDragging()
+	/**
+	 * True iff the overview bar is used to change what part of the video is visible
+	 * in the detail view bar
+	 * @return  True iff this is the case
+	 */
+	public boolean isDragging()
 	{
 		return this.isDragging;
 	}
+	
 	
 }

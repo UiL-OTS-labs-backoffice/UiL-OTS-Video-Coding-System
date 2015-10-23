@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 //import java.awt.EventQueue;
 
 
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -24,6 +25,7 @@ import javax.swing.JCheckBox;
 
 
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
 
 import controller.*;
 
@@ -65,6 +67,16 @@ public class ExperimentSettings{
 	 */
 	public ExperimentSettings(Globals g) {
 		c = g.getController();
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				createLayout();
+			}
+		});
+	}
+	
+	private void createLayout()
+	{
 		frmExperimentSettings = new JFrame();
 		frmExperimentSettings.setIconImages(Globals.getIcons());
 		frmExperimentSettings.setResizable(false);
@@ -336,7 +348,11 @@ public class ExperimentSettings{
 	 */
 	public void show()
 	{
-		frmExperimentSettings.setVisible(true);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				frmExperimentSettings.setVisible(true);
+			}
+		});
 	}
 	
 	/**
@@ -344,7 +360,11 @@ public class ExperimentSettings{
 	 */
 	public void hide()
 	{
-		frmExperimentSettings.setVisible(false);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				frmExperimentSettings.setVisible(false);
+			}
+		});
 	}
 	
 	/**
@@ -424,18 +444,23 @@ public class ExperimentSettings{
 	 * @param show_res_id		True iff to show researcher ID in csv
 	 * @param show_pp_id		True iff to show participant ID in csv
 	 */
-	public void setSettings(String exp_name, String exp_id, String res_id,
-			String pp_id, boolean show_exp_name, boolean show_exp_id,
-			boolean show_res_id, boolean show_pp_id)
+	public void setSettings(final String exp_name, final String exp_id, final String res_id,
+			final String pp_id, final boolean show_exp_name, final boolean show_exp_id,
+			final boolean show_res_id, final boolean show_pp_id)
 	{
-		this.exp_name.setText(exp_name);
-		this.exp_id.setText(exp_id);
-		this.res_id.setText(res_id);
-		this.pp_id.setText(pp_id);
-		this.show_exp_name.setSelected(show_exp_name);
-		this.show_exp_id.setSelected(show_exp_id);
-		this.show_res_id.setSelected(show_res_id);
-		this.show_pp_id.setSelected(show_pp_id);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				ExperimentSettings.this.exp_name.setText(exp_name);
+				ExperimentSettings.this.exp_id.setText(exp_id);
+				ExperimentSettings.this.res_id.setText(res_id);
+				ExperimentSettings.this.pp_id.setText(pp_id);
+				ExperimentSettings.this.show_exp_name
+						.setSelected(show_exp_name);
+				ExperimentSettings.this.show_exp_id.setSelected(show_exp_id);
+				ExperimentSettings.this.show_res_id.setSelected(show_res_id);
+				ExperimentSettings.this.show_pp_id.setSelected(show_pp_id);
+			}
+		});
 	}
 	
 	/**
@@ -443,11 +468,16 @@ public class ExperimentSettings{
 	 * @param useTimeout 	Wether or not to use the timeout variable
 	 * @param timeout		The number of ms after which a look times out
 	 */
-	public void setTimeout(Boolean useTimeout, Long timeout)
+	public void setTimeout(final Boolean useTimeout, final Long timeout)
 	{
-		this.use_timeout.setSelected(useTimeout);
-		this.spinner_timeout.setValue(timeout.intValue());
-		this.spinner_timeout.setEnabled(useTimeout);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				ExperimentSettings.this.use_timeout.setSelected(useTimeout);
+				ExperimentSettings.this.spinner_timeout.setValue(timeout
+						.intValue());
+				ExperimentSettings.this.spinner_timeout.setEnabled(useTimeout);
+			}
+		});
 	}
 
 }

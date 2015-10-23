@@ -24,10 +24,14 @@ public class MainMenu extends JMenuBar {
 	public MainMenu(Globals g)
 	{
 		c = g.getController();
-		addFileMenu();
-		addTrialMenu();
-		addSettingsMenu();
-		addHelpMenu();
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				addFileMenu();
+				addTrialMenu();
+				addSettingsMenu();
+				addHelpMenu();
+			}
+		});
 	}
 	
 	/**

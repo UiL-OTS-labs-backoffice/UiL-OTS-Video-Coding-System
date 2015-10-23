@@ -60,14 +60,19 @@ public class ControlBar  extends JPanel {
 		slider.addChangeListener(new ChangeListener(){
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				if(slider.getValueIsAdjusting())
-				{
-					navbar.setVisibleTime(visibleTimeFromPercentage(slider.getValue()));
-					if(navbar.getCurrentStartVisibleTime() + navbar.getVisibleTime() > player.getMediaDuration())
-					{
-						navbar.setCurrentStartVisibleTime(player.getMediaDuration() - navbar.getVisibleTime());
+				Thread stateChangerThread = new Thread(){
+					public void run(){
+						if(slider.getValueIsAdjusting())
+						{
+							navbar.setVisibleTime(visibleTimeFromPercentage(slider.getValue()));
+							if(navbar.getCurrentStartVisibleTime() + navbar.getVisibleTime() > player.getMediaDuration())
+							{
+								navbar.setCurrentStartVisibleTime(player.getMediaDuration() - navbar.getVisibleTime());
+							}
+						}
 					}
-				}
+				};
+				stateChangerThread.start();
 			}
 		});
 	}
@@ -89,10 +94,21 @@ public class ControlBar  extends JPanel {
 		scrollBar.addAdjustmentListener(new AdjustmentListener(){
 			@Override
 			public void adjustmentValueChanged(AdjustmentEvent e) {
-				if(scrollBar.getValueIsAdjusting())
+				
+				final long newStartTime = fromInt(e.getValue());
+				Thread valueAdjustedThread = new Thread()
 				{
-					navbar.setCurrentStartVisibleTime(fromInt(e.getValue()));
-				}
+					public void run()
+					{
+						if(scrollBar.getValueIsAdjusting())
+						{
+							navbar.setCurrentStartVisibleTime(newStartTime);
+						}
+					}
+				};
+				valueAdjustedThread.start();
+				
+				
 			}
 		});
 	}

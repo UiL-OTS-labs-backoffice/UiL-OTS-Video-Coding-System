@@ -1,26 +1,37 @@
 package view.navbar;
 
-import java.awt.Rectangle;
-import java.util.LinkedList;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
+import java.util.HashMap;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import controller.Globals;
-import view.navbar.PanelTimeframe;
-import view.player.IMediaPlayer;
+import model.AbstractTimeContainer;
 import model.AbstractTimeFrame;
+import controller.Globals;
+import controller.IVideoControls;
+import view.navbar.PanelTimeframe;
+import view.navbar.listeners.TimeMouseListener;
+import view.navbar.listeners.TimeMouseMotionListener;
+import view.player.IMediaPlayer;
 
 public abstract class ABar extends JPanel {
 
 	private static final long serialVersionUID = 1L;
+	private static final int ALLOWED_DRAG_MARGIN = 10;
 	
 	protected Globals g;
 	protected IMediaPlayer player;
+	protected IVideoControls vc;
 	
 	protected Navbar navbar;
+	protected HashMap<AbstractTimeFrame, PanelTimeframe> timeFrames = 
+			new HashMap<AbstractTimeFrame, PanelTimeframe>();
+	
 	protected TimeIndicator indicator;
-	private LinkedList<PanelTimeframe> timeFrames = new LinkedList<PanelTimeframe>();
 	
 	/**
 	 * Constructor method creates a new ABar object.
@@ -30,74 +41,80 @@ public abstract class ABar extends JPanel {
 	protected ABar(Navbar navbar, Globals g)
 	{
 		this.g = g;
+		this.vc = g.getVideoController();
 		this.navbar = navbar;
-		indicator = new TimeIndicator(this, g);
-		add(indicator);
-		setIndicatorSettings();
+		this.setLayout(null);
+	}
+	
+	protected void loadTimeframes()
+	{
+		for(AbstractTimeFrame tr : Globals.getInstance().getExperimentModel().getItems())
+		{
+			AbstractTimeContainer trial = (AbstractTimeContainer) tr;
+			timeFrames.put(trial, new PanelTimeframe(trial, InformationPanel.TYPE_TRIAL, this));
+			for(AbstractTimeFrame l : trial.getItems())
+			{
+				timeFrames.put(l, new PanelTimeframe(l, InformationPanel.TYPE_LOOK, this));
+			}
+		}
 	}
 	
 	public void videoInstantiated()
 	{
-		this.player = g.getVideoController().getPlayer();
-	}
-	
-	/**
-	 * adds a time frame to the list of time frames.
-	 * TODO find a way to make reference to model in final product
-	 * @param tf 	Time frame to be added
-	 */
-	public void addTimeFrame(AbstractTimeFrame tf, int type) {
+		player = g.getVideoController().getPlayer();
 		
-		// TODO delete and reference model
-		timeFrames.add(new PanelTimeframe(tf, type, this));
+		indicator = new TimeIndicator(this, player);
+		
+		loadTimeframes();
 		paintTimeFrames();
+		
+		addMouseListener(new TimeMouseListener(this, navbar, vc));
+		addMouseMotionListener(new TimeMouseMotionListener(this, navbar, vc));
 	}
 	
-
+	public void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setColor(Color.RED);
+		g2.draw(indicator.getLine());
+	}
+	
 	/**
 	 * Method to invoke when the window has changed by zooming,
 	 * scrolling or resizing. Repaints all time frames
 	 */
 	protected void paintTimeFrames()
 	{
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run()
-			{
-				runnableUpdater();
+		for(AbstractTimeFrame tf : timeFrames.keySet())
+		{
+			paintTimeFrame(timeFrames.get(tf));
+		}
+	}
+	
+	/**
+	 * Method to call if media time changed. Updates indicators for
+	 * current media time
+	 */
+	public void mediaTimeChanged()
+	{
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				indicator.repositionIndicator();
 			}
 		});
 	}
 	
 	/**
-	 * Call these actions if the containing JFrame is resized
+	 * True if a clicked point is within the draggable area of the time
+	 * indicator
+	 * @param e
+	 * @return
 	 */
-	public void componentResized()
+	public boolean draggableArea(MouseEvent e)
 	{
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run()
-			{
-				paintTimeFrames();
-				indicator.setBounds(getIndicatorRectangle());
-			}
-		});
-	}
-	
-	/**
-	 * Use the Indicator.calculateBounds function with the component
-	 * specific parameters
-	 * @return	Rectangle containing indicator bounds
-	 */
-	protected Rectangle getIndicatorRectangle()
-	{
-		return indicator.calculateBounds(player.getMediaTime());
-	}
-	
-	/**
-	 * Code to execute when repainting
-	 */
-	protected void runnableUpdater()
-	{
-		paintTimeFrames();
+		int mediaX = xByTime(player.getMediaTime());
+		return e.getX() > mediaX - ALLOWED_DRAG_MARGIN && e.getX() < mediaX + ALLOWED_DRAG_MARGIN; 
 	}
 	
 	/**
@@ -113,7 +130,7 @@ public abstract class ABar extends JPanel {
 	 * @return	int giving the x coordinate that corresponds 
 	 * 				with the time
 	 */
-	protected abstract int xByTime(long time);
+	public abstract int xByTime(long time);
 	
 	/**
 	 * Get the video time that corresponds with a certain x coordinate
@@ -121,12 +138,10 @@ public abstract class ABar extends JPanel {
 	 * @param xCoord	The x coordinate in the current view
 	 * @return			Time corresponding to x coordinate
 	 */
-	protected abstract long timeByX(int xCoord);
+	public abstract long timeByX(int xCoord);
 	
 	/**
 	 * Set the settings of the indicator, giving it the
 	 * margin and the preferred width
 	 */
-	protected abstract void setIndicatorSettings();
-	
 }

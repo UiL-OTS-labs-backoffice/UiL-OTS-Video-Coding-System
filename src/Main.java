@@ -53,11 +53,7 @@ public class Main {
 		if(vlcFound() && !fail_find_vlc)
 		{
 			// Only starts the main application after VLC has been found
-			SwingUtilities.invokeLater(new Runnable(){
-				public void run(){
-					 Globals.getInstance();
-				}
-			});
+			Globals.getInstance();
 		} else {
 			SwingUtilities.invokeLater(new Runnable(){
 				public void run(){

@@ -1,9 +1,9 @@
 package view.navbar;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import controller.Globals;
-import model.AbstractTimeFrame;
 import net.miginfocom.swing.MigLayout;
 
 public class InformationPanel extends JPanel {
@@ -16,38 +16,56 @@ public class InformationPanel extends JPanel {
 	
 	protected InformationPanel(Navbar navbar, Globals g)
 	{
-		setLayout(new MigLayout("", "[grow,fill]", "[20px:40px:40px,grow,fill][40px:50px:100px,fill][200px:n,grow,fill]"));
-		
 		overview = new OverviewBar(navbar, g);
-		add(overview, "cell 0 0,grow");
-		overview.repaint();
-		
-		
 		detail = new DetailBar(navbar, g);
-		add(detail, "cell 0 2,grow");
-		detail.repaint();
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				setLayout(new MigLayout("", "[grow,fill]",
+						"[20px:40px:40px,grow,fill][40px:50px:100px,fill][200px:n,grow,fill]"));
+				add(overview, "cell 0 0,grow");
+				add(detail, "cell 0 2,grow");
+			}
+		});
 	}
 	
 	public void videoInstantiated()
 	{
 		overview.videoInstantiated();
 		detail.videoInstantiated();
+		componentResized();
 	}
 	
-	public void addTimeFrame(AbstractTimeFrame tf, int type) {
-		// TODO: remove. Draw from model
-		overview.addTimeFrame(tf, type);
-		detail.addTimeFrame(tf, type);
-	}
-	
+	/**
+	 * If the component is resized, everything (all panels, overview box and indicators)
+	 * has to be updated 
+	 */
 	public void componentResized()
 	{
-		overview.componentResized();
+		overview.paintTimeFrames();
+		overview.paintBox();
 		detail.paintTimeFrames();
+		mediaTimeChanged();
 	}
-
-	public void repaintDetails() {
+	
+	/**
+	 * If the visible area changed (resized, start time changed, etc), all VISIBLE
+	 * panels in the detail view have to be redrawn. The overview box in the overview 
+	 * has to be redrawn. That's it 
+	 */
+	public void visibleAreaChanged()
+	{
+		overview.paintBox();
 		detail.paintTimeFrames();
-		overview.componentResized();
+		detail.repaint();
+	}
+	
+	/**
+	 * Update indicators only
+	 */
+	public void mediaTimeChanged()
+	{
+		overview.mediaTimeChanged();
+		detail.mediaTimeChanged();
 	}
 }

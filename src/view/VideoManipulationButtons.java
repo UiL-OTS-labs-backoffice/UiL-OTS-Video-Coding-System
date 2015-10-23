@@ -48,40 +48,42 @@ public class VideoManipulationButtons extends JPanel {
 		this.g = g;
 		c = this.g.getVideoController();
 		
-		setLayout(new BorderLayout());
-		
-		panel = new JPanel();
-		add(panel, BorderLayout.NORTH);
-		
-		addTimeoutText();
-		addPrevTrialButton();
-		addPrevFrameButton();
-		addPauseButton();
-		addNextFrameButton();
-		addNextTrialButton();
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				setLayout(new BorderLayout());
+				panel = new JPanel();
+				add(panel, BorderLayout.NORTH);
+				addTimeoutText();
+				addPrevTrialButton();
+				addPrevFrameButton();
+				addPauseButton();
+				addNextFrameButton();
+				addNextTrialButton();
+			}
+		});
 	}
 	
-	public void setEnableButtons(boolean state)
+	public void setEnableButtons(final boolean state)
 	{
-		prevTrial.setEnabled(state);
-		nextTrial.setEnabled(state);
-		prevFrame.setEnabled(state);
-		nextFrame.setEnabled(state);
-		playPause.setEnabled(state);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				prevTrial.setEnabled(state);
+				nextTrial.setEnabled(state);
+				prevFrame.setEnabled(state);
+				nextFrame.setEnabled(state);
+				playPause.setEnabled(state);
+			}
+		});
 	}
 	
 	private void addTimeoutText()
 	{
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run(){
-				lblTimeout = new JLabel("Timeout");
-				lblTimeout.setHorizontalAlignment(SwingConstants.CENTER);
-				lblTimeout.setFont(new Font("Tahoma", Font.PLAIN, 35));
-				lblTimeout.setForeground(Color.RED);
-				lblTimeout.setVisible(false);
-				add(lblTimeout, BorderLayout.CENTER);
-			}
-		});
+		lblTimeout = new JLabel("Timeout");
+		lblTimeout.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTimeout.setFont(new Font("Tahoma", Font.PLAIN, 35));
+		lblTimeout.setForeground(Color.RED);
+		lblTimeout.setVisible(false);
+		add(lblTimeout, BorderLayout.CENTER);
 	}
 	
 	/**
@@ -105,14 +107,11 @@ public class VideoManipulationButtons extends JPanel {
         		prevTrialThread.start();
         	}
         });
+		
 		prevTrial.setFocusable(false);
 		prevTrial.setEnabled(false);
 		
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run(){
-				panel.add(prevTrial);
-			}
-		});
+		panel.add(prevTrial);
 	}
 	
 	/**
@@ -139,11 +138,7 @@ public class VideoManipulationButtons extends JPanel {
 		nextTrial.setFocusable(false);
 		nextTrial.setEnabled(false);
 		
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run(){
-				panel.add(nextTrial);
-			}
-		});
+		panel.add(nextTrial);
 	}
 	
 	/**
@@ -169,11 +164,7 @@ public class VideoManipulationButtons extends JPanel {
 		prevFrame.setFocusable(false);
 		prevFrame.setEnabled(false);
 		
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run(){
-				panel.add(prevFrame);
-			}
-		});
+		panel.add(prevFrame);
 	}
 	
 	/**
@@ -199,11 +190,7 @@ public class VideoManipulationButtons extends JPanel {
 		nextFrame.setFocusable(false);
 		nextFrame.setEnabled(false);
 		
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run(){
-				panel.add(nextFrame);
-			}
-		});
+		panel.add(nextFrame);
 	}
 	
 	/**
@@ -231,37 +218,32 @@ public class VideoManipulationButtons extends JPanel {
 		playPause.setFocusable(false);
 		playPause.setEnabled(false);
 		
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run(){
-				panel.add(playPause);
-			}
-		});
+		panel.add(playPause);
 	}
 	
-	public void setPlay(boolean state)
+	public void setPlay(final boolean state)
 	{
-		if (state) {
-			SwingUtilities.invokeLater(new Runnable(){
-				public void run(){
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				if (state) {
 					playPause.setText("\u25b6");
-				}
-			});
-		}
-		else {
-			SwingUtilities.invokeLater(new Runnable(){
-				public void run(){
+				} else {
 					playPause.setText("||");
 				}
-			});
-		}	
+			}
+		});	
 	}
 	
 	/**
 	 * Method to show or hide the text that indicates a timeout
 	 * @param state	Boolean. True iff text is to show
 	 */
-	public void setTimeoutText(boolean state)
+	public void setTimeoutText(final boolean state)
 	{
-		lblTimeout.setVisible(state);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				lblTimeout.setVisible(state);
+			}
+		});
 	}
 }

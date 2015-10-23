@@ -35,7 +35,12 @@ public class OverviewBar extends ABar {
 	{
 		super(navbar, g);
 		minVisibleTime = 0;
-		addOverviewBox();
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				addOverviewBox();
+			}
+		});
 	}
 	
 	public void videoInstantiated()
@@ -47,12 +52,19 @@ public class OverviewBar extends ABar {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void componentResized()
+	@Override
+	protected void paintTimeFrame(final PanelTimeframe tf)
 	{
-		super.componentResized();
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run(){
-				paintBox();
+		int left = xByTime(tf.getStart());
+		int right = xByTime(tf.getEnd());
+		int y = (tf.getType() == InformationPanel.TYPE_LOOK) ? getHeight() / 2
+				: BOX_BORDER_WIDTH;
+		final Rectangle r2 = new Rectangle(left, y, right - left, getHeight()
+				/ 2 - BOX_BORDER_WIDTH);
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				tf.setSize(r2);
 			}
 		});
 	}
@@ -61,22 +73,7 @@ public class OverviewBar extends ABar {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void paintTimeFrame(PanelTimeframe tf)
-	{
-		int left = xByTime(tf.getStart());
-		int right = xByTime(tf.getEnd());
-		
-		int y = (tf.getType() == InformationPanel.TYPE_LOOK) ? getHeight()/2 : BOX_BORDER_WIDTH;
-		
-		Rectangle r2 = new Rectangle(left, y, right-left, getHeight()/2 - BOX_BORDER_WIDTH);
-		tf.setSize(r2);
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected int xByTime(long time)
+	public int xByTime(long time)
 	{
 		return (int) ((float) time * (float) getWidth() / (float) player.getMediaDuration());
 	}
@@ -85,17 +82,8 @@ public class OverviewBar extends ABar {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected long timeByX(int xCoord) {
+	public long timeByX(int xCoord) {
 		return (long) ((float) xCoord / (float) getWidth() * player.getMediaDuration());
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void setIndicatorSettings() {
-		indicator.setPreferredWidth(INDICATOR_WIDTH);
-		indicator.setMargins(2);
 	}
 	
 	/******************************************
@@ -109,10 +97,17 @@ public class OverviewBar extends ABar {
 	 * Resize- and paint the overview box
 	 */
 	public void paintBox() {
-		int left = (int) ((float) navbar.getCurrentStartVisibleTime() / (float) player.getMediaDuration() * (float) getWidth());
-		int right = (int) ((float) navbar.getVisiblePercentage() * (float) getWidth() / 100.0);
-		Rectangle rBox = new Rectangle(left, 0, right, getHeight());
-		overviewBox.setBounds(rBox);
+		int left = (int) ((float) navbar.getCurrentStartVisibleTime()
+				/ (float) player.getMediaDuration() * (float) getWidth());
+		int right = (int) ((float) navbar.getVisiblePercentage()
+				* (float) getWidth() / 100.0);
+		final Rectangle rBox = new Rectangle(left, 0, right, getHeight());
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				overviewBox.setBounds(rBox);
+			}
+		});
 	}
 	
 	/**
@@ -133,20 +128,30 @@ public class OverviewBar extends ABar {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				xStart = e.getXOnScreen();
-				if(e.getX() < BOX_BORDER_WIDTH){
-					resizeLeft = true;
-					resizeRight = false;
-					visibleEndTime = navbar.getCurrentEndVisibleTime();
-				}else if (e.getX() > overviewBox.getWidth() - BOX_BORDER_WIDTH)
+				final int xStartInThread = e.getXOnScreen();
+				final int eX = e.getX();
+				Thread mousePressedT = new Thread()
 				{
-					resizeRight = true;
-					resizeLeft = false;
-				}
-				else {
-					resizeRight = false;
-					resizeLeft = false;
-				}
+					public void run()
+					{
+						xStart = xStartInThread;
+						if(eX < BOX_BORDER_WIDTH){
+							resizeLeft = true;
+							resizeRight = false;
+							visibleEndTime = navbar.getCurrentEndVisibleTime();
+						}else if (eX > overviewBox.getWidth() - BOX_BORDER_WIDTH)
+						{
+							resizeRight = true;
+							resizeLeft = false;
+						}
+						else {
+							resizeRight = false;
+							resizeLeft = false;
+						}
+					}
+				};
+				mousePressedT.start();
+				
 			}
 
 			@Override
@@ -166,28 +171,36 @@ public class OverviewBar extends ABar {
 	
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				long dt = timeByX(e.getXOnScreen() - xStart);
-				if(resizeRight)
-				{
-					long net = navbar.getCurrentEndVisibleTime() + dt;
-					if(net <= navbar.getCurrentStartVisibleTime() + minVisibleTime) net = navbar.getCurrentStartVisibleTime() + minVisibleTime;
-					else if(net > player.getMediaDuration()) net = player.getMediaDuration();
-					navbar.setCurrentEndVisibleTime(net);
-				} else if (resizeLeft)
-				{
-					long nst = navbar.getCurrentStartVisibleTime() + dt;
-					if(nst < 0) nst = 0;
-					else if(nst >= navbar.getCurrentEndVisibleTime() - minVisibleTime) nst = navbar.getCurrentEndVisibleTime() - minVisibleTime;
-					navbar.setCurrentStartVisibleTime(nst);
-					navbar.setCurrentEndVisibleTime(visibleEndTime);
-				} else {
-					long nt = navbar.getCurrentStartVisibleTime() + dt;
-					if(nt < 0) nt = 0;
-					else if(nt + navbar.getVisibleTime() > player.getMediaDuration()) nt = player.getMediaDuration() - navbar.getVisibleTime();
-					navbar.setCurrentStartVisibleTime(nt);
-				}
+				final long dt = timeByX(e.getXOnScreen() - xStart);
+				final int XonScreenFinal = e.getXOnScreen();
 				
-				xStart = e.getXOnScreen();
+				Thread mouseDraggingThread = new Thread()
+				{
+					public void run()
+					{
+						if(resizeRight)
+						{
+							long net = navbar.getCurrentEndVisibleTime() + dt;
+							if(net <= navbar.getCurrentStartVisibleTime() + minVisibleTime) net = navbar.getCurrentStartVisibleTime() + minVisibleTime;
+							else if(net > player.getMediaDuration()) net = player.getMediaDuration();
+							navbar.setCurrentEndVisibleTime(net);
+						} else if (resizeLeft)
+						{
+							long nst = navbar.getCurrentStartVisibleTime() + dt;
+							if(nst < 0) nst = 0;
+							else if(nst >= navbar.getCurrentEndVisibleTime() - minVisibleTime) nst = navbar.getCurrentEndVisibleTime() - minVisibleTime;
+							navbar.setCurrentStartVisibleTime(nst);
+							navbar.setCurrentEndVisibleTime(visibleEndTime);
+						} else {
+							long nt = navbar.getCurrentStartVisibleTime() + dt;
+							if(nt < 0) nt = 0;
+							else if(nt + navbar.getVisibleTime() > player.getMediaDuration()) nt = player.getMediaDuration() - navbar.getVisibleTime();
+							navbar.setCurrentStartVisibleTime(nt);
+						}
+						xStart = XonScreenFinal;
+					}
+				};
+				mouseDraggingThread.start();
 			}
 	
 			@Override

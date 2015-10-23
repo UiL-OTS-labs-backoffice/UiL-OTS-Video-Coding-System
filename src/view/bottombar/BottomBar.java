@@ -25,7 +25,11 @@ public class BottomBar extends JPanel {
 	public BottomBar(Globals g)
 	{
 		this.g = g;
-		setLayout(new BorderLayout(0, 0));
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				setLayout(new BorderLayout(0, 0));
+			}
+		});
 		addTimeBar();
 		addControlPanel();
 		addDetailBar();
@@ -44,13 +48,7 @@ public class BottomBar extends JPanel {
      */
     public void setInfo(final String trial, final String look, final String time)
     {
-    	SwingUtilities.invokeLater(new Runnable(){
-    		public void run()
-    		{
-    			trialInformation.setInfo(trial, look, time);
-    		}
-    	});
-    	
+		trialInformation.setInfo(trial, look, time);
     }
     
     /**
@@ -78,7 +76,7 @@ public class BottomBar extends JPanel {
      */
     public void setFile(String file)
     {
-    	trialInformation.setFile(file);
+		trialInformation.setFile(file);
     }
     
     /**
@@ -96,14 +94,22 @@ public class BottomBar extends JPanel {
 	private void addTimeBar()
 	{
 		timecodes = new PlayerControlsPanel(g);
-		add(timecodes, BorderLayout.NORTH);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				add(timecodes, BorderLayout.NORTH);
+			}
+		});
 	}
 	
 	private void addControlPanel()
 	{
-		controlPanel = new JPanel();
-		controlPanel.setLayout(new BorderLayout(0,0));
-		add(controlPanel, BorderLayout.NORTH);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				controlPanel = new JPanel();
+				controlPanel.setLayout(new BorderLayout(0, 0));
+				add(controlPanel, BorderLayout.NORTH);
+			}
+		});
 		addTrialControls();
 		AddTrialInformation();
 	}
@@ -113,8 +119,12 @@ public class BottomBar extends JPanel {
      */
     private void addTrialControls()
     {
-    	trial_controls = new TrialControls(g);
-        controlPanel.add(trial_controls, BorderLayout.EAST);
+		trial_controls = new TrialControls(g);
+        SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				controlPanel.add(trial_controls, BorderLayout.EAST);
+			}
+		});
     }
     
     /**
@@ -122,18 +132,26 @@ public class BottomBar extends JPanel {
      */
     private void AddTrialInformation()
     {
-    	trialInformation = new TrialInformation();
-    	controlPanel.add(trialInformation, BorderLayout.WEST);
+		trialInformation = new TrialInformation();
+    	SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				controlPanel.add(trialInformation, BorderLayout.WEST);
+			}
+		});
     }
 	
     private void addDetailBar()
     {
-    	navbar = new Navbar(g);
-    	add(navbar, BorderLayout.SOUTH);
+		navbar = new Navbar(g);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				add(navbar, BorderLayout.SOUTH);
+			}
+		});
     }
 
 	public void mediaTimeChanged() {
-		navbar.mediaTimeChanged();		
+		navbar.mediaTimeChanged();
 	}
 	
 }

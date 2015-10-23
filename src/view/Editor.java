@@ -50,12 +50,14 @@ public class Editor {
     {
     	this.g = g;
     	this.c = this.g.getController();
-    	createFrame();
-    	addMenu();
-    	addControlBar();
+    	SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				createFrame();
+				addMenu();
+			}
+		});
+		addControlBar();
     	addVideoManipulationButtons();
-//    	KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-//        manager.addKeyEventDispatcher(new KeyDispatch(g));
     }
     
     public void videoInstantiated()
@@ -123,7 +125,11 @@ public class Editor {
     private void addControlBar()
     {
     	bottom_bar = new BottomBar(g);
-        frame.getContentPane().add(bottom_bar, BorderLayout.SOUTH);
+        SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				frame.getContentPane().add(bottom_bar, BorderLayout.SOUTH);
+			}
+		});
     }
     
     /**
@@ -132,7 +138,11 @@ public class Editor {
     private void addVideoManipulationButtons()
     {
     	playButtons = new VideoManipulationButtons(g);
-    	bottom_bar.add(playButtons, BorderLayout.CENTER);
+    	SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				bottom_bar.add(playButtons, BorderLayout.CENTER);
+			}
+		});
     }
     
     /**
@@ -148,18 +158,35 @@ public class Editor {
     		frame.getContentPane().remove(visualComponent);
     	
     	visualComponent = videoPlayer.getVisualComponent();
-    	frame.getContentPane().add(visualComponent);
-    	playButtons.setEnableButtons(true);
-    	bottom_bar.getTimeCodes().playerStarted(player);
+    	SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				frame.getContentPane().add(visualComponent);
+				playButtons.setEnableButtons(true);
+			}
+		});
+		bottom_bar.getTimeCodes().playerStarted(player);
     }
     
     /**
      * Shows the main view
      */
     public void show(){
-        frame.setVisible(true);
-        c.updateLabels(0L);
-        c.updateCurrentFileLabel();
+        SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				frame.setVisible(true);
+			}
+		});
+        
+        Thread updateLabels = new Thread()
+        {
+        	public void run()
+        	{
+        		c.updateLabels(0L);
+                c.updateCurrentFileLabel();
+        	}
+        };
+        updateLabels.start();
+		
     }
     
     /**
@@ -171,12 +198,6 @@ public class Editor {
      */
     public void setInfo(String trial, String look, String time)
     {
-    	SwingUtilities.invokeLater(new Runnable(){
-    		public void run()
-    		{
-    			
-    		}
-    	});
     	bottom_bar.setInfo(trial, look, time);
     }
     
@@ -186,12 +207,6 @@ public class Editor {
      */
     public void updateSlider()
     {
-    	SwingUtilities.invokeLater(new Runnable(){
-    		public void run()
-    		{
-    			
-    		}
-    	});
     	bottom_bar.mediaTimeChanged();
 //    	getTimeCodes().updateSlider();
     }
@@ -203,12 +218,7 @@ public class Editor {
      */
     public void setFile(final String file)
     {
-    	SwingUtilities.invokeLater(new Runnable(){
-    		public void run()
-    		{
-    			bottom_bar.setFile(file);
-    		}
-    	});
+		bottom_bar.setFile(file);
     }
     
     /**
@@ -230,42 +240,22 @@ public class Editor {
 			final boolean rmt, final boolean rml, final String trialComment, final String lookComment
 		)
     {
-    	SwingUtilities.invokeLater(new Runnable(){
-    		public void run()
-    		{
-    			bottom_bar.updateButtons(endTrial, endLook,	nt, et, nl, el, trialComment, lookComment);
-    	    	menu.updateButtons(rmt, rml);
-    		}
-    	});
+			bottom_bar.updateButtons(endTrial, endLook,	nt, et, nl, el, trialComment, lookComment);
+	    	menu.updateButtons(rmt, rml);
     }
     
     public void setPlayState(final boolean state)
     {
-    	SwingUtilities.invokeLater(new Runnable(){
-    		public void run()
-    		{
-    			playButtons.setPlay(state);
-    		}
-    	});
-    	}
+		playButtons.setPlay(state);
+	}
     
     public void setTimeoutText(final boolean state)
     {
-    	SwingUtilities.invokeLater(new Runnable(){
-    		public void run()
-    		{
-    			playButtons.setTimeoutText(state);
-    		}
-    	});
+		playButtons.setTimeoutText(state);
     }
 
 	public void mediaTimeChanged() {
-		SwingUtilities.invokeLater(new Runnable(){
-    		public void run()
-    		{
-    			bottom_bar.mediaTimeChanged();
-    		}
-    	});
+		bottom_bar.mediaTimeChanged();
 	}
     
     

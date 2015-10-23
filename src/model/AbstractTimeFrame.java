@@ -1,5 +1,8 @@
 package model;
+import java.awt.Rectangle;
 import java.io.Serializable;
+
+import javax.swing.JPanel;
 
 /**
  * A timeframe is an object that has a begin time and an end time
@@ -21,6 +24,8 @@ public abstract class AbstractTimeFrame implements Serializable
 	protected long duration, begintime, endtime = -1L;
 	
 	protected String comment;
+	
+	protected JPanel panel;
 	
 	/**
 	 * Constructor for this class
@@ -166,5 +171,16 @@ public abstract class AbstractTimeFrame implements Serializable
 	public void setComment(String comment)
 	{
 		this.comment = comment;
+	}
+	
+	/**
+	 * Method to change the size and position of the panel that
+	 * show up on the view for this time frame. 
+	 * @param r 	Rectangle for the bounds
+	 */
+	public void setSize(Rectangle r)
+	{
+		if(panel != null)
+			panel.setBounds(r);
 	}
 }

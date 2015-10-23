@@ -86,9 +86,13 @@ public class PlayerControlsPanel extends JPanel {
      * Constructor helper method
      */
     private void createUI() {
-        createControls();
-        layoutControls();
-        registerListeners();
+        SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				createControls();
+				layoutControls();
+				registerListeners();
+			}
+		});
     }
     
     /**
@@ -126,12 +130,18 @@ public class PlayerControlsPanel extends JPanel {
      * Broken out position setting, handles updating mediaPlayer
      */
     private void setSliderBasedPosition() {
-       float positionValue = positionSlider.getValue() / 10000.0f;
+    	float positionValue = positionSlider.getValue() / 10000.0f;
         // Avoid end of file freeze-up
         if (positionValue > 0.99f) {
             positionValue = 0.99f;
         }
-        c.setPosition(positionValue);
+        final float posVal = positionValue;
+        Thread positionThread = new Thread(){
+        	public void run(){
+        		c.setPosition(posVal);
+        	}
+        };
+        positionThread.start();
         runnable.update();
     }
     
@@ -141,16 +151,22 @@ public class PlayerControlsPanel extends JPanel {
             
         	@Override
             public void mousePressed(MouseEvent e) {
-        		dragging = true; 
-        		
-                if (c.isPlaying()) {
-                    mousePressedPlaying = true;
-                    c.play();
-                } else {
-                    mousePressedPlaying = false;
-                }
-                
-                setSliderBasedPosition();
+        		Thread mousePressedT = new Thread(){
+        			public void run(){
+        				dragging = true; 
+                		
+                        if (c.isPlaying()) {
+                            mousePressedPlaying = true;
+                            c.play();
+                        } else {
+                            mousePressedPlaying = false;
+                        }
+                        
+                        
+        			}
+        		};
+        		mousePressedT.start();
+				setSliderBasedPosition();
             }
             
             @Override
@@ -179,12 +195,21 @@ public class PlayerControlsPanel extends JPanel {
         
         timeLabel.addMouseListener(new MouseAdapter() {
         	public void mousePressed(MouseEvent e) {
-        		if(c.isPlaying())
-        		{
-        			c.play();
-        		}
+        		Thread doPauseT = new Thread(){
+        			public void run(){
+        				if(c.isPlaying())
+                		{
+                			c.play();
+                		}
+        			}
+        		};
+        		doPauseT.start();
         		
-        		new view.panels.TimeSelector(c.getMediaTime());
+        		SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						new view.panels.TimeSelector(c.getMediaTime());
+					}
+				});
         	}
         });
     }
@@ -235,18 +260,25 @@ public class PlayerControlsPanel extends JPanel {
         }
     }
     
-    private void updateTime(long millis, long end) {
+    private void updateTime(final long millis, long end) {
     	// RemainingTime string
-    	if(remaining)
-    		end = end - millis;
+		final long endTime = (remaining) ? end - millis : end;
     	
-    	// Set Times
-        timeLabel.setText(formatTime(millis));
-        remainingLabel.setText(formatTime(end));
+    	SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				// Set Times
+				timeLabel.setText(formatTime(millis));
+				remainingLabel.setText(formatTime(endTime));
+			}
+		});
     }
     
-    private void updatePosition(int value) {
-        positionSlider.setValue(value);
+    private void updatePosition(final int value) {
+        SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				positionSlider.setValue(value);
+			}
+		});
     }
     
     public void playerStarted(IMediaPlayer player)

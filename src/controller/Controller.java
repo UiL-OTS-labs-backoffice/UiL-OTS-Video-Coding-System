@@ -111,8 +111,12 @@ public class Controller {
 	 */
 	public void saveAs()
 	{
-		SaveAs dialog = new SaveAs();
-		dialog.setVisible(true);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				SaveAs dialog = new SaveAs();
+				dialog.setVisible(true);
+			}
+		});
 	}
 	
 	/**
@@ -200,15 +204,10 @@ public class Controller {
 	 */
 	public void updateLabels(final long time)
 	{	
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run(){
-				int tnr = g.getExperimentModel().getItemForTime(time);
-				updateButtons(tnr, time);
-				generateInfo(tnr, time);
-				g.getEditor().updateSlider();
-			}
-		});
-		
+		int tnr = g.getExperimentModel().getItemForTime(time);
+		updateButtons(tnr, time);
+		generateInfo(tnr, time);
+		g.getEditor().updateSlider();
 	}
 	
 	/**

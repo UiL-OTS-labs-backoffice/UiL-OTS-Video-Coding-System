@@ -6,6 +6,7 @@ import java.awt.Insets;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 /**
  * JPanel that contains the trial information
@@ -27,11 +28,15 @@ public class TrialInformation extends JPanel {
      */
     public TrialInformation()
     {
-    	createLayout();
-    	addCurrentFileLabels();
-    	addTrialNumberLabels();
-    	addLookNumberLabels();
-    	addTotalLookTimeLabels();
+    	SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				createLayout();
+				addCurrentFileLabels();
+				addTrialNumberLabels();
+				addLookNumberLabels();
+				addTotalLookTimeLabels();
+			}
+		});
     }
     
     /**
@@ -40,20 +45,28 @@ public class TrialInformation extends JPanel {
      * @param look		Look Number at current play position
      * @param time		Total look time at current play position
      */
-    public void setInfo(String trial, String look, String time)
+    public void setInfo(final String trial, final String look, final String time)
     {
-    	this.trialNumber.setText(trial);
-    	this.lookNumber.setText(look);
-    	this.lookTime.setText(time);
+    	SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				TrialInformation.this.trialNumber.setText(trial);
+				TrialInformation.this.lookNumber.setText(look);
+				TrialInformation.this.lookTime.setText(time);
+			}
+		});
     }
     
     /**
      * Method to change the value of the file label
      * @param file		Name of the file to be set
      */
-    public void setFile(String file)
+    public void setFile(final String file)
     {
-    	this.currentFile.setText(file);
+    	SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				TrialInformation.this.currentFile.setText(file);
+			}
+		});
     }
     
     private void createLayout()

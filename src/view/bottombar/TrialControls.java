@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import model.AbstractTimeFrame;
 import model.Trial;
@@ -35,12 +36,16 @@ public class TrialControls extends JPanel {
 		c = g.getController();
 		v = g.getVideoController();
 		
-		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		addNewTrialButton();
-		addEndTrialButton();
-		addNewLookButton();
-		addEndLookButton();
-		addCommentsButtons();
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				setLayout(new BoxLayout(TrialControls.this, BoxLayout.PAGE_AXIS));
+				addNewTrialButton();
+				addEndTrialButton();
+				addNewLookButton();
+				addEndLookButton();
+				addCommentsButtons();
+			}
+		});
 	}
 	
 	/**
@@ -57,24 +62,24 @@ public class TrialControls extends JPanel {
 	 * @param trialComment 
 	 */
 	public void update(
-			String endTrial,String endLook,
-			boolean nt, boolean et, boolean nl, boolean el, String trialComment, String lookComment
+			final String endTrial,final String endLook,
+			final boolean nt, final boolean et, final boolean nl, final boolean el, final String trialComment, final String lookComment
 		)
 	{
-		this.newTrial.setEnabled(nt);
-		
-		this.endTrial.setText(endTrial);
-		this.endTrial.setEnabled(et);
-		this.trialComment.setEnabled(et || nl || el);
-		this.trialComment.setText(trialComment);
-		
-		this.newLook.setEnabled(nl);
-		
-		this.endLook.setText(endLook);
-		this.endLook.setEnabled(el);
-		
-		this.lookComment.setEnabled(el);
-		this.lookComment.setText(lookComment);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				TrialControls.this.newTrial.setEnabled(nt);
+				TrialControls.this.endTrial.setText(endTrial);
+				TrialControls.this.endTrial.setEnabled(et);
+				TrialControls.this.trialComment.setEnabled(et || nl || el);
+				TrialControls.this.trialComment.setText(trialComment);
+				TrialControls.this.newLook.setEnabled(nl);
+				TrialControls.this.endLook.setText(endLook);
+				TrialControls.this.endLook.setEnabled(el);
+				TrialControls.this.lookComment.setEnabled(el);
+				TrialControls.this.lookComment.setText(lookComment);
+			}
+		});
 	}
 
 	private void addNewTrialButton()
@@ -85,7 +90,12 @@ public class TrialControls extends JPanel {
 		newTrial.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				c.newTrial();
+				Thread ntT = new Thread(){
+					public void run(){
+						c.newTrial();
+					}
+				};
+				ntT.start();
 			}
 		});
 		
@@ -104,7 +114,12 @@ public class TrialControls extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				c.setEndTrial();
+				Thread etT = new Thread(){
+					public void run(){
+						c.setEndTrial();
+					}
+				};
+				etT.start();
 			}
 			
 		});
@@ -122,7 +137,12 @@ public class TrialControls extends JPanel {
 		newLook.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				c.newLook();
+				Thread nlT = new Thread(){
+					public void run(){
+						c.newLook();
+					}
+				};
+				nlT.start();
 			}
 		});
 		
@@ -140,9 +160,13 @@ public class TrialControls extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				c.setEndLook();
+				Thread elT = new Thread(){
+					public void run(){
+						c.setEndLook();
+					}
+				};
+				elT.start();
 			}
-			
 		});
 		
 		add(endLook, Component.CENTER_ALIGNMENT);
@@ -157,20 +181,41 @@ public class TrialControls extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				int tn = Math.abs(g.getExperimentModel().getItemForTime(v.getMediaTime()));
-				Trial t = c.getTrial(tn);
-				new CommentEditor(t.getBegin(), t, String.format("Trial %d",tn));
+				Thread actionThread = new Thread(){
+					public void run(){
+						final int tn = Math.abs(g.getExperimentModel().getItemForTime(v.getMediaTime()));
+						final Trial t = c.getTrial(tn);
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								new CommentEditor(t.getBegin(), t, String
+										.format("Trial %d", tn));
+							}
+						});
+					}
+				};
+				actionThread.start();
+				
 			}
 		});
 		
 		lookComment = new JButton("Look comment");
 		lookComment.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent event) {
-				int tn = Math.abs(g.getExperimentModel().getItemForTime(v.getMediaTime()));
-				Trial t = c.getTrial(tn);
-				int ln = Math.abs(t.getItemForTime(v.getMediaTime()));
-				AbstractTimeFrame l = t.getItem(ln);
-				new CommentEditor(t.getBegin(), l, String.format("Trial %d look %d",tn, ln));
+				Thread actionThread = new Thread(){
+					public void run(){
+						final int tn = Math.abs(g.getExperimentModel().getItemForTime(v.getMediaTime()));
+						final Trial t = c.getTrial(tn);
+						final int ln = Math.abs(t.getItemForTime(v.getMediaTime()));
+						final AbstractTimeFrame l = t.getItem(ln);
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								new CommentEditor(t.getBegin(), l, String.format(
+										"Trial %d look %d", tn, ln));
+							}
+						});
+					}
+				};
+				actionThread.start();
 			}
 		});
 		
