@@ -1,49 +1,46 @@
 package view.bottombar;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import model.AbstractTimeFrame;
-import model.Trial;
-import view.panels.CommentEditor;
 import controller.Controller;
 import controller.Globals;
-import controller.IVideoControls;
 
 public class TrialControls extends JPanel {
 	
 	private static final long serialVersionUID = -2015592156911727320L;
-	
-	private Globals g;
+	private static ArrayList<ImageIcon> buttonIcons;
 	private Controller c;
-	private IVideoControls v;
 	
 	// Buttons
-	private JButton newTrial, endTrial, newLook, endLook, trialComment,lookComment;
+	private JButton newTrial, endTrial, newLook, endLook;
 	
-	private static final Dimension BUTTON_SIZE = new Dimension(150, 25);
+	private static final Dimension BUTTON_SIZE = new Dimension(40, 40);
 
 	public TrialControls(Globals g)
 	{
-		this.g = g;
-		c = g.getController();
-		v = g.getVideoController();
+		readButtonIcons();
 		
+		this.c = g.getController();
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				setLayout(new BoxLayout(TrialControls.this, BoxLayout.PAGE_AXIS));
+				setLayout(new BoxLayout(TrialControls.this, BoxLayout.LINE_AXIS));
 				addNewTrialButton();
 				addEndTrialButton();
 				addNewLookButton();
 				addEndLookButton();
-				addCommentsButtons();
 			}
 		});
 	}
@@ -62,30 +59,39 @@ public class TrialControls extends JPanel {
 	 * @param trialComment 
 	 */
 	public void update(
-			final String endTrial,final String endLook,
-			final boolean nt, final boolean et, final boolean nl, final boolean el, final String trialComment, final String lookComment
+			final int trial, final int look,
+			final boolean nt, final boolean et, final boolean nl, final boolean el
 		)
 	{
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				TrialControls.this.newTrial.setEnabled(nt);
-				TrialControls.this.endTrial.setText(endTrial);
+				
+//				TrialControls.this.endTrial.setText(Integer.toString(trial));
+				TrialControls.this.endTrial.setIcon(trial >= 0 ? buttonIcons.get(1) : buttonIcons.get(2));
+				TrialControls.this.endTrial.setToolTipText(formatLookTrial("trial", trial));
 				TrialControls.this.endTrial.setEnabled(et);
-				TrialControls.this.trialComment.setEnabled(et || nl || el);
-				TrialControls.this.trialComment.setText(trialComment);
+				
 				TrialControls.this.newLook.setEnabled(nl);
-				TrialControls.this.endLook.setText(endLook);
+				
+//				TrialControls.this.endLook.setText(Integer.toString(look));
+				TrialControls.this.endLook.setIcon(look >= 0 ? buttonIcons.get(4) : buttonIcons.get(5));
+				TrialControls.this.endLook.setToolTipText(formatLookTrial("look", look));
 				TrialControls.this.endLook.setEnabled(el);
-				TrialControls.this.lookComment.setEnabled(el);
-				TrialControls.this.lookComment.setText(lookComment);
 			}
 		});
+	}
+	
+	private static String formatLookTrial(String text, int number)
+	{
+		String endOrExtend = number >= 0 ? "End" : "Extend";
+		return String.format("%s %s %d", endOrExtend, text, Math.abs(number));
 	}
 
 	private void addNewTrialButton()
 	{
-		newTrial = new JButton("New trial");
-		newTrial.setToolTipText("New Trial");
+		newTrial = new JButton(buttonIcons.get(0));
+		newTrial.setToolTipText("Star a new Trial");
 		
 		newTrial.addActionListener(new ActionListener() {
 			@Override
@@ -99,15 +105,17 @@ public class TrialControls extends JPanel {
 			}
 		});
 		
-		add(newTrial, Component.CENTER_ALIGNMENT);
+		add(newTrial);
 		newTrial.setPreferredSize(BUTTON_SIZE);
 		newTrial.setMaximumSize(BUTTON_SIZE);
 		newTrial.setFocusable(false);
+		newTrial.setBorder(BorderFactory.createEmptyBorder());
+		newTrial.setContentAreaFilled(false);
 	}
 	
 	private void addEndTrialButton()
 	{
-		endTrial = new JButton("End trial");
+		endTrial = new JButton(buttonIcons.get(1));
 		endTrial.setToolTipText("End trial");
 		
 		endTrial.addActionListener(new ActionListener(){
@@ -124,14 +132,16 @@ public class TrialControls extends JPanel {
 			
 		});
 		
-		add(endTrial, Component.CENTER_ALIGNMENT);
+		add(endTrial);
 		endTrial.setMaximumSize(BUTTON_SIZE);
 		endTrial.setFocusable(false);
+		endTrial.setBorder(BorderFactory.createEmptyBorder());
+		endTrial.setContentAreaFilled(false);
 	}
 	
 	private void addNewLookButton()
 	{
-		newLook = new JButton("New look");
+		newLook = new JButton(buttonIcons.get(3));
 		newLook.setToolTipText("New look");
 		
 		newLook.addActionListener(new ActionListener() {
@@ -146,14 +156,16 @@ public class TrialControls extends JPanel {
 			}
 		});
 		
-		add(newLook, Component.CENTER_ALIGNMENT);
+		add(newLook);
 		newLook.setMaximumSize(BUTTON_SIZE);
 		newLook.setFocusable(false);
+		newLook.setBorder(BorderFactory.createEmptyBorder());
+		newLook.setContentAreaFilled(false);
 	}
 	
 	private void addEndLookButton()
 	{
-		endLook = new JButton("End look");
+		endLook = new JButton(buttonIcons.get(4));
 		endLook.setToolTipText("End look");
 		
 		endLook.addActionListener(new ActionListener(){
@@ -169,63 +181,27 @@ public class TrialControls extends JPanel {
 			}
 		});
 		
-		add(endLook, Component.CENTER_ALIGNMENT);
+		add(endLook);
 		endLook.setMaximumSize(BUTTON_SIZE);
 		endLook.setFocusable(false);
+		endLook.setBorder(BorderFactory.createEmptyBorder());
+		endLook.setContentAreaFilled(false);
 	}
 	
-	private void addCommentsButtons()
+	private static void readButtonIcons()
 	{
-		trialComment = new JButton("Trial comment");
-		trialComment.addActionListener(new ActionListener(){
-			
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				Thread actionThread = new Thread(){
-					public void run(){
-						final int tn = Math.abs(g.getExperimentModel().getItemForTime(v.getMediaTime()));
-						final Trial t = c.getTrial(tn);
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-								new CommentEditor(t.getBegin(), t, String
-										.format("Trial %d", tn));
-							}
-						});
-					}
-				};
-				actionThread.start();
-				
+		buttonIcons = new ArrayList<ImageIcon>();
+		for(int i = 5; i <= 10; i++)
+		{
+			String filename = String.format("../../img/trialControls/vidCodingSystemLogos-10-%02d.png", i);
+			try {
+				BufferedImage buttonIcon = ImageIO.read(TrialControls.class.getResource(filename));
+				buttonIcons.add(new ImageIcon(buttonIcon));
+			} catch (IOException e) {
+				System.out.format("Couldn't read file '%s'\n", filename);
 			}
-		});
-		
-		lookComment = new JButton("Look comment");
-		lookComment.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent event) {
-				Thread actionThread = new Thread(){
-					public void run(){
-						final int tn = Math.abs(g.getExperimentModel().getItemForTime(v.getMediaTime()));
-						final Trial t = c.getTrial(tn);
-						final int ln = Math.abs(t.getItemForTime(v.getMediaTime()));
-						final AbstractTimeFrame l = t.getItem(ln);
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-								new CommentEditor(t.getBegin(), l, String.format(
-										"Trial %d look %d", tn, ln));
-							}
-						});
-					}
-				};
-				actionThread.start();
-			}
-		});
-		
-		add(trialComment, Component.LEFT_ALIGNMENT);
-		trialComment.setMaximumSize(BUTTON_SIZE);
-		trialComment.setFocusable(false);
-		
-		add(lookComment, Component.RIGHT_ALIGNMENT);
-		lookComment.setMaximumSize(BUTTON_SIZE);
-		lookComment.setFocusable(false);
+		}
 	}
+	
 	
 }

@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import model.AbstractTimeFrame;
 import view.player.IMediaPlayer;
 import controller.Globals;
 import controller.IVideoControls;
@@ -111,6 +110,8 @@ public class Navbar extends JPanel {
 		
 		information.videoInstantiated();
 		controls.videoInstantiated();
+		
+		new DebugInfo(this, g.getVideoController());
 	}
 	
 	/**
@@ -138,16 +139,6 @@ public class Navbar extends JPanel {
 	{
 		information.visibleAreaChanged();
 		controls.visibleAreaChanged();
-	}
-	
-	/**
-	 * Method to call if a single AbstractTimeFrame changed
-	 * @param tf 	AbstractTimeFrame that changed
-	 */
-	public void updateATF(AbstractTimeFrame tf)
-	{
-		// TODO handle this
-//		information
 	}
 	
 	/**
@@ -266,13 +257,13 @@ public class Navbar extends JPanel {
 
 				@Override
 				public void run() {
-					if(navbar.isDragging() || vc.IsLoaded() && vc.isPlaying() ) {
+					if(navbar.isDragging() || vc.IsLoaded() && vc.isPlaying() && begin < time && time < end) {
 						if(time > end - Math.round(visible * .3f) && end < total)
 						{
-							navbar.setCurrentStartVisibleTime(begin + Math.round(.01f * total));
+							navbar.setCurrentStartVisibleTime(begin + 250);
 						} else if (time < begin + Math.round(visible * .3f) && begin > 0)
 						{
-							navbar.setCurrentStartVisibleTime(begin - Math.round(.01f * total));
+							navbar.setCurrentStartVisibleTime(begin - 250);
 						}
 					}
 				}
@@ -300,5 +291,13 @@ public class Navbar extends JPanel {
 		return this.isDragging;
 	}
 	
+	public void addTimeFrame(model.AbstractTimeFrame tf)
+	{
+		information.addTimeFrame(tf);
+	}
 	
+	public void removeTimeFrame(model.AbstractTimeFrame tf)
+	{
+		information.removeTimeFrame(tf);
+	}
 }

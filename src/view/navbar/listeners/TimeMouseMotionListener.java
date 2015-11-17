@@ -19,7 +19,6 @@ public class TimeMouseMotionListener implements MouseMotionListener{
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
 		final int centreX = e.getX() - comp.xByTime(vc.getMediaTime());
 		if(navbar.isDragging()) {
 			new Thread(){
@@ -32,8 +31,9 @@ public class TimeMouseMotionListener implements MouseMotionListener{
 				}
 			}.start();
 		}
+		
 	}
-
+	
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		if(comp.draggableArea(e)) comp.setCursor(new Cursor(Cursor.E_RESIZE_CURSOR));

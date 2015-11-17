@@ -21,16 +21,19 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame
 	 * The list of subitems that this container contains
 	 */
 	protected LinkedList<AbstractTimeFrame> items;
+	
+	
 
 	/**
-	 * The constructor for Timecontainer calls the super constructor from
-	 * Timeframe and creates a new LinkedList that will contain the sub items
+	 * The constructor for Time container calls the super constructor from
+	 * Time frame and creates a new LinkedList that will contain the sub items
 	 * @param time
 	 */
-	public AbstractTimeContainer(long time)
+	public AbstractTimeContainer(long time, int type)
 	{
-		super(time);
-		items = new LinkedList<AbstractTimeFrame>();
+		super(time, type);
+		this.timeout = -1L;
+		this.items = new LinkedList<AbstractTimeFrame>();
 	}
 
 	/**
@@ -212,7 +215,7 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame
 	 * then call hiddenAddItem with that time and the new object
 	 * @param time	The start time for the item
 	 */
-	abstract public void addItem(long time);
+	abstract public AbstractTimeFrame addItem(long time);
 	
 	/**
 	 * This abstract class can't instantiate the right types, so this function
@@ -241,6 +244,7 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame
 			}
 			items.add(canAdd, tf);
 		}
+		calculateTimeout();
 	}
 	
 	/**
@@ -257,6 +261,7 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame
 		} else {
 			items.remove(getIndex(item));
 		}
+		calculateTimeout();
 	}
 
 	/**
@@ -331,17 +336,60 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame
 		return time;
 	}
 	
+	/**
+	 * Get the item number for a certain item
+	 * @param tf 	Item AbstractTimeFrame to be checked
+	 */
 	@Override
-	public void setEnd(long time)
+	public int getNumberForItem(AbstractTimeFrame tf)
 	{
-		if(canEnd(time) && items.size() > 0)
+		int number = -1;
+		
+		if(items.contains(tf))
 		{
-			AbstractTimeFrame it = items.getLast();
-			if (it.getEnd() > time || it.getEnd() < 0)
+			number = items.indexOf(tf) + 1;
+		} else {
+			for(AbstractTimeFrame item : items)
 			{
-				it.setEnd(time);
+				int maybeNumber = item.getNumberForItem(tf);
+				if(maybeNumber > 0)
+				{
+					number = maybeNumber;
+					break;
+				}
 			}
 		}
-		super.setEnd(time);
+		
+		return number;
 	}
+	
+	/**
+	 * Method to calculate the time out for this abstract time frame
+	 */
+	public void calculateTimeout()
+	{
+		Experiment m = Globals.getInstance().getExperimentModel();
+		if(!m.getUseTimeout() || items.size() == 0)
+		{
+			this.timeout = -1l;
+		} else {
+			this.timeout = items.getFirst().getEnd();	
+			for(AbstractTimeFrame tf : items)
+			{
+				if(tf.getBegin() < this.timeout)
+				{
+					this.timeout = (tf.hasEnded()) ? tf.getEnd() + m.getTimeout() : -1l;
+				}
+				tf.setTimeout(this.timeout);
+			}
+		}
+	}
+	
+	/**
+	 * Disabled for time containers
+	 */
+	protected void setTimeout(long timeout)
+	{
+	}
+	
 }

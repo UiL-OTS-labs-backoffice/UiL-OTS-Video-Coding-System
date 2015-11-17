@@ -21,7 +21,7 @@ public class TimeMouseListener implements MouseListener{
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		int x = e.getX();
-		final long newTime = comp.timeByX(x);
+		final long newTime = comp.timeByXinView(x);
 		new Thread(){
 			public void run()
 			{
@@ -32,24 +32,12 @@ public class TimeMouseListener implements MouseListener{
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if(comp.draggableArea(e)){
-			new Thread()
-			{
-				public void run()
-				{
-					navbar.setIsDragging(true);
-				}
-			}.start();
-		}
+		if(comp.draggableArea(e)) navbar.setIsDragging(true);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		new Thread(){
-			public void run(){
-				navbar.setIsDragging(false);
-			}
-		}.start();
+		navbar.setIsDragging(false);
 	}
 
 	@Override

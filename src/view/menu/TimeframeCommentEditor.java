@@ -16,11 +16,11 @@ public class TimeframeCommentEditor extends AbstractTrialListMenu {
 	}
 
 	@Override
-	public void actionPerformer(final long ltime, final AbstractTimeFrame fr, final String trialText) {
+	public void actionPerformer(long ltime, final AbstractTimeFrame fr, final String trialText) {
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run()
 			{
-				new CommentEditor(ltime, fr, trialText);	
+				new CommentEditor(fr, trialText);	
 			}
 		});
 	}

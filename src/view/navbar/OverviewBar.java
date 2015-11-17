@@ -11,14 +11,16 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.MatteBorder;
 
+import model.AbstractTimeFrame;
 import controller.Globals;
-import view.navbar.PanelTimeframe;
+import view.navbar.paneltimeframe.PanelTimeframe;
 
 public class OverviewBar extends ABar {
 
 	private static final long serialVersionUID = 1L;
-	private static final int INDICATOR_WIDTH = 10;
 	private static final int BOX_BORDER_WIDTH = 2;
+	
+	public static final int TYPE = ABar.TYPE_OVERVIEW;
 	
 	private JPanel overviewBox;
 	
@@ -39,6 +41,8 @@ public class OverviewBar extends ABar {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				addOverviewBox();
+				setBorder(new MatteBorder(1, 1, 1, 1,
+						(Color) new Color(0, 0, 0)));
 			}
 		});
 	}
@@ -56,8 +60,8 @@ public class OverviewBar extends ABar {
 	protected void paintTimeFrame(final PanelTimeframe tf)
 	{
 		int left = xByTime(tf.getStart());
-		int right = xByTime(tf.getEnd());
-		int y = (tf.getType() == InformationPanel.TYPE_LOOK) ? getHeight() / 2
+		int right = xByTime((tf.getEnd() == -1L) ? Globals.getInstance().getVideoController().getMediaTime() : tf.getEnd());
+		int y = (tf.getType() == AbstractTimeFrame.TYPE_LOOK) ? getHeight() / 2
 				: BOX_BORDER_WIDTH;
 		final Rectangle r2 = new Rectangle(left, y, right - left, getHeight()
 				/ 2 - BOX_BORDER_WIDTH);
@@ -84,6 +88,23 @@ public class OverviewBar extends ABar {
 	@Override
 	public long timeByX(int xCoord) {
 		return (long) ((float) xCoord / (float) getWidth() * player.getMediaDuration());
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public long timeByXinView(int xCoord) {
+		return timeByX(xCoord);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getType()
+	{
+		return TYPE;
 	}
 	
 	/******************************************

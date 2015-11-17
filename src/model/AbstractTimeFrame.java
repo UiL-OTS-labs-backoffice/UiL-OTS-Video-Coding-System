@@ -16,6 +16,10 @@ public abstract class AbstractTimeFrame implements Serializable
 	 */
 	private static final long serialVersionUID = 2L;
 	
+	public static final int TYPE_LOOK = 0;
+	public static final int TYPE_TRIAL = 1;
+	public static final int TYPE_EXPERIMENT = 2;
+	
 	/**
 	 * Fields for begin- and end time, and duration
 	 * which are given as longs and based on the
@@ -27,6 +31,10 @@ public abstract class AbstractTimeFrame implements Serializable
 	
 	protected JPanel panel;
 	
+	protected int type;
+	
+	protected long timeout;
+	
 	/**
 	 * Constructor for this class
 	 * Creates a new time frame with begin time set to
@@ -35,9 +43,10 @@ public abstract class AbstractTimeFrame implements Serializable
 	 * if not
 	 * @param time	The begin time of this time frame in milliseconds
 	 */
-	public AbstractTimeFrame(long time)
+	public AbstractTimeFrame(long time, int type)
 	{
 		this.begintime = time;
+		this.type = type;
 	}
 
 	/**
@@ -182,5 +191,45 @@ public abstract class AbstractTimeFrame implements Serializable
 	{
 		if(panel != null)
 			panel.setBounds(r);
+	}
+	
+	public int getType()
+	{
+		return this.type;
+	}
+	
+	/**
+	 * By default, an abstract time frame cannot contain any items.
+	 * @param tf	The time frame to get the number for
+	 * @return		-1 if time frame can't be found, number otherwise
+	 */
+	public int getNumberForItem(AbstractTimeFrame tf)
+	{
+		return -1;
+	}
+	
+	public boolean hasEnded()
+	{
+		return this.endtime >= 0;
+	}
+	
+	/**
+	 * Method to get the time where a timeout starts for this abstract time container
+	 * @return	-1 if no timeout is present, a long containing the timeout starttime
+	 * 			otherwise
+	 */
+	public long getTimeout()
+	{
+		return this.timeout;
+	}
+	
+	/**
+	 * Protected method to set the timeout. This can be called from an abstract time container
+	 * this time frame is an item of and should be set to the timeout of that container
+	 * @param timeout	The timeout time
+	 */
+	protected void setTimeout(long timeout)
+	{
+		this.timeout = timeout;
 	}
 }

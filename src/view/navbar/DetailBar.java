@@ -4,22 +4,22 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.geom.Line2D;
 
 import javax.swing.SwingUtilities;
 import javax.swing.border.MatteBorder;
 
+import model.AbstractTimeFrame;
 import controller.Globals;
 import view.bottombar.PlayerControlsPanel;
-import view.navbar.PanelTimeframe;
+import view.navbar.paneltimeframe.PanelTimeframe;
 
 
 
 public class DetailBar extends ABar{
 	
 	private static final long serialVersionUID = 1L;
+	private static final int TYPE = ABar.TYPE_DETAIL;
 	
 	/**
 	 * Construct a new detail bar JPanel
@@ -43,8 +43,8 @@ public class DetailBar extends ABar{
 	protected void paintTimeFrame(final PanelTimeframe tf)
 	{
 		int left = xByTime(tf.getStart());
-		int right = xByTime(tf.getEnd());
-		int y = (tf.getType() == InformationPanel.TYPE_LOOK) ? getHeight() / 2 + 20
+		int right = xByTime((tf.getEnd() == -1L) ? Globals.getInstance().getVideoController().getMediaTime() : tf.getEnd());
+		int y = (tf.getType() == AbstractTimeFrame.TYPE_LOOK) ? getHeight() / 2 + 20
 				: 35;
 		final Rectangle r = new Rectangle(left, y, right - left,
 				(getHeight() / 2) - 30);
@@ -71,7 +71,6 @@ public class DetailBar extends ABar{
 			{
 				height = getHeight() - 21;
 				StringPosition sp = new StringPosition(x);
-				if(i == 0) System.out.format("x: %d, time: %s\n", x, PlayerControlsPanel.formatTime(timeByX(x) + navbar.getCurrentStartVisibleTime()));
 				g.drawString(sp.getString(), sp.getX(), sp.getY());
 			} else { 
 				height = 10;
@@ -96,9 +95,25 @@ public class DetailBar extends ABar{
 	 */
 	public long timeByX(int xCoord)
 	{
-		return (long)(((float) xCoord * 
-			(float) (navbar.getCurrentEndVisibleTime() - navbar.getCurrentStartVisibleTime()) 
-				/(float) getWidth()));
+		return (long) ((float) xCoord / (float) getWidth() * navbar.getVisibleTime());
+	}
+	
+	public long timeByXinView(int xCoord)
+	{
+		long time = (long) Math.round( 
+				((float) xCoord / (float) getWidth()) *
+				((float) navbar.getVisibleTime())
+				+ (float) navbar.getCurrentStartVisibleTime());
+		return time;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getType()
+	{
+		return TYPE;
 	}
 	
 	public void paintComponent(Graphics g)
@@ -134,5 +149,6 @@ public class DetailBar extends ABar{
 			return y;
 		}
 	}
+	
 	
 }

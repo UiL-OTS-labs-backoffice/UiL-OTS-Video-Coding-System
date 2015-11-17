@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import model.AbstractTimeFrame;
 import view.bottombar.BottomBar;
 import view.events.CodingKeyListener;
 //import view.events.KeyDispatch;
@@ -223,24 +224,22 @@ public class Editor {
     
     /**
      * Method to set state of buttons
-     * @param endTrial		Text for end trial button
-     * @param endLook		Text for end look button
+     * @param trial		Text for end trial button
+     * @param look		Text for end look button
      * @param nt			State of new trial button
      * @param et			State of end trial button
      * @param nl			State of new look button
      * @param el			State of end look button
      * @param rmt			Currently in trial
      * @param rml			Currently in look
-     * @param lookComment 
-     * @param trialComment 
      */
     public void updateButtons(
-			final String endTrial, final String endLook,
+			final int trial, final int look,
 			final boolean nt, final boolean et, final boolean nl, final boolean el,
-			final boolean rmt, final boolean rml, final String trialComment, final String lookComment
+			final boolean rmt, final boolean rml
 		)
     {
-			bottom_bar.updateButtons(endTrial, endLook,	nt, et, nl, el, trialComment, lookComment);
+			bottom_bar.updateButtons(trial, look, nt, et, nl, el);
 	    	menu.updateButtons(rmt, rml);
     }
     
@@ -258,6 +257,16 @@ public class Editor {
 		bottom_bar.mediaTimeChanged();
 	}
     
+	
+	public void addTimeFrame(AbstractTimeFrame tf)
+	{
+		bottom_bar.addTimeFrame(tf);
+	}
+	
+	public void removeTimeFrame(AbstractTimeFrame tf)
+	{
+		bottom_bar.removeTimeFrame(tf);
+	}
     
     
 }

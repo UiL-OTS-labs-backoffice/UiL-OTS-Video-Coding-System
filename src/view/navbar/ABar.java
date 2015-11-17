@@ -13,15 +13,18 @@ import model.AbstractTimeContainer;
 import model.AbstractTimeFrame;
 import controller.Globals;
 import controller.IVideoControls;
-import view.navbar.PanelTimeframe;
 import view.navbar.listeners.TimeMouseListener;
 import view.navbar.listeners.TimeMouseMotionListener;
+import view.navbar.paneltimeframe.PanelTimeframe;
 import view.player.IMediaPlayer;
 
 public abstract class ABar extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private static final int ALLOWED_DRAG_MARGIN = 10;
+	
+	public static final int TYPE_DETAIL = 1;
+	public static final int TYPE_OVERVIEW = 2;
 	
 	protected Globals g;
 	protected IMediaPlayer player;
@@ -44,6 +47,7 @@ public abstract class ABar extends JPanel {
 		this.vc = g.getVideoController();
 		this.navbar = navbar;
 		this.setLayout(null);
+		this.setBackground(new Color(220,227,232));
 	}
 	
 	protected void loadTimeframes()
@@ -51,12 +55,31 @@ public abstract class ABar extends JPanel {
 		for(AbstractTimeFrame tr : Globals.getInstance().getExperimentModel().getItems())
 		{
 			AbstractTimeContainer trial = (AbstractTimeContainer) tr;
-			timeFrames.put(trial, new PanelTimeframe(trial, InformationPanel.TYPE_TRIAL, this));
+			timeFrames.put(trial, new PanelTimeframe(trial, this, g, navbar));
 			for(AbstractTimeFrame l : trial.getItems())
 			{
-				timeFrames.put(l, new PanelTimeframe(l, InformationPanel.TYPE_LOOK, this));
+				timeFrames.put(l, new PanelTimeframe(l, this, g, navbar));
 			}
 		}
+	}
+	
+	/**
+	 * Add a new time frame to the view
+	 * @param tf	Reference to abstract time frame object
+	 */
+	public void addTimeFrame(AbstractTimeFrame tf)
+	{
+		timeFrames.put(tf, new PanelTimeframe(tf, this, g, navbar));
+	}
+	
+	/**
+	 * Remove a time frame from the view
+	 * @param tf 	Reference to abstract time frame object that is to be removed
+	 */
+	public void removeTimeFrame(AbstractTimeFrame tf)
+	{
+		timeFrames.get(tf).remove();
+		timeFrames.remove(tf);
 	}
 	
 	public void videoInstantiated()
@@ -101,6 +124,7 @@ public abstract class ABar extends JPanel {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				indicator.repositionIndicator();
+				paintTimeFrames();
 			}
 		});
 	}
@@ -140,8 +164,11 @@ public abstract class ABar extends JPanel {
 	 */
 	public abstract long timeByX(int xCoord);
 	
+	public abstract long timeByXinView(int xCoord);
+	
 	/**
-	 * Set the settings of the indicator, giving it the
-	 * margin and the preferred width
+	 * Get the type of this component
+	 * @return	1 if detail, 2 if overview
 	 */
+	public abstract int getType();
 }

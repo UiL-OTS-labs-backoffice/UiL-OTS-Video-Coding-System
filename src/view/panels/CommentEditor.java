@@ -13,7 +13,7 @@ public class CommentEditor extends JOptionPane {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public CommentEditor(long ltime, AbstractTimeFrame fr, String trialText)
+	public CommentEditor(AbstractTimeFrame fr, String trialText)
 	{
 		String comment = (String) showInputDialog(
 				null, 

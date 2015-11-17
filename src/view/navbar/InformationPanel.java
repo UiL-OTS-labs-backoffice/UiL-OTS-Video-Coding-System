@@ -21,10 +21,9 @@ public class InformationPanel extends JPanel {
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				setLayout(new MigLayout("", "[grow,fill]",
-						"[20px:40px:40px,grow,fill][40px:50px:100px,fill][200px:n,grow,fill]"));
+				setLayout(new MigLayout("", "[grow,fill]", "[20px:40px:40px,grow,fill][150px:n,grow,fill]"));
 				add(overview, "cell 0 0,grow");
-				add(detail, "cell 0 2,grow");
+				add(detail, "cell 0 1,grow");
 			}
 		});
 	}
@@ -67,5 +66,17 @@ public class InformationPanel extends JPanel {
 	{
 		overview.mediaTimeChanged();
 		detail.mediaTimeChanged();
+	}
+	
+	public void addTimeFrame(model.AbstractTimeFrame tf)
+	{
+		overview.addTimeFrame(tf);
+		detail.addTimeFrame(tf);
+	}
+	
+	public void removeTimeFrame(model.AbstractTimeFrame tf)
+	{
+		overview.removeTimeFrame(tf);
+		detail.removeTimeFrame(tf);
 	}
 }

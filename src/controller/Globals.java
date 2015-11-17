@@ -75,7 +75,7 @@ public class Globals {
 	private static void readIcons(){
 		String path = "/img/icons/";
 		int sizes[] = {16, 24, 32, 48, 64, 96, 128, 256, 512};
-		for(int i = 0; i < 9; i++)
+		for(int i = 0; i < sizes.length; i++)
 		{
 			String filename = String.format("%s%dx%d.png", path, sizes[i], sizes[i]);
 			

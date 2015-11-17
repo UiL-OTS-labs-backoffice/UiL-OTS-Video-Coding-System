@@ -52,9 +52,9 @@ public class BottomBar extends JPanel {
     }
     
     /**
-     * Method to update the buttons in the bottombar
-     * @param endTrial	The text for the end trial button
-     * @param endLook	The text for the end look button
+     * Method to update the buttons in the bottom bar
+     * @param trial		The currently active trial number
+     * @param look		The currently active look number
      * @param nt		The state of the new trial button
      * @param et		The state of the end trial button
      * @param nl		The state of the new look button
@@ -63,11 +63,11 @@ public class BottomBar extends JPanel {
      * @param trialComment 
      */
     public void updateButtons(
-			String endTrial, String endLook,
-			boolean nt, boolean et, boolean nl, boolean el, String trialComment, String lookComment
+			int trial, int look,
+			boolean nt, boolean et, boolean nl, boolean el
 		)
 	{
-    	trial_controls.update(endTrial, endLook, nt, et, nl, el, trialComment, lookComment);
+    	trial_controls.update(trial, look, nt, et, nl, el);
 	}
     
     /**
@@ -90,6 +90,7 @@ public class BottomBar extends JPanel {
 	
 	/**
 	 * Adds the time slider video controls to the bottom bar panel
+	 * TODO remove this
 	 */
 	private void addTimeBar()
 	{
@@ -101,6 +102,7 @@ public class BottomBar extends JPanel {
 		});
 	}
 	
+	// TODO remove trial information. Add controls left to player controls, whereever those are
 	private void addControlPanel()
 	{
 		SwingUtilities.invokeLater(new Runnable() {
@@ -154,4 +156,13 @@ public class BottomBar extends JPanel {
 		navbar.mediaTimeChanged();
 	}
 	
+	public void addTimeFrame(model.AbstractTimeFrame tf)
+	{
+		navbar.addTimeFrame(tf);
+	}
+	
+	public void removeTimeFrame(model.AbstractTimeFrame tf)
+	{
+		navbar.removeTimeFrame(tf);
+	}
 }
