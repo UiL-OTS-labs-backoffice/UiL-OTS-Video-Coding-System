@@ -1,7 +1,6 @@
 package view;
 
 import java.awt.BorderLayout;
-//import java.awt.KeyboardFocusManager;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -10,10 +9,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import model.AbstractTimeFrame;
 import view.bottombar.BottomBar;
 import view.events.CodingKeyListener;
-//import view.events.KeyDispatch;
 import view.menu.MainMenu;
 import view.player.IMediaPlayer;
 import view.player.VLCMediaPlayer;
@@ -62,6 +59,7 @@ public class Editor {
     public void videoInstantiated()
     {
     	bottom_bar.videoInstantiated();
+    	frame.setTitle(String.format("UiL OTS Labs Video Coding Software - %s", c.getUrl()));
     }
     
     /**

@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 public class Time {
 	/**
      * Formats the time in a nice format
-     * @param millis	The timestring to be encoded
+     * @param millis	The time string to be encoded
      * @return			String displaying the time nicely
      */
     public static String format(long millis)

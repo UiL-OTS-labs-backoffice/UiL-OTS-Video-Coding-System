@@ -44,7 +44,7 @@ public class ExperimentOverview extends JFrame {
 	}
 	
 	/**
-	 * Creates the gridbaglayout and adds it to the frame
+	 * Creates the grid bag layout and adds it to the frame
 	 */
 	private void createLayout()
 	{
