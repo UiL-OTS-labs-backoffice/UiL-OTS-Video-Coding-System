@@ -11,7 +11,7 @@ import javax.swing.border.MatteBorder;
 
 import model.AbstractTimeFrame;
 import controller.Globals;
-import view.bottombar.PlayerControlsPanel;
+import view.formatter.Time;
 import view.navbar.paneltimeframe.PanelTimeframe;
 
 
@@ -129,7 +129,7 @@ public class DetailBar extends ABar{
 		
 		public StringPosition(int x)
 		{
-			this.s = PlayerControlsPanel.formatTime(timeByX(x) + navbar.getCurrentStartVisibleTime());
+			this.s = Time.format(timeByX(x) + navbar.getCurrentStartVisibleTime());
 			this.x = x;
 			this.y = 15;
 		}

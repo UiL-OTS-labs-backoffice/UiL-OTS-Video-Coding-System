@@ -20,7 +20,6 @@ public class TrialNavigator extends AbstractTrialListMenu {
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
 				vc.setMediaTime(ltime);
-				c.updateLabels(ltime);
 			}
 		});
 	}

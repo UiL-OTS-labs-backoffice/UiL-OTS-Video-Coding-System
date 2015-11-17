@@ -4,7 +4,7 @@ import java.awt.geom.Line2D;
 
 import javax.swing.SwingUtilities;
 
-import view.bottombar.PlayerControlsPanel;
+import view.formatter.Time;
 import view.player.IMediaPlayer;
 
 public class TimeIndicator
@@ -27,7 +27,7 @@ public class TimeIndicator
 	{
 		curX = parent.xByTime(player.getMediaTime());
 		verticalLine = new Line2D.Float(curX, 0, curX, parent.getHeight());
-		currentPositionLabel = PlayerControlsPanel.formatTime(curX);
+		currentPositionLabel = Time.format(curX);
 		
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){

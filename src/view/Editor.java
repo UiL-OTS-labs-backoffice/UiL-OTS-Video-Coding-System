@@ -36,7 +36,6 @@ public class Editor {
 	// Panels
     private JFrame frame;
     private BottomBar bottom_bar;
-    private VideoManipulationButtons playButtons;
     
     private java.awt.Component visualComponent = null;
     
@@ -58,7 +57,6 @@ public class Editor {
 			}
 		});
 		addControlBar();
-    	addVideoManipulationButtons();
     }
     
     public void videoInstantiated()
@@ -134,19 +132,6 @@ public class Editor {
     }
     
     /**
-     * Adds the video controls to the frame
-     */
-    private void addVideoManipulationButtons()
-    {
-    	playButtons = new VideoManipulationButtons(g);
-    	SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				bottom_bar.add(playButtons, BorderLayout.CENTER);
-			}
-		});
-    }
-    
-    /**
      * Creates a video panel and sets it to the content frame
      * This is only called when the media file has been selected
      */
@@ -162,10 +147,8 @@ public class Editor {
     	SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				frame.getContentPane().add(visualComponent);
-				playButtons.setEnableButtons(true);
 			}
 		});
-		bottom_bar.getTimeCodes().playerStarted(player);
     }
     
     /**
@@ -177,49 +160,6 @@ public class Editor {
 				frame.setVisible(true);
 			}
 		});
-        
-        Thread updateLabels = new Thread()
-        {
-        	public void run()
-        	{
-        		c.updateLabels(0L);
-                c.updateCurrentFileLabel();
-        	}
-        };
-        updateLabels.start();
-		
-    }
-    
-    /**
-     * Method to set the trial look numbers and the current total look time
-     * This gets passed along to the bottom_bar panel
-     * @param trial		Trial Number at current play position
-     * @param look		Look Number at current play position
-     * @param time		Total look time at current play position
-     */
-    public void setInfo(String trial, String look, String time)
-    {
-    	bottom_bar.setInfo(trial, look, time);
-    }
-    
-    /**
-     * Method to update the slider position based on the time.
-     * Used the sliders own update function
-     */
-    public void updateSlider()
-    {
-    	bottom_bar.mediaTimeChanged();
-//    	getTimeCodes().updateSlider();
-    }
-    
-    /**
-     * Method to change the value of the file label in the trial information
-     * by passing the argument to the bottom bar
-     * @param file		Name of the file to be set
-     */
-    public void setFile(final String file)
-    {
-		bottom_bar.setFile(file);
     }
     
     /**
@@ -243,30 +183,9 @@ public class Editor {
 	    	menu.updateButtons(rmt, rml);
     }
     
-    public void setPlayState(final boolean state)
-    {
-		playButtons.setPlay(state);
-	}
-    
-    public void setTimeoutText(final boolean state)
-    {
-		playButtons.setTimeoutText(state);
-    }
-
-	public void mediaTimeChanged() {
-		bottom_bar.mediaTimeChanged();
-	}
-    
-	
-	public void addTimeFrame(AbstractTimeFrame tf)
+	public BottomBar getBottomBar()
 	{
-		bottom_bar.addTimeFrame(tf);
+		return this.bottom_bar;
 	}
-	
-	public void removeTimeFrame(AbstractTimeFrame tf)
-	{
-		bottom_bar.removeTimeFrame(tf);
-	}
-    
     
 }

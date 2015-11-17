@@ -8,7 +8,7 @@ import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 
 import controller.IVideoControls;
-import view.bottombar.PlayerControlsPanel;
+import view.formatter.Time;
 
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -181,7 +181,7 @@ public class DebugInfo extends JFrame {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					currentlonglbl.setText(Long.toString(v.getMediaTime()));
-					currenttimelbl.setText(PlayerControlsPanel.formatTime(v
+					currenttimelbl.setText(Time.format(v
 							.getMediaTime()));
 					visiblepctlbl.setText(String.format("%f%%",
 							navbar.getVisiblePercentage()));
@@ -189,13 +189,13 @@ public class DebugInfo extends JFrame {
 							.getVisibleTime()));
 					endlonglbl.setText(Long.toString(navbar
 							.getCurrentEndVisibleTime()));
-					endtimelbl.setText(PlayerControlsPanel.formatTime(navbar
+					endtimelbl.setText(Time.format(navbar
 							.getCurrentEndVisibleTime()));
 					startlonglbl.setText(Long.toString(navbar
 							.getCurrentStartVisibleTime()));
-					starttimelbl.setText(PlayerControlsPanel.formatTime(navbar
+					starttimelbl.setText(Time.format(navbar
 							.getCurrentStartVisibleTime()));
-					videoEndTimelbl.setText(PlayerControlsPanel.formatTime(v.getMediaDuration()));
+					videoEndTimelbl.setText(Time.format(v.getMediaDuration()));
 					videoEndLonglbl.setText(Long.toString(v.getMediaDuration()));
 				}
 			});

@@ -10,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import model.Look;
+import model.Trial;
 import view.player.IMediaPlayer;
 import controller.Globals;
 import controller.IVideoControls;
@@ -238,10 +240,12 @@ public class Navbar extends JPanel {
 	{
 		
 		private final Navbar navbar;
+		private final Globals g;
 		
 		private UpdateScrollable(Navbar navbar)
 		{
 			this.navbar = navbar;
+			this.g = Globals.getInstance();
 		}
 		
 		@Override
@@ -253,8 +257,10 @@ public class Navbar extends JPanel {
 			final long total 	= vc.IsLoaded() ? vc.getMediaDuration() : 1;
 			final long visible 	= navbar.getVisibleTime();
 			
+			navbar.mediaTimeChanged();
+			
 			SwingUtilities.invokeLater(new Runnable(){
-
+				
 				@Override
 				public void run() {
 					if(navbar.isDragging() || vc.IsLoaded() && vc.isPlaying() && begin < time && time < end) {
@@ -266,9 +272,51 @@ public class Navbar extends JPanel {
 							navbar.setCurrentStartVisibleTime(begin - 250);
 						}
 					}
+					updateButtons();
 				}
 			});
 		}
+		
+		/**
+		 * Updates the button text and state
+		 * @param tnr		Current trial number
+		 * @param t			Current trial
+		 * @param lnr		Current look number
+		 * @param l			Current look
+		 * @param time		Current time
+		 */
+		private void updateButtons()
+		{
+			long time = g.getVideoController().getMediaTime();
+			int tnr = g.getExperimentModel().getItemForTime(time);
+			
+			boolean nt = g.getExperimentModel().canAddItem(time) >= 0 & tnr <= 0;
+			boolean et = false, nl = false, el = false;
+			boolean tm = false; // Timeout?
+			int lnr = 0;
+			if(tnr != 0)
+			{
+				Trial t = (Trial) g.getExperimentModel().getItem(Math.abs(tnr));
+				lnr = t.getItemForTime(time);
+				et = t.canEnd(time) && lnr <= 0;
+				nl = t.canAddItem(time) >= 0 && lnr <= 0;
+				
+				if(lnr != 0)
+				{
+					Look l = (Look) t.getItem(Math.abs(lnr));
+					tm = tnr > 0 && l.getEnd() > -1 && time - l.getEnd() > g.getExperimentModel().getTimeout() && g.getExperimentModel().getUseTimeout();
+					el = tnr > 0 && l.canEnd(time);
+				}
+			}
+			
+			g.getEditor().updateButtons(tnr, lnr, nt, et, nl, el, tnr > 0, lnr > 0);
+			g.getEditor().getBottomBar().setTimeoutText(tm);
+		}
+	}
+	
+	public void updateLabels()
+	{
+		updateScrollable.updateButtons();
 	}
 	
 	/**

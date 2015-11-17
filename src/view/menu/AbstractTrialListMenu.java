@@ -9,6 +9,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 
+import view.formatter.Time;
 import controller.Controller;
 import controller.Globals;
 import controller.IVideoControls;
@@ -75,7 +76,7 @@ public abstract class AbstractTrialListMenu extends JMenu {
 			final String trialText = String.format(
 					"Trial %d (%s)", 
 					i, 
-					view.bottombar.PlayerControlsPanel.formatTime(time)
+					Time.format(time)
 				);
 			
 			final JMenuItem item;
@@ -125,7 +126,7 @@ public abstract class AbstractTrialListMenu extends JMenu {
 				final String lookText = String.format(
 						"Look %d (%s)", 
 						j, 
-						view.bottombar.PlayerControlsPanel.formatTime(ltime)
+						Time.format(ltime)
 					);
 				final JMenuItem look = new JMenuItem(lookText);
 				look.addActionListener(new ActionListener(){

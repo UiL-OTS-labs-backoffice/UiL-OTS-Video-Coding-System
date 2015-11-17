@@ -517,7 +517,7 @@ public class VLCMediaPlayer implements IMediaPlayer{
 	   player.setTime(time - offset);
 	   SwingUtilities.invokeLater(new Runnable(){
 		   public void run(){
-			   Globals.getInstance().getController().updateLabels(time);
+			   Globals.getInstance().getEditor().getBottomBar().getNavbar().updateLabels();
 		   }
 	   });
    }
