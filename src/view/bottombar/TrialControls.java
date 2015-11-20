@@ -3,6 +3,7 @@ package view.bottombar;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -30,7 +32,8 @@ public class TrialControls extends JPanel {
 	// Buttons
 	private JButton newTrial, endTrial, newLook, endLook;
 	
-	private static final Dimension BUTTON_SIZE = new Dimension(48, 25);
+	private static final int BUTTON_HEIGHT = 30;
+	private static final int BUTTON_TEXT_MARGIN = 20;
 
 	public TrialControls(Globals g)
 	{
@@ -109,8 +112,8 @@ public class TrialControls extends JPanel {
 		});
 		
 		add(newTrial);
-		newTrial.setPreferredSize(BUTTON_SIZE);
-		newTrial.setMaximumSize(BUTTON_SIZE);
+		newTrial.setPreferredSize(getButtonDimension(newTrial.getIcon()));
+		newTrial.setMaximumSize(getButtonDimension(newTrial.getIcon()));
 		newTrial.setFocusable(false);
 		newTrial.setBorder(BorderFactory.createEmptyBorder());
 		newTrial.setContentAreaFilled(false);
@@ -120,8 +123,8 @@ public class TrialControls extends JPanel {
 	{
 		endTrial = new JButton(buttonIcons.get(5));
 		endTrial.setToolTipText("End trial");
-		endTrial.setHorizontalTextPosition(SwingConstants.CENTER);
-		endTrial.setVerticalTextPosition(SwingConstants.CENTER);
+		endTrial.setHorizontalAlignment(SwingConstants.CENTER);
+		endTrial.setHorizontalTextPosition(SwingConstants.LEADING);
 		
 		endTrial.addActionListener(new ActionListener(){
 
@@ -138,7 +141,8 @@ public class TrialControls extends JPanel {
 		});
 		
 		add(endTrial);
-		endTrial.setMaximumSize(BUTTON_SIZE);
+		endTrial.setPreferredSize(getButtonDimension(endTrial.getIcon()));
+		endTrial.setMaximumSize(getButtonDimension(endTrial.getIcon()));
 		endTrial.setFocusable(false);
 		endTrial.setBorder(BorderFactory.createEmptyBorder());
 		endTrial.setContentAreaFilled(false);
@@ -162,7 +166,8 @@ public class TrialControls extends JPanel {
 		});
 		
 		add(newLook);
-		newLook.setMaximumSize(BUTTON_SIZE);
+		newLook.setPreferredSize(getButtonDimension(newLook.getIcon()));
+		newLook.setMaximumSize(getButtonDimension(newLook.getIcon()));
 		newLook.setFocusable(false);
 		newLook.setBorder(BorderFactory.createEmptyBorder());
 		newLook.setContentAreaFilled(false);
@@ -172,11 +177,9 @@ public class TrialControls extends JPanel {
 	{
 		endLook = new JButton(buttonIcons.get(2));
 		endLook.setToolTipText("End look");
-		endLook.setHorizontalTextPosition(SwingConstants.CENTER);
-		endLook.setVerticalTextPosition(SwingConstants.CENTER);
-		endLook.setForeground(Color.BLUE);
+		endLook.setHorizontalAlignment(SwingConstants.CENTER);
+		endLook.setHorizontalTextPosition(SwingConstants.LEADING);
 		endLook.setContentAreaFilled(false);
-		
 		endLook.addActionListener(new ActionListener(){
 
 			@Override
@@ -191,10 +194,16 @@ public class TrialControls extends JPanel {
 		});
 		
 		add(endLook);
-		endLook.setMaximumSize(BUTTON_SIZE);
+		endLook.setPreferredSize(getButtonDimension(endLook.getIcon()));
+		endLook.setMaximumSize(getButtonDimension(endLook.getIcon()));
 		endLook.setFocusable(false);
 		endLook.setBorder(BorderFactory.createEmptyBorder());
 		endLook.setContentAreaFilled(false);
+	}
+	
+	private static Dimension getButtonDimension(Icon ico)
+	{
+		return new Dimension(ico.getIconWidth() + BUTTON_TEXT_MARGIN, BUTTON_HEIGHT);
 	}
 	
 	private static void readButtonIcons()
@@ -202,17 +211,20 @@ public class TrialControls extends JPanel {
 		buttonIcons = new ArrayList<ImageIcon>();
 		for(int i = 1; i <= 6; i++)
 		{
-			String filename = String.format("../../img/trialControls2/vidCodingSystemLogosLarger-%02d.png", i);
+			String filename = String.format("../../img/TrialButtonIcons/TrialButtons-%02d.png", i);
 			try{
 				BufferedImage buttonIcon = ImageIO.read(TrialControls.class.getResource(filename));
 				ImageIcon icon = new ImageIcon(buttonIcon);
 				Image img = icon.getImage();
-				img = img.getScaledInstance(48, 25, Image.SCALE_SMOOTH);
+				int width = Math.round(25f / (float) buttonIcon.getHeight() * (float) buttonIcon.getWidth()); 
+				img = img.getScaledInstance(width, 25, Image.SCALE_SMOOTH);
 				buttonIcons.add(new ImageIcon(img));
 			} catch (IOException e) {
 				System.out.format("Couldn't read file '%s'\n", filename);
 			}
 		}
+		
+		
 	}
 	
 	
