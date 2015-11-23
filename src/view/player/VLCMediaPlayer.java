@@ -6,6 +6,8 @@ import java.awt.event.HierarchyListener;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.SwingUtilities;
+
 import controller.Globals;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
@@ -446,7 +448,7 @@ public class VLCMediaPlayer implements IMediaPlayer{
 	 */
     @Override
 	public void start() {
-       	if(player.isPlaying())
+		if(player.isPlaying())
        	{
        		if(player.canPause())
        			player.pause();
@@ -460,13 +462,13 @@ public class VLCMediaPlayer implements IMediaPlayer{
 	 */
     @Override
 	public void stop() {
-        if (player.isPlaying()) {
+		if (player.isPlaying()) {
             if (player.canPause()) {
                 player.pause();
             } else {
                 player.stop();
             }
-        }
+		}
     }
     
     /* (non-Javadoc)
@@ -511,9 +513,13 @@ public class VLCMediaPlayer implements IMediaPlayer{
     * @see view.IMediaPlayer#setMediaTime(long)
     */
    @Override
-   public void setMediaTime(long time) {
+   public void setMediaTime(final long time) {
 	   player.setTime(time - offset);
-	   Globals.getInstance().getController().updateLabels(time);
+	   SwingUtilities.invokeLater(new Runnable(){
+		   public void run(){
+			   Globals.getInstance().getEditor().getBottomBar().getNavbar().updateLabels();
+		   }
+	   });
    }
    
    /* (non-Javadoc)

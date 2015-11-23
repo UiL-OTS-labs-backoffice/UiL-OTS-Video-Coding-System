@@ -7,7 +7,9 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.SwingUtilities;
 
+import view.formatter.Time;
 import controller.Controller;
 import controller.Globals;
 import controller.IVideoControls;
@@ -34,21 +36,24 @@ public abstract class AbstractTrialListMenu extends JMenu {
 		vc = Globals.getInstance().getVideoController();
 		c = Globals.getInstance().getController();
 		addMouseListener(new MouseListener(){
-			public void mouseClicked(MouseEvent e) {
-			}
-
+			
+			/**
+			 * Update the trial menu when the menu is requested
+			 */
 			public void mouseEntered(MouseEvent e) {
-				generateTrialMenuItems();
+				Thread menuItemGeneratorThread = new Thread()
+				{
+					public void run(){
+						generateTrialMenuItems();
+					}
+				};
+				menuItemGeneratorThread.start();
 			}
-
-			public void mouseExited(MouseEvent e) {
-			}
-
-			public void mousePressed(MouseEvent e) {
-			}
-
-			public void mouseReleased(MouseEvent e) {
-			}
+			
+			public void mouseClicked(MouseEvent e) { }
+			public void mouseExited(MouseEvent e) { }
+			public void mousePressed(MouseEvent e) { }
+			public void mouseReleased(MouseEvent e) { }
 		});
 	}
 	
@@ -71,29 +76,28 @@ public abstract class AbstractTrialListMenu extends JMenu {
 			final String trialText = String.format(
 					"Trial %d (%s)", 
 					i, 
-					view.bottombar.PlayerControlsPanel.formatTime(time)
+					Time.format(time)
 				);
 			
-			JMenuItem item;
+			final JMenuItem item;
 			if (t.getNumberOfItems() > 0)
 			{
 				item = new JMenu(trialText);
 				item.addMouseListener(new MouseListener(){
 					public void mouseClicked(MouseEvent e) {
-						actionPerformer(time, t, trialText);
+						Thread actionPerformerThread = new Thread(){
+							public void run(){
+								actionPerformer(time, t, trialText);
+							}
+						};
+						actionPerformerThread.start();
+						
 					}
 
-					public void mouseEntered(MouseEvent e) {
-					}
-
-					public void mouseExited(MouseEvent e) {
-					}
-
-					public void mousePressed(MouseEvent e) {
-					}
-
-					public void mouseReleased(MouseEvent e) {
-					}
+					public void mouseEntered(MouseEvent e) { }
+					public void mouseExited(MouseEvent e) { }
+					public void mousePressed(MouseEvent e) { }
+					public void mouseReleased(MouseEvent e) { }
 					
 				});
 			}
@@ -103,7 +107,13 @@ public abstract class AbstractTrialListMenu extends JMenu {
 				item.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent e)
 					{
-						actionPerformer(time, t, trialText);
+						Thread actionPerformerThread  = new Thread()
+						{
+							public void run(){
+								actionPerformer(time, t, trialText);
+							}
+						};
+						actionPerformerThread.start();
 					}
 				});
 			}
@@ -116,20 +126,34 @@ public abstract class AbstractTrialListMenu extends JMenu {
 				final String lookText = String.format(
 						"Look %d (%s)", 
 						j, 
-						view.bottombar.PlayerControlsPanel.formatTime(ltime)
+						Time.format(ltime)
 					);
-				JMenuItem look = new JMenuItem(lookText);
+				final JMenuItem look = new JMenuItem(lookText);
 				look.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent e)
 					{
-						actionPerformer(ltime, l, String.format("Trial %d look %d", tnr, lnr));
+						Thread actionPerformerThread = new Thread()
+						{
+							public void run(){
+								actionPerformer(ltime, l, String.format("Trial %d look %d", tnr, lnr));
+							}
+						};
+						actionPerformerThread.start();
 					}
 				});
 				
-				item.add(look);
+				SwingUtilities.invokeLater(new Runnable(){
+					public void run(){
+						item.add(look);
+					}
+				});
 			}
 			
-			add(item);
+			SwingUtilities.invokeLater(new Runnable(){
+				public void run(){
+					add(item);
+				}
+			});
 		}
 	}
 	

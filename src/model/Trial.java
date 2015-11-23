@@ -1,5 +1,7 @@
 package model;
 
+import java.util.LinkedList;
+
 public class Trial extends AbstractTimeContainer
 {
 	/**
@@ -12,13 +14,18 @@ public class Trial extends AbstractTimeContainer
 	 * @param time	Starttime of the trial in milliseconds
 	 */
 	public Trial(long time) {
-		super(time);
+		super(time, AbstractTimeFrame.TYPE_TRIAL);
 	}
 
 	@Override
-	public void addItem(long time) {
+	public AbstractTimeFrame addItem(long time) {
 		Look nl = new Look(time);
 		hiddenAddItem(time, nl);
+		return nl;
 	}
-
+	
+	public void removeAll()
+	{
+		this.items = new LinkedList<AbstractTimeFrame>();
+	}
 }

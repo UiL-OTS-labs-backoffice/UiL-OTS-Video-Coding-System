@@ -29,10 +29,15 @@ public class CodingKeyListener implements KeyListener {
 		// TODO Auto-generated method stub
 		if(vc.IsLoaded())
     	{
-    		int keycode = e.getKeyCode();
+    		final int keycode = e.getKeyCode();
     		
     		try{
-    			executeCodeForKey(keycode);
+    			Thread executorThread = new Thread(){
+    				public void run(){
+    					executeCodeForKey(keycode);
+    				}
+    			};
+    			executorThread.start();
     		} catch(Exception exc) {
     		}
     	}

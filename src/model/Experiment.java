@@ -42,7 +42,7 @@ public class Experiment extends AbstractTimeContainer{
 	 * @param g		Globals instance
 	 */
 	public Experiment(Globals g) {
-		super(0L);
+		super(0L, AbstractTimeFrame.TYPE_EXPERIMENT);
 		this.g = g;
 	}
 	
@@ -66,9 +66,10 @@ public class Experiment extends AbstractTimeContainer{
 	}
 
 	@Override
-	public void addItem(long time) {
+	public AbstractTimeFrame addItem(long time) {
 		Trial nt = new Trial(time);
 		hiddenAddItem(time, nt);
+		return nt;
 	}
 
 	/*****************************************************************

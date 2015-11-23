@@ -9,6 +9,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
 import controller.*;
 
@@ -23,10 +24,14 @@ public class MainMenu extends JMenuBar {
 	public MainMenu(Globals g)
 	{
 		c = g.getController();
-		addFileMenu();
-		addTrialMenu();
-		addSettingsMenu();
-		addHelpMenu();
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				addFileMenu();
+				addTrialMenu();
+				addSettingsMenu();
+				addHelpMenu();
+			}
+		});
 	}
 	
 	/**
@@ -39,56 +44,93 @@ public class MainMenu extends JMenuBar {
 	 */
 	private void addFileMenu()
 	{
-		JMenu fileMenu = new JMenu("File");
+		final JMenu fileMenu = new JMenu("File");
 		fileMenu.setMnemonic('F');
-		add(fileMenu);
 		
-		JMenuItem save = new JMenuItem("Save");
+		final JMenuItem save = new JMenuItem("Save");
 		save.setMnemonic('S');
 		save.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S,
                 java.awt.Event.CTRL_MASK));
 		save.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				c.save();
+				Thread saveThread = new Thread(){ 
+					public void run(){
+						c.save();
+					}
+				};
+				saveThread.start();
 			}
 		});
-		JMenuItem saveas = new JMenuItem("Save As");
+		final JMenuItem saveas = new JMenuItem("Save As");
 		saveas.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				c.saveAs();
+				Thread saveAsThread = new Thread(){
+					public void run(){
+						c.saveAs();
+					}
+				};
+				saveAsThread.start();
 			}
 		});
 		saveas.setMnemonic('A');
 		
-		JMenuItem exportProject = new JMenuItem("Export project to CSV");
+		final JMenuItem exportProject = new JMenuItem("Export project to CSV");
 		exportProject.setMnemonic('E');
 		exportProject.setToolTipText("This will export all the trials and the total of the time of all the looks in each of those trials");
 		exportProject.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				if (!c.export())
+				Thread exportThread = new Thread()
 				{
-					JOptionPane.showMessageDialog(new JPanel(), "Sorry! Looks like the file couldn't exported!", "Exporting failed", JOptionPane.ERROR_MESSAGE);
-				}
+					public void run(){
+						if (!c.export())
+						{
+							JOptionPane.showMessageDialog(
+									new JPanel(), 
+									"Sorry! Looks like the file couldn't exported!", 
+									"Exporting failed", 
+									JOptionPane.ERROR_MESSAGE
+								);
+						}
+					}
+				};
+				exportThread.start();
 			}
 		});
 		
-		JMenuItem exportOverview = new JMenuItem("Export overview to CSV");
+		final JMenuItem exportOverview = new JMenuItem("Export overview to CSV");
 		exportOverview.setToolTipText("This will export an extended overview of the project, including the begin- and end times for all trials and looks");
 		exportOverview.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				if (!c.exportOverview())
+				Thread exportThread = new Thread()
 				{
-					JOptionPane.showMessageDialog(new JPanel(), "Sorry! Looks like the file couldn't exported!", "Exporting failed", JOptionPane.ERROR_MESSAGE);
-				}
+					public void run(){
+						if (!c.exportOverview())
+						{
+							JOptionPane.showMessageDialog(
+									new JPanel(), 
+									"Sorry! Looks like the file couldn't exported!", 
+									"Exporting failed", 
+								JOptionPane.ERROR_MESSAGE
+							);
+						}
+					}
+				};
+				exportThread.start();
 			}
 		});
 		
-		fileMenu.add(save);
-		fileMenu.add(saveas);
-//		fileMenu.add(openProject);
-		fileMenu.addSeparator();
-		fileMenu.add(exportProject);
-		fileMenu.add(exportOverview);
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				fileMenu.add(save);
+				fileMenu.add(saveas);
+//				fileMenu.add(openProject);
+				fileMenu.addSeparator();
+				fileMenu.add(exportProject);
+				fileMenu.add(exportOverview);
+				add(fileMenu);
+			}
+		});
+		
 	}
 	
 	/**
@@ -97,10 +139,14 @@ public class MainMenu extends JMenuBar {
 	 * @param rmt	True iff currently in trial
 	 * @param rml	True iff currently in look
 	 */
-	public void updateButtons(boolean rmt, boolean rml){
-		removeTrial.setEnabled(rmt);
-		removeLook.setEnabled(rml);
-		removeLooks.setEnabled(rmt);
+	public void updateButtons(final boolean rmt, final boolean rml){
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				removeTrial.setEnabled(rmt);
+				removeLook.setEnabled(rml);
+				removeLooks.setEnabled(rmt);
+			}
+		});
 	}
 	
 	/**
@@ -110,20 +156,30 @@ public class MainMenu extends JMenuBar {
 	 */
 	private void addSettingsMenu()
 	{
-		JMenu settingsMenu = new JMenu("Settings");
+		final JMenu settingsMenu = new JMenu("Settings");
 		settingsMenu.setMnemonic('E');
-		add(settingsMenu);
 		
-		JMenuItem setExpInfo = new JMenuItem("Experiment Information");
+		final JMenuItem setExpInfo = new JMenuItem("Experiment Information");
 		setExpInfo.setMnemonic('I');
 		
 		setExpInfo.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		c.openSettings();
+        		Thread settingsOpener = new Thread(){
+        			public void run(){
+        				c.openSettings();
+        			}
+        		};
+        		settingsOpener.start();
         	}
         });
 		
-		settingsMenu.add(setExpInfo);
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				settingsMenu.add(setExpInfo);
+				add(settingsMenu);
+			}
+		});
+		
 	}
 	
 	/**
@@ -141,9 +197,9 @@ public class MainMenu extends JMenuBar {
 	 */
 	private void addTrialMenu()
 	{
-		JMenu trialMenu = new JMenu("Trial");
+		final JMenu trialMenu = new JMenu("Trial");
 		trialMenu.setMnemonic('T');
-		add(trialMenu);
+		
 		
 		removeTrial = new JMenuItem("Remove current trial");
 		removeTrial.setToolTipText("Removes the current trial");
@@ -151,7 +207,12 @@ public class MainMenu extends JMenuBar {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				c.removeCurrentTrial();
+				Thread removeTrialThread = new Thread(){
+					public void run(){
+						c.removeCurrentTrial();
+					}
+				};
+				removeTrialThread.start();
 			}
 			
 		});
@@ -162,7 +223,12 @@ public class MainMenu extends JMenuBar {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				c.removeCurrentLook();
+				Thread removeLookThread = new Thread(){
+					public void run(){
+						c.removeCurrentLook();
+					}
+				};
+				removeLookThread.start();
 			}
 			
 		});
@@ -174,7 +240,12 @@ public class MainMenu extends JMenuBar {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				c.removeAllCurrentLooks();
+				Thread removeAllLooks = new Thread(){
+					public void run(){
+						c.removeAllCurrentLooks();
+					}
+				};
+				removeAllLooks.start();
 			}
 			
 		});
@@ -182,7 +253,7 @@ public class MainMenu extends JMenuBar {
 		final JMenu goToTrial = new TrialNavigator("Go to trial");
 		final JMenu addCommentMenu = new TimeframeCommentEditor("Add a comment");
 		
-		JMenuItem overview = new JMenuItem("Show overview");
+		final JMenuItem overview = new JMenuItem("Show overview");
 		overview.setToolTipText("Show an overview of the experiment so far");
 		overview.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
@@ -191,18 +262,23 @@ public class MainMenu extends JMenuBar {
         	}
         });
 		
-		trialMenu.add(removeTrial);
-		trialMenu.add(removeLook);
-		trialMenu.add(removeLooks);
-		trialMenu.add(goToTrial);
-		trialMenu.add(addCommentMenu);
-		trialMenu.add(overview);
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				trialMenu.add(removeTrial);
+				trialMenu.add(removeLook);
+				trialMenu.add(removeLooks);
+				trialMenu.add(goToTrial);
+				trialMenu.add(addCommentMenu);
+				trialMenu.add(overview);
+				add(trialMenu);
+				
+				removeTrial.setEnabled(false);
+				removeLook.setEnabled(false);
+				removeLooks.setEnabled(false);
+			}
+		});
 		
-		removeTrial.setEnabled(false);
-		removeLook.setEnabled(false);
-		removeLooks.setEnabled(false);
 	}
-	
 	
 	/**
 	 * Adds the help menu
@@ -212,10 +288,9 @@ public class MainMenu extends JMenuBar {
 	 */
 	private void addHelpMenu()
 	{
-		JMenu help = new JMenu("Help");
-		add(help);
+		final JMenu help = new JMenu("Help");
 		
-		JMenuItem shortKeys = new JMenuItem("Quick keys");
+		final JMenuItem shortKeys = new JMenuItem("Quick keys");
 		shortKeys.setToolTipText("Show a list of quick keys");
 		shortKeys.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
@@ -224,7 +299,7 @@ public class MainMenu extends JMenuBar {
         	}
         });
 		
-		JMenuItem about = new JMenuItem("About");
+		final JMenuItem about = new JMenuItem("About");
 		about.addActionListener(new ActionListener(){
 
 			@Override
@@ -234,8 +309,14 @@ public class MainMenu extends JMenuBar {
 			
 		});
 		
-		help.add(shortKeys);
-		help.add(about);
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				help.add(shortKeys);
+				help.add(about);
+				add(help);
+			}
+		});
+		
 	}
 	
 }

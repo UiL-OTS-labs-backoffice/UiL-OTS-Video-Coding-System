@@ -1,5 +1,7 @@
 package view.menu;
 
+import javax.swing.SwingUtilities;
+
 import model.AbstractTimeFrame;
 
 public class TrialNavigator extends AbstractTrialListMenu {
@@ -13,10 +15,13 @@ public class TrialNavigator extends AbstractTrialListMenu {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public void actionPerformer(long ltime, AbstractTimeFrame f, String tt)
+	public void actionPerformer(final long ltime, AbstractTimeFrame f, String tt)
 	{
-		vc.setMediaTime(ltime);
-		c.updateLabels(ltime);
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				vc.setMediaTime(ltime);
+			}
+		});
 	}
 
 }

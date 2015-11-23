@@ -52,29 +52,30 @@ public class Globals {
 	{
 		instance = this;
 		controller = new Controller(instance);
+		preferences = new ApplicationPreferences();
 		videoController = new VLCVideoController(instance);
 		experimentModel = new Experiment(instance);
-		preferences = new ApplicationPreferences();
+		keyCodeModel = model.QuickKeys.getInstance(preferences);
 		
 		readIcons();
 		
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run()
-			{
-				keyCodeModel = model.QuickKeys.getInstance(preferences);
-				editorView = new Editor(instance);
-				settingsView = new ExperimentSettings(instance);
-				
-				view.panels.projectOpener opener = new view.panels.projectOpener(instance);
+		editorView = new Editor(instance);
+		settingsView = new ExperimentSettings(instance);
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				view.panels.projectOpener opener = new view.panels.projectOpener(
+						instance);
 				opener.setVisible(true);
 			}
 		});
+	
 	}
 	
 	private static void readIcons(){
 		String path = "/img/icons/";
 		int sizes[] = {16, 24, 32, 48, 64, 96, 128, 256, 512};
-		for(int i = 0; i < 9; i++)
+		for(int i = 0; i < sizes.length; i++)
 		{
 			String filename = String.format("%s%dx%d.png", path, sizes[i], sizes[i]);
 			
