@@ -1,16 +1,20 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import controller.Globals;
 import model.AbstractTimeFrame;
+import model.TimeObserver.ITimeContainerObserver;
+import model.TimeObserver.ITimeContainerSubject;
 
 /**
  * This abstract class extends the timeframe
  * In this class, a time frame can contain one or more sub time frames that
  * need to fall within the range if this time frame
  */
-public abstract class AbstractTimeContainer extends AbstractTimeFrame
+public abstract class AbstractTimeContainer extends AbstractTimeFrame implements ITimeContainerSubject
 {
 	/**
 	 * SerialVersion UID
@@ -22,7 +26,11 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame
 	 */
 	protected LinkedList<AbstractTimeFrame> items;
 	
-	
+	/**
+	 * Observer pattern
+	 */
+	private List<ITimeContainerObserver> containerObservers;
+	private final Object MUTEX = new Object();
 
 	/**
 	 * The constructor for Time container calls the super constructor from
@@ -32,6 +40,7 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame
 	public AbstractTimeContainer(long time, int type)
 	{
 		super(time, type);
+		this.containerObservers = new ArrayList<ITimeContainerObserver>();
 		this.timeout = -1L;
 		this.items = new LinkedList<AbstractTimeFrame>();
 	}
@@ -243,8 +252,10 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame
 				tf.setEnd(items.get(canAdd).getBegin()-1);
 			}
 			items.add(canAdd, tf);
+			itemAdded(tf, canAdd + 1);
 		}
 		calculateTimeout();
+		
 	}
 	
 	/**
@@ -259,7 +270,9 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame
 					+ "removed because it does not exist.", item);
 			throw new IllegalStateException(e);
 		} else {
+			AbstractTimeFrame it = items.get(item);
 			items.remove(getIndex(item));
+			itemRemoved(it, item+1);
 		}
 		calculateTimeout();
 	}
@@ -391,5 +404,56 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame
 	protected void setTimeout(long timeout)
 	{
 	}
+	
+	@Override
+    public void registerContainerListener(ITimeContainerObserver obj) {
+        if(obj == null) throw new NullPointerException("Null Observer");
+        synchronized (MUTEX) {
+        if(!containerObservers.contains(obj)) containerObservers.add(obj);
+        }
+    }
+ 
+    @Override
+    public void unregisterContainerListener(ITimeContainerObserver obj) {
+        synchronized (MUTEX) {
+        	containerObservers.remove(obj);
+        }
+    }
+    
+    @Override
+    public void itemAdded(AbstractTimeFrame item, int itemNumber){
+    	List<ITimeContainerObserver> observersLocal = null;
+    	synchronized(MUTEX) {
+    		observersLocal = new ArrayList<ITimeContainerObserver>(this.containerObservers);
+    	}
+    	for(ITimeContainerObserver obj : observersLocal)
+    	{
+    		obj.itemAdded(this, item, itemNumber);
+    	}
+    }
+    
+    @Override
+	public void itemRemoved(AbstractTimeFrame item, int itemNumber){
+    	List<ITimeContainerObserver> observersLocal = null;
+    	synchronized(MUTEX) {
+    		observersLocal = new ArrayList<ITimeContainerObserver>(this.containerObservers);
+    	}
+    	for(ITimeContainerObserver obj : observersLocal)
+    	{
+    		obj.itemRemoved(this, item, itemNumber);
+    	}
+    }
+    
+    @Override
+	public void numberOfItemsChanged(){
+    	List<ITimeContainerObserver> observersLocal = null;
+    	synchronized(MUTEX) {
+    		observersLocal = new ArrayList<ITimeContainerObserver>(this.containerObservers);
+    	}
+    	for(ITimeContainerObserver obj : observersLocal)
+    	{
+    		obj.numberOfItemsChanged(this);
+    	}
+    }
 	
 }

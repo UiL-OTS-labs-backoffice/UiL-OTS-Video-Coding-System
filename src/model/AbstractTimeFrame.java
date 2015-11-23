@@ -1,15 +1,20 @@
 package model;
 import java.awt.Rectangle;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
+
+import model.TimeObserver.ITimeFrameObserver;
+import model.TimeObserver.ITimeFrameSubject;
 
 /**
  * A timeframe is an object that has a begin time and an end time
  * These times can be changed if necessary and the duration of a time frame
  * can be requested
  */
-public abstract class AbstractTimeFrame implements Serializable
+public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubject
 {
 	/**
 	 * SerialVersion UID
@@ -35,6 +40,10 @@ public abstract class AbstractTimeFrame implements Serializable
 	
 	protected long timeout;
 	
+	private List<ITimeFrameObserver> observers;
+	private boolean changed;
+	private final Object MUTEX = new Object();
+	
 	/**
 	 * Constructor for this class
 	 * Creates a new time frame with begin time set to
@@ -45,6 +54,7 @@ public abstract class AbstractTimeFrame implements Serializable
 	 */
 	public AbstractTimeFrame(long time, int type)
 	{
+		this.observers=new ArrayList<ITimeFrameObserver>();
 		this.begintime = time;
 		this.type = type;
 	}
@@ -90,7 +100,9 @@ public abstract class AbstractTimeFrame implements Serializable
 		if(canBegin(time))
 		{
 			this.begintime = time;
+			this.changed = true;
 			calculateDuration();
+			timeChanged();
 		} else {
 			String e = String.format("Requested new begin time is %d, but the "
 					+ "current end time is %d. The begin time should be less "
@@ -113,7 +125,9 @@ public abstract class AbstractTimeFrame implements Serializable
 		if(canEnd(time))
 		{
 			this.endtime = time;
+			this.changed = true;
 			calculateDuration();
+			timeChanged();
 		} else {
 			String e = String.format("Requested new end time is %d, but the "
 					+ "current begin time is %d. The end time should "
@@ -232,4 +246,38 @@ public abstract class AbstractTimeFrame implements Serializable
 	{
 		this.timeout = timeout;
 	}
+	
+	@Override
+	public void registerFrameListener(ITimeFrameObserver obj)
+	{
+		if(obj == null) throw new NullPointerException("Null Observer");
+		synchronized (MUTEX) {
+			if(!observers.contains(obj)) observers.add(obj);
+		}
+	}
+	
+	@Override
+	public void unregisterFrameListener(ITimeFrameObserver obj)
+	{
+		synchronized (MUTEX) {
+			observers.remove(obj);
+		}
+	}
+	
+	@Override
+	public void timeChanged()
+	{
+		List<ITimeFrameObserver> observersLocal = null;
+		synchronized(MUTEX) {
+			if (!changed)
+				return;
+			observersLocal = new ArrayList<ITimeFrameObserver>(this.observers);
+			this.changed=false;
+		}
+		for(ITimeFrameObserver obj : observersLocal)
+		{
+			obj.timeChanged(this);
+		}
+	}
+	
 }
