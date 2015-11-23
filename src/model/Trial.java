@@ -1,7 +1,5 @@
 package model;
 
-import java.util.LinkedList;
-
 public class Trial extends AbstractTimeContainer
 {
 	/**
@@ -22,10 +20,5 @@ public class Trial extends AbstractTimeContainer
 		Look nl = new Look(time);
 		hiddenAddItem(time, nl);
 		return nl;
-	}
-	
-	public void removeAll()
-	{
-		this.items = new LinkedList<AbstractTimeFrame>();
 	}
 }

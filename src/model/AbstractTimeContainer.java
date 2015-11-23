@@ -272,9 +272,18 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 		} else {
 			AbstractTimeFrame it = items.get(item);
 			items.remove(getIndex(item));
-			itemRemoved(it, item+1);
+			itemRemoved(it);
 		}
 		calculateTimeout();
+	}
+	
+	public void removeAll()
+	{
+		for(AbstractTimeFrame t : items)
+		{
+			items.remove(t);
+			itemRemoved(t);
+		}
 	}
 
 	/**
@@ -433,14 +442,14 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
     }
     
     @Override
-	public void itemRemoved(AbstractTimeFrame item, int itemNumber){
+	public void itemRemoved(AbstractTimeFrame item){
     	List<ITimeContainerObserver> observersLocal = null;
     	synchronized(MUTEX) {
     		observersLocal = new ArrayList<ITimeContainerObserver>(this.containerObservers);
     	}
     	for(ITimeContainerObserver obj : observersLocal)
     	{
-    		obj.itemRemoved(this, item, itemNumber);
+    		obj.itemRemoved(this, item);
     	}
     }
     

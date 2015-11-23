@@ -20,7 +20,7 @@ public interface ITimeContainerObserver {
 	 * @param itemNumber	The item number of the item that was deleted (from before it
 	 * 						was deleted)
 	 */
-	public void itemRemoved(AbstractTimeContainer container, AbstractTimeFrame tf, int itemNumber);
+	public void itemRemoved(AbstractTimeContainer container, AbstractTimeFrame tf);
 	
 	/**
 	 * Method to notify the observer that the amount of items was changed, either by insertion

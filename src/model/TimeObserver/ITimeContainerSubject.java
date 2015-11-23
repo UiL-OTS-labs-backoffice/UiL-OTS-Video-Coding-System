@@ -29,7 +29,7 @@ public interface ITimeContainerSubject {
 	 * @param itemNumber	The item number of the removed item from
 	 * 						before it was removed
 	 */
-	public void itemRemoved(AbstractTimeFrame item, int itemNumber);
+	public void itemRemoved(AbstractTimeFrame item);
 	
 	/**
 	 * Method to notify all observers the amount of items was changed,
