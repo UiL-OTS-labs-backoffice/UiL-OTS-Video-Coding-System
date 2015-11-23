@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -31,8 +32,8 @@ public abstract class ABar extends JPanel {
 	protected IVideoControls vc;
 	
 	protected Navbar navbar;
-	protected HashMap<AbstractTimeFrame, PanelTimeframe> timeFrames = 
-			new HashMap<AbstractTimeFrame, PanelTimeframe>();
+	protected ConcurrentHashMap<AbstractTimeFrame, PanelTimeframe> timeFrames = 
+			new ConcurrentHashMap<AbstractTimeFrame, PanelTimeframe>();
 	
 	protected TimeIndicator indicator;
 	

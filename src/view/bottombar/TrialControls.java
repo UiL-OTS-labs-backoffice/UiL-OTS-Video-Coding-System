@@ -3,7 +3,6 @@ package view.bottombar;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -73,16 +72,16 @@ public class TrialControls extends JPanel {
 			public void run() {
 				TrialControls.this.newTrial.setEnabled(nt);
 				
-				TrialControls.this.endTrial.setIcon(trial >= 0 ? buttonIcons.get(4) : buttonIcons.get(5));
+				TrialControls.this.endTrial.setIcon(trial >= 0 ? buttonIcons.get(5) : buttonIcons.get(4));
 				TrialControls.this.endTrial.setToolTipText(formatLookTrial("trial", trial));
-				TrialControls.this.endTrial.setText(et ? Integer.toString(trial) : "");
+				TrialControls.this.endTrial.setText(et ? Integer.toString(Math.abs(trial)) : "");
 				TrialControls.this.endTrial.setEnabled(et);
 				
 				TrialControls.this.newLook.setEnabled(nl);
 				
-				TrialControls.this.endLook.setIcon(buttonIcons.get(look >= 0 ? 1 : 2));
+				TrialControls.this.endLook.setIcon(buttonIcons.get(look >= 0 ? 2 : 1));
 				TrialControls.this.endLook.setToolTipText(formatLookTrial("look", look));
-				TrialControls.this.endLook.setText(el ? Integer.toString(look) : "");
+				TrialControls.this.endLook.setText(el ? Integer.toString(Math.abs(look)) : "");
 				TrialControls.this.endLook.setEnabled(el);
 			}
 		});
