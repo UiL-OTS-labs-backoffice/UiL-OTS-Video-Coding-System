@@ -68,15 +68,15 @@ public class InformationPanel extends JPanel {
 		detail.mediaTimeChanged();
 	}
 	
-	public void addTimeFrame(model.AbstractTimeFrame tf)
-	{
-		overview.addTimeFrame(tf);
-		detail.addTimeFrame(tf);
-	}
-	
-	public void removeTimeFrame(model.AbstractTimeFrame tf)
-	{
-		overview.removeTimeFrame(tf);
-		detail.removeTimeFrame(tf);
-	}
+//	public void addTimeFrame(model.AbstractTimeFrame tf)
+//	{
+//		overview.addTimeFrame(tf);
+//		detail.addTimeFrame(tf);
+//	}
+//	
+//	public void removeTimeFrame(model.AbstractTimeFrame tf)
+//	{
+//		overview.removeTimeFrame(tf);
+//		detail.removeTimeFrame(tf);
+//	}
 }

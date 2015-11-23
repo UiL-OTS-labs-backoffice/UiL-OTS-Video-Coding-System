@@ -45,11 +45,8 @@ public class Serializer {
 		try {
 			FileInputStream fin = new FileInputStream(url);
 			ObjectInputStream ois = new ObjectInputStream(fin);
-			
 			experimentModel = (model.Experiment) ois.readObject();
-			
 			ois.close();
-			
 			return experimentModel;
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(new JFrame(),

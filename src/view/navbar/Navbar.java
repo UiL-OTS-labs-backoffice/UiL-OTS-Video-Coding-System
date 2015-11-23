@@ -339,13 +339,13 @@ public class Navbar extends JPanel {
 		return this.isDragging;
 	}
 	
-	public void addTimeFrame(model.AbstractTimeFrame tf)
-	{
-		information.addTimeFrame(tf);
-	}
-	
-	public void removeTimeFrame(model.AbstractTimeFrame tf)
-	{
-		information.removeTimeFrame(tf);
-	}
+//	public void addTimeFrame(model.AbstractTimeFrame tf)
+//	{
+//		information.addTimeFrame(tf);
+//	}
+//	
+//	public void removeTimeFrame(model.AbstractTimeFrame tf)
+//	{
+//		information.removeTimeFrame(tf);
+//	}
 }

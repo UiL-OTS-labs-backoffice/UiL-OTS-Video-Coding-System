@@ -1,5 +1,7 @@
 package model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,13 +27,14 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 	 * The list of subitems that this container contains
 	 */
 	protected LinkedList<AbstractTimeFrame> items;
+	private transient Object ITEMS_MUTEX;
 	
 	/**
 	 * Observer pattern
 	 */
-	private List<ITimeContainerObserver> containerObservers;
-	private final Object MUTEX = new Object();
-
+	private transient List<ITimeContainerObserver> containerObservers;
+	private transient Object CONTAINER_MUTEX;
+	
 	/**
 	 * The constructor for Time container calls the super constructor from
 	 * Time frame and creates a new LinkedList that will contain the sub items
@@ -40,6 +43,8 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 	public AbstractTimeContainer(long time, int type)
 	{
 		super(time, type);
+		this.CONTAINER_MUTEX = new Object();
+		this.ITEMS_MUTEX = new Object();
 		this.containerObservers = new ArrayList<ITimeContainerObserver>();
 		this.timeout = -1L;
 		this.items = new LinkedList<AbstractTimeFrame>();
@@ -52,6 +57,7 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 	 */
 	public LinkedList<AbstractTimeFrame> getItems()
 	{
+		// TODO this should probably only return a copy, to prevent concurrent modification
 		return items;
 	}
 	
@@ -62,7 +68,9 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 	 */
 	public AbstractTimeFrame getItem(int item)
 	{
-		return items.get(getIndex(item));
+		synchronized (ITEMS_MUTEX) {
+			return items.get(getIndex(item));
+		}
 	}
 	
 	/**
@@ -100,7 +108,10 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 	public boolean canEnd(long time)
 	{
 		boolean itemCanEnd = super.canEnd(time);
-		boolean containerCanEnd = items.size() == 0 || items.peekLast().getEnd() == -1 ||items.peekLast().getEnd() <= time;
+		boolean containerCanEnd;
+		synchronized (ITEMS_MUTEX) {
+			containerCanEnd = items.size() == 0 || items.peekLast().getEnd() == -1 ||items.peekLast().getEnd() <= time;
+		}
 		return itemCanEnd && containerCanEnd;
 	}
 
@@ -119,9 +130,13 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 		if (!this.timeInRange(time)) {
 			canAdd = -1;
 		} else {
-			for(int i = 0; i < items.size(); i++)
+			LinkedList<AbstractTimeFrame> itemsLocal;
+			synchronized (ITEMS_MUTEX) {
+				itemsLocal = new LinkedList<AbstractTimeFrame>(this.items);
+			}
+			for(int i = 0; i < itemsLocal.size(); i++)
 			{
-				AbstractTimeFrame tf = items.get(i);
+				AbstractTimeFrame tf = itemsLocal.get(i);
 				if(tf.getBegin() > time)
 				{
 					canAdd = i;
@@ -163,8 +178,8 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 			canBegin = false;
 		} else {
 			int index = this.getIndex(item);
-			AbstractTimeFrame victem = items.get(index);
-			if(!victem.canBegin(time))
+			AbstractTimeFrame victim = items.get(index);
+			if(!victim.canBegin(time))
 			{
 				// The new start time falls after the end time of the item
 				canBegin = false;
@@ -246,12 +261,18 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 		} else {
 			if(canAdd > 0 && (items.get(canAdd-1).getEnd() >= tf.getBegin() || items.get(canAdd-1).getEnd() < 0))
 			{
-				items.get(canAdd-1).setEnd(tf.getBegin()-1);
+				synchronized (ITEMS_MUTEX){
+					items.get(canAdd-1).setEnd(tf.getBegin()-1);
+				}
 			}
 			if (canAdd < items.size()){
-				tf.setEnd(items.get(canAdd).getBegin()-1);
+				synchronized (ITEMS_MUTEX) {
+					tf.setEnd(items.get(canAdd).getBegin()-1);
+				}
 			}
-			items.add(canAdd, tf);
+			synchronized (ITEMS_MUTEX) {
+				items.add(canAdd, tf);
+			}
 			itemAdded(tf, canAdd + 1);
 		}
 		calculateTimeout();
@@ -270,8 +291,12 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 					+ "removed because it does not exist.", item);
 			throw new IllegalStateException(e);
 		} else {
-			AbstractTimeFrame it = items.get(item);
-			items.remove(getIndex(item));
+			AbstractTimeFrame it;
+			synchronized(ITEMS_MUTEX)
+			{
+				it = items.get(getIndex(item));
+				items.remove(getIndex(item));
+			}
 			itemRemoved(it);
 		}
 		calculateTimeout();
@@ -279,11 +304,15 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 	
 	public void removeAll()
 	{
-		for(AbstractTimeFrame t : items)
+		LinkedList<AbstractTimeFrame> itemsLocal;
+		synchronized (ITEMS_MUTEX) {
+			itemsLocal = new LinkedList<AbstractTimeFrame>(items);
+		}
+		for(AbstractTimeFrame t : itemsLocal)
 		{
-			items.remove(t);
 			itemRemoved(t);
 		}
+		items = new LinkedList<AbstractTimeFrame>();
 	}
 
 	/**
@@ -306,7 +335,9 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 	 */
 	private boolean itemExists(int item)
 	{
-		return item > 0 && item <= items.size();
+		synchronized (ITEMS_MUTEX) {
+			return item > 0 && item <= items.size();
+		}
 	}
 	
 	/**
@@ -319,11 +350,15 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 	 */
 	public int getItemForTime(long time)
 	{
-		for(int i = 0; i < items.size(); i++)
+		LinkedList<AbstractTimeFrame> itemsLocal;
+		synchronized (ITEMS_MUTEX) {
+			itemsLocal = new LinkedList<AbstractTimeFrame>(items);
+		}
+		for(int i = 0; i < itemsLocal.size(); i++)
 		{
-			AbstractTimeFrame tf = items.get(i);
+			AbstractTimeFrame tf = itemsLocal.get(i);
 			if(tf.getEnd() >= 0 && tf.getEnd() < time) {
-				if(i == items.size()-1)
+				if(i == itemsLocal.size()-1)
 					return 0 - i - 1;
 				continue;
 			} else if (tf.getBegin() <= time || tf.getEnd() == -1) {
@@ -345,7 +380,11 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 		model.Experiment em = Globals.getInstance().getExperimentModel();
 		long time = 0L;
 		long last_end = -1;
-		for(AbstractTimeFrame tf : items)
+		LinkedList<AbstractTimeFrame> itemsLocal;
+		synchronized (ITEMS_MUTEX) {
+			itemsLocal = new LinkedList<AbstractTimeFrame>(items);
+		}
+		for(AbstractTimeFrame tf : itemsLocal)
 		{
 			if(!em.getUseTimeout() || tf.getBegin() - last_end < em.getTimeout() || last_end < 0)
 			{
@@ -366,12 +405,15 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 	public int getNumberForItem(AbstractTimeFrame tf)
 	{
 		int number = -1;
-		
-		if(items.contains(tf))
+		LinkedList<AbstractTimeFrame> itemsLocal;
+		synchronized (ITEMS_MUTEX) {
+			itemsLocal = new LinkedList<AbstractTimeFrame>(items);
+		}
+		if(itemsLocal.contains(tf))
 		{
-			number = items.indexOf(tf) + 1;
+			number = itemsLocal.indexOf(tf) + 1;
 		} else {
-			for(AbstractTimeFrame item : items)
+			for(AbstractTimeFrame item : itemsLocal)
 			{
 				int maybeNumber = item.getNumberForItem(tf);
 				if(maybeNumber > 0)
@@ -391,12 +433,16 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 	public void calculateTimeout()
 	{
 		Experiment m = Globals.getInstance().getExperimentModel();
-		if(!m.getUseTimeout() || items.size() == 0)
+		LinkedList<AbstractTimeFrame> itemsLocal;
+		synchronized (ITEMS_MUTEX) {
+			itemsLocal = new LinkedList<AbstractTimeFrame>(items);
+		}
+		if(!m.getUseTimeout() || itemsLocal.size() == 0)
 		{
 			this.timeout = -1l;
 		} else {
 			this.timeout = items.getFirst().getEnd();	
-			for(AbstractTimeFrame tf : items)
+			for(AbstractTimeFrame tf : itemsLocal)
 			{
 				if(tf.getBegin() < this.timeout)
 				{
@@ -417,14 +463,14 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 	@Override
     public void registerContainerListener(ITimeContainerObserver obj) {
         if(obj == null) throw new NullPointerException("Null Observer");
-        synchronized (MUTEX) {
-        if(!containerObservers.contains(obj)) containerObservers.add(obj);
+        synchronized (CONTAINER_MUTEX) {
+        	if(!containerObservers.contains(obj)) containerObservers.add(obj);
         }
     }
  
     @Override
     public void unregisterContainerListener(ITimeContainerObserver obj) {
-        synchronized (MUTEX) {
+        synchronized (CONTAINER_MUTEX) {
         	containerObservers.remove(obj);
         }
     }
@@ -432,7 +478,7 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
     @Override
     public void itemAdded(AbstractTimeFrame item, int itemNumber){
     	List<ITimeContainerObserver> observersLocal = null;
-    	synchronized(MUTEX) {
+    	synchronized(CONTAINER_MUTEX) {
     		observersLocal = new ArrayList<ITimeContainerObserver>(this.containerObservers);
     	}
     	for(ITimeContainerObserver obj : observersLocal)
@@ -444,7 +490,7 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
     @Override
 	public void itemRemoved(AbstractTimeFrame item){
     	List<ITimeContainerObserver> observersLocal = null;
-    	synchronized(MUTEX) {
+    	synchronized(CONTAINER_MUTEX) {
     		observersLocal = new ArrayList<ITimeContainerObserver>(this.containerObservers);
     	}
     	for(ITimeContainerObserver obj : observersLocal)
@@ -456,13 +502,22 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
     @Override
 	public void numberOfItemsChanged(){
     	List<ITimeContainerObserver> observersLocal = null;
-    	synchronized(MUTEX) {
+    	synchronized(CONTAINER_MUTEX) {
     		observersLocal = new ArrayList<ITimeContainerObserver>(this.containerObservers);
     	}
     	for(ITimeContainerObserver obj : observersLocal)
     	{
     		obj.numberOfItemsChanged(this);
     	}
+    }
+    
+    private void readObject (final ObjectInputStream s ) throws ClassNotFoundException, IOException
+    {
+        s.defaultReadObject( );
+
+        this.CONTAINER_MUTEX = new Object();
+        this.ITEMS_MUTEX = new Object();
+        this.containerObservers = new ArrayList<ITimeContainerObserver>();
     }
 	
 }

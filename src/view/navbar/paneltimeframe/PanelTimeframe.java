@@ -17,6 +17,7 @@ import java.awt.geom.Rectangle2D;
 
 
 
+
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -26,7 +27,7 @@ import javax.swing.border.EmptyBorder;
 /**
  *	Each time frame has its own panel.
  */
-public class PanelTimeframe extends JPanel
+public class PanelTimeframe extends JPanel implements model.TimeObserver.ITimeFrameObserver
 {
 	/**
 	 * 
@@ -65,12 +66,18 @@ public class PanelTimeframe extends JPanel
 	{
 		this.panel = this;
 		this.tf = tf;
+		tf.registerFrameListener(this);
 		this.pane = parentPane;
 		this.g = g;
 		this.navbar = navbar;
 		
 		this.margin = (pane.getType() == ABar.TYPE_DETAIL) ? DETAIL_MARGIN : OVERVIEW_MARGIN;
 		createLayout();
+	}
+		
+	@Override
+	public void timeChanged(AbstractTimeFrame tf) {
+		// repaint
 	}
 	
 	/**
@@ -261,5 +268,4 @@ public class PanelTimeframe extends JPanel
 		g2.draw(diagonal);
 		return bi;
 	}
-	
 }

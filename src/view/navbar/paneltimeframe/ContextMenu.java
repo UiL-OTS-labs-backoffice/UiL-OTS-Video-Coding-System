@@ -95,7 +95,9 @@ class ContextMenu extends JPopupMenu
 					public void run()
 					{
 						int tnr = g.getExperimentModel().getItemForTime(tf.getBegin());
+						System.out.println("Tnr is " + tnr);
 						int lnr = g.getExperimentModel().getItem(tnr).getNumberForItem(tf);
+						System.out.println("lnr is " + lnr);
 						g.getController().removeLook(tnr, lnr);
 					}
 				}.start();

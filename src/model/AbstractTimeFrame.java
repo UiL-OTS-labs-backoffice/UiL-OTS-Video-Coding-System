@@ -1,5 +1,7 @@
 package model;
 import java.awt.Rectangle;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +42,8 @@ public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubje
 	
 	protected long timeout;
 	
-	private List<ITimeFrameObserver> observers;
-	private boolean changed;
-	private final Object MUTEX = new Object();
+	private transient List<ITimeFrameObserver> observers;
+	private transient Object MUTEX;
 	
 	/**
 	 * Constructor for this class
@@ -54,7 +55,8 @@ public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubje
 	 */
 	public AbstractTimeFrame(long time, int type)
 	{
-		this.observers=new ArrayList<ITimeFrameObserver>();
+		this.MUTEX = new Object();
+		this.observers = new ArrayList<ITimeFrameObserver>();
 		this.begintime = time;
 		this.type = type;
 	}
@@ -100,7 +102,6 @@ public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubje
 		if(canBegin(time))
 		{
 			this.begintime = time;
-			this.changed = true;
 			calculateDuration();
 			timeChanged();
 		} else {
@@ -125,7 +126,6 @@ public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubje
 		if(canEnd(time))
 		{
 			this.endtime = time;
-			this.changed = true;
 			calculateDuration();
 			timeChanged();
 		} else {
@@ -268,11 +268,8 @@ public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubje
 	public void timeChanged()
 	{
 		List<ITimeFrameObserver> observersLocal = null;
-		synchronized(MUTEX) {
-			if (!changed)
-				return;
+		synchronized (MUTEX) {
 			observersLocal = new ArrayList<ITimeFrameObserver>(this.observers);
-			this.changed=false;
 		}
 		for(ITimeFrameObserver obj : observersLocal)
 		{
@@ -280,4 +277,11 @@ public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubje
 		}
 	}
 	
+	private void readObject (final ObjectInputStream s ) throws ClassNotFoundException, IOException
+    {
+        s.defaultReadObject( );
+
+        this.MUTEX = new Object();
+        this.observers = new ArrayList<ITimeFrameObserver>();
+    }
 }

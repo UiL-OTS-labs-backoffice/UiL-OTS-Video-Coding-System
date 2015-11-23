@@ -18,7 +18,7 @@ import view.navbar.listeners.TimeMouseMotionListener;
 import view.navbar.paneltimeframe.PanelTimeframe;
 import view.player.IMediaPlayer;
 
-public abstract class ABar extends JPanel {
+public abstract class ABar extends JPanel implements model.TimeObserver.ITimeContainerObserver{
 
 	private static final long serialVersionUID = 1L;
 	private static final int ALLOWED_DRAG_MARGIN = 10;
@@ -55,6 +55,7 @@ public abstract class ABar extends JPanel {
 		for(AbstractTimeFrame tr : Globals.getInstance().getExperimentModel().getItems())
 		{
 			AbstractTimeContainer trial = (AbstractTimeContainer) tr;
+			trial.registerContainerListener(this);
 			timeFrames.put(trial, new PanelTimeframe(trial, this, g, navbar));
 			for(AbstractTimeFrame l : trial.getItems())
 			{
@@ -63,27 +64,54 @@ public abstract class ABar extends JPanel {
 		}
 	}
 	
+	@Override
+	public void itemAdded(AbstractTimeContainer container, AbstractTimeFrame item, int itemNumber)
+	{
+		if(item.getType() == model.AbstractTimeFrame.TYPE_TRIAL)
+		{
+			((AbstractTimeContainer) item).registerContainerListener(this);
+		}
+		timeFrames.put(item, new PanelTimeframe(item, this, g, navbar));
+	}
+	
+	@Override
+	public void itemRemoved(AbstractTimeContainer container, AbstractTimeFrame item)
+	{
+		timeFrames.get(item).remove();
+		timeFrames.remove(item);
+	}
+	
+	@Override
+	public void numberOfItemsChanged(AbstractTimeContainer container) {
+		// TODO Auto-generated method stub
+		// TODO what do we do with this? Don't really need to do anything i'spose?
+	}
+	
 	/**
 	 * Add a new time frame to the view
 	 * @param tf	Reference to abstract time frame object
 	 */
-	public void addTimeFrame(AbstractTimeFrame tf)
-	{
-		timeFrames.put(tf, new PanelTimeframe(tf, this, g, navbar));
-	}
+//	private void addTimeFrame(AbstractTimeFrame tf)
+//	{
+//		// TODO make this redundant, then remove
+//		timeFrames.put(tf, new PanelTimeframe(tf, this, g, navbar));
+//	}
 	
 	/**
 	 * Remove a time frame from the view
 	 * @param tf 	Reference to abstract time frame object that is to be removed
 	 */
-	public void removeTimeFrame(AbstractTimeFrame tf)
-	{
-		timeFrames.get(tf).remove();
-		timeFrames.remove(tf);
-	}
+//	private void removeTimeFrame(AbstractTimeFrame tf)
+//	{
+//		// TODO make this redundant, then remove
+//		timeFrames.get(tf).remove();
+//		timeFrames.remove(tf);
+//	}
 	
+	// TODO make this registered event
 	public void videoInstantiated()
 	{
+		g.getExperimentModel().registerContainerListener(this);
 		player = g.getVideoController().getPlayer();
 		
 		indicator = new TimeIndicator(this, player);
