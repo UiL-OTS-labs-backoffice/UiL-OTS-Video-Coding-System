@@ -5,24 +5,24 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import model.Look;
+import model.Trial;
 import view.navbar.utilities.INavbarObserver;
 import view.navbar.utilities.INavbarSubject;
-import view.navbar.utilities.NavbarUpdater;
 import view.player.IMediaPlayer;
+import view.player.IMediaPlayerListener;
 import controller.Globals;
 import controller.IVideoControllerObserver;
+import controller.IVideoControls;
 
 /**
  * Navbar is the controller class for all the time bar elements in the view
  */
-public class Navbar extends JPanel implements INavbarSubject, IVideoControllerObserver{
+public class Navbar extends JPanel implements INavbarSubject{
 
 	private static final long serialVersionUID = 1L;
 	
@@ -40,11 +40,6 @@ public class Navbar extends JPanel implements INavbarSubject, IVideoControllerOb
 	private float visiblePercentage;
 	private boolean isDragging;
 	
-	private final ScheduledExecutorService executorService = 
-			Executors.newSingleThreadScheduledExecutor();
-	
-	private NavbarUpdater updateScrollable;
-	
 	/**
 	 * Constructor
 	 * @param g 	Reference to Globals instance
@@ -52,7 +47,12 @@ public class Navbar extends JPanel implements INavbarSubject, IVideoControllerOb
 	public Navbar(Globals g)
 	{
 		this.g = g;
-		this.g.getVideoController().register(this);
+		this.g.getVideoController().register(new IVideoControllerObserver(){
+			@Override
+			public void videoInstantiated() {
+				Navbar.this.videoInstantiated();
+			}
+		});
 		this.observers = new ArrayList<INavbarObserver>();
 		this.currentStartVisibleTime = 0;
 		createLayout();
@@ -103,23 +103,85 @@ public class Navbar extends JPanel implements INavbarSubject, IVideoControllerOb
 	 * creates references to the video player and starts the single
 	 * thread executor
 	 */
-	@Override
 	public void videoInstantiated()
 	{
 		this.player = g.getVideoController().getPlayer();
-		
-		updateScrollable = new NavbarUpdater(this);
-		executorService.scheduleAtFixedRate(
-					updateScrollable,
-					0L,
-					1L,
-					TimeUnit.MILLISECONDS
-				);
-		
 		this.visibleTime = player.getMediaDuration();
 		this.currentEndVisibleTime = player.getMediaDuration();
 		
+		this.player.register(new IMediaPlayerListener(){
+
+			@Override
+			public void mediaStarted() { }
+			@Override
+			public void mediaPaused() { }
+
+			@Override
+			public void mediaTimeChanged() {
+				final IVideoControls vc = Globals.getInstance().getVideoController();
+				final long time 	= vc.IsLoaded() ? vc.getMediaTime() : 1;
+				final long begin 	= getCurrentStartVisibleTime();
+				final long end 		= getCurrentEndVisibleTime();
+				final long total 	= vc.IsLoaded() ? vc.getMediaDuration() : 1;
+				final long visible 	= getVisibleTime();
+				
+				SwingUtilities.invokeLater(new Runnable(){
+					
+					@Override
+					public void run() {
+						if(isDragging() || vc.IsLoaded() && vc.isPlaying() && begin < time && time < end) {
+							if(time > end - Math.round(visible * .3f) && end < total)
+							{
+								setCurrentStartVisibleTime(begin + 250);
+							} else if (time < begin + Math.round(visible * .3f) && begin > 0)
+							{
+								setCurrentStartVisibleTime(begin - 250);
+							}
+						}
+						updateButtons();
+					}
+				});
+			}
+			
+		});
+		
 		new DebugInfo(this, g.getVideoController());
+	}
+	
+	/**
+	 * Updates the button text and state
+	 * @param tnr		Current trial number
+	 * @param t			Current trial
+	 * @param lnr		Current look number
+	 * @param l			Current look
+	 * @param time		Current time
+	 */
+	public void updateButtons()
+	{
+		long time = g.getVideoController().getMediaTime();
+		int tnr = g.getExperimentModel().getItemForTime(time);
+		
+		boolean nt = g.getExperimentModel().canAddItem(time) >= 0 & tnr <= 0;
+		boolean et = false, nl = false, el = false;
+		boolean tm = false; // Timeout?
+		int lnr = 0;
+		if(tnr != 0)
+		{
+			Trial t = (Trial) g.getExperimentModel().getItem(Math.abs(tnr));
+			lnr = t.getItemForTime(time);
+			et = t.canEnd(time) && lnr <= 0;
+			nl = t.canAddItem(time) >= 0 && lnr <= 0;
+			
+			if(lnr != 0)
+			{
+				Look l = (Look) t.getItem(Math.abs(lnr));
+				tm = tnr > 0 && l.getEnd() > -1 && time - l.getEnd() > g.getExperimentModel().getTimeout() && g.getExperimentModel().getUseTimeout();
+				el = tnr > 0 && l.canEnd(time);
+			}
+		}
+		
+		g.getEditor().updateButtons(tnr, lnr, nt, et, nl, el, tnr > 0, lnr > 0);
+		g.getEditor().getBottomBar().setTimeoutText(tm);
 	}
 	
 	/**
@@ -262,9 +324,9 @@ public class Navbar extends JPanel implements INavbarSubject, IVideoControllerOb
 	@Override
 	public void register(INavbarObserver obj) {
 		if(obj == null) throw new NullPointerException("Null Observer");
-//		synchronized(MUTEX) {
+		synchronized(MUTEX) {
 			if(!this.observers.contains(obj)) this.observers.add(obj);
-//		}
+		}
 	}
 
 	@Override
@@ -273,13 +335,4 @@ public class Navbar extends JPanel implements INavbarSubject, IVideoControllerOb
 			observers.remove(obj);
 		}
 	}
-
-	@Override
-	public void mediaTimeChanged(long time) { }
-
-	@Override
-	public void playerStarted() { }
-
-	@Override
-	public void playerPaused() { }
 }

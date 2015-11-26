@@ -16,7 +16,7 @@ import view.player.IMediaPlayer;
 import controller.Globals;
 import controller.IVideoControllerObserver;
 
-public class ControlBar  extends JPanel implements INavbarObserver, IVideoControllerObserver{
+public class ControlBar  extends JPanel implements INavbarObserver{
 
 	private static final long serialVersionUID = 1L;
 	private static final int MAX_INT_VALUE = 2147483647;
@@ -36,7 +36,12 @@ public class ControlBar  extends JPanel implements INavbarObserver, IVideoContro
 		setLayout(new BorderLayout(0, 0));
 		addSizeSlider();
 		addScrollBar();
-		this.g.getVideoController().register(this);
+		this.g.getVideoController().register(new IVideoControllerObserver(){
+			@Override
+			public void videoInstantiated() {
+				ControlBar.this.videoInstantiated();
+			}
+		});
 		navbar.register(this);
 	}
 	
@@ -183,13 +188,4 @@ public class ControlBar  extends JPanel implements INavbarObserver, IVideoContro
 	{
 		return (useLongConversion) ? value * MAX_INT_VALUE : (long) value;
 	}
-
-	@Override
-	public void mediaTimeChanged(long time) { }
-
-	@Override
-	public void playerStarted() { }
-
-	@Override
-	public void playerPaused() { }
 }

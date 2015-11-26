@@ -139,5 +139,9 @@ public interface IMediaPlayer {
 	 * @param position	Position in media file in percentage points
 	 */
 	public void setPosition(float position);
+	
+	public void register(IMediaPlayerListener obj);
+	
+	public void deregister(IMediaPlayerListener obj);
 
 }

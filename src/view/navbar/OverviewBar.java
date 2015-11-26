@@ -26,7 +26,7 @@ public class OverviewBar extends ABar {
 	private int xStart;
 	private long visibleEndTime;
 	private boolean resizeRight = false, resizeLeft = false;
-	private long minVisibleTime;
+	
 	
 	/**
 	 * Constructor method for OverviewBar object
@@ -44,12 +44,6 @@ public class OverviewBar extends ABar {
 						(Color) new Color(0, 0, 0)));
 			}
 		});
-	}
-	
-	public void videoInstantiated()
-	{
-		super.videoInstantiated();
-		minVisibleTime = (long) Math.round((float) player.getMediaDuration() / 100.0);
 	}
 	
 	public Rectangle getTfRect(long start, long end, int type)
@@ -106,6 +100,7 @@ public class OverviewBar extends ABar {
 	/**
 	 * Resize- and paint the overview box
 	 */
+	@Override
 	public void paintBox() {
 		int left = (int) ((float) navbar.getCurrentStartVisibleTime()
 				/ (float) player.getMediaDuration() * (float) getWidth());
@@ -227,11 +222,5 @@ public class OverviewBar extends ABar {
 			}
 			
 		});
-	}
-
-	@Override
-	public void visibleAreaChanged(long begin, long end, long visibleTime,
-			float visiblePercentage) {
-		paintBox();
 	}
 }

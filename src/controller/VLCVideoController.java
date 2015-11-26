@@ -54,19 +54,6 @@ public class VLCVideoController implements IVideoControls {
 	@Override
 	public void play() {
 		player.start();
-		ArrayList<IVideoControllerObserver> localObservers;
-		synchronized (MUTEX) {
-			localObservers = new ArrayList<IVideoControllerObserver>(this.observers);
-		}
-		if(player.isPlaying()){
-			for(IVideoControllerObserver obj : localObservers){
-				obj.playerStarted();
-			}
-		} else {
-			for(IVideoControllerObserver obj : localObservers){
-				obj.playerStarted();
-			}
-		}
 	}
 
 	@Override
@@ -202,13 +189,6 @@ public class VLCVideoController implements IVideoControls {
 	@Override
 	public void setMediaTime(long time) {
 		player.setMediaTime(time);
-		ArrayList<IVideoControllerObserver> localObservers;
-		synchronized(MUTEX) {
-			localObservers = new ArrayList<IVideoControllerObserver>(this.observers);
-		}
-		for(IVideoControllerObserver obj : localObservers) {
-			obj.mediaTimeChanged(time);
-		}
 	}
 
 	@Override
@@ -266,5 +246,4 @@ public class VLCVideoController implements IVideoControls {
 			obj.videoInstantiated();
 		}
 	}
-
 }

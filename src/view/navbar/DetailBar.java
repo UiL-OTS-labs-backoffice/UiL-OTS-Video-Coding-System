@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
-import java.util.HashMap;
 
 import javax.swing.SwingUtilities;
 import javax.swing.border.MatteBorder;
@@ -13,16 +12,11 @@ import javax.swing.border.MatteBorder;
 import model.AbstractTimeFrame;
 import controller.Globals;
 import view.formatter.Time;
-import view.navbar.paneltimeframe.PanelTimeframe;
-
-
 
 public class DetailBar extends ABar{
 	
 	private static final long serialVersionUID = 1L;
 	private static final int TYPE = ABar.TYPE_DETAIL;
-	
-	private final Object MUTEX = new Object();
 	
 	/**
 	 * Construct a new detail bar JPanel
@@ -144,21 +138,6 @@ public class DetailBar extends ABar{
 		}
 	}
 
-	@Override
-	public void visibleAreaChanged(long begin, long end, long visibleTime,
-			float visiblePercentage) {
-		final HashMap<AbstractTimeFrame, PanelTimeframe> ptfLocal;
-		synchronized (MUTEX) {
-			ptfLocal = new HashMap<AbstractTimeFrame, PanelTimeframe>(timeFrames);
-		}
-		new Thread() {
-			public void run(){
-				for(PanelTimeframe ptf : ptfLocal.values()){
-					ptf.resize();
-				}
-				repaint();
-			}
-		}.start();
-	}
+	
 	
 }
