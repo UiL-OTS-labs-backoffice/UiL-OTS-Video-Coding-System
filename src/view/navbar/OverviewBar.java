@@ -13,7 +13,6 @@ import javax.swing.border.MatteBorder;
 
 import model.AbstractTimeFrame;
 import controller.Globals;
-import view.navbar.paneltimeframe.PanelTimeframe;
 
 public class OverviewBar extends ABar {
 
@@ -53,24 +52,14 @@ public class OverviewBar extends ABar {
 		minVisibleTime = (long) Math.round((float) player.getMediaDuration() / 100.0);
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void paintTimeFrame(final PanelTimeframe tf)
+	public Rectangle getTfRect(long start, long end, int type)
 	{
-		int left = xByTime(tf.getStart());
-		int right = xByTime((tf.getEnd() == -1L) ? Globals.getInstance().getVideoController().getMediaTime() : tf.getEnd());
-		int y = (tf.getType() == AbstractTimeFrame.TYPE_LOOK) ? getHeight() / 2
+		int left = xByTime(start);
+		int right = xByTime((end == -1L) ? Globals.getInstance().getVideoController().getMediaTime() : end);
+		int y = (type == AbstractTimeFrame.TYPE_LOOK) ? getHeight() / 2
 				: BOX_BORDER_WIDTH;
-		final Rectangle r2 = new Rectangle(left, y, right - left, getHeight()
+		return new Rectangle(left, y, right - left, getHeight()
 				/ 2 - BOX_BORDER_WIDTH);
-		
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				tf.setSize(r2);
-			}
-		});
 	}
 	
 	/**
@@ -238,5 +227,11 @@ public class OverviewBar extends ABar {
 			}
 			
 		});
+	}
+
+	@Override
+	public void visibleAreaChanged(long begin, long end, long visibleTime,
+			float visiblePercentage) {
+		paintBox();
 	}
 }

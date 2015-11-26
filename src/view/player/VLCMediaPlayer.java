@@ -5,10 +5,6 @@ import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-
-import javax.swing.SwingUtilities;
-
-import controller.Globals;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
 import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
@@ -515,11 +511,6 @@ public class VLCMediaPlayer implements IMediaPlayer{
    @Override
    public void setMediaTime(final long time) {
 	   player.setTime(time - offset);
-	   SwingUtilities.invokeLater(new Runnable(){
-		   public void run(){
-			   Globals.getInstance().getEditor().getBottomBar().getNavbar().updateLabels();
-		   }
-	   });
    }
    
    /* (non-Javadoc)

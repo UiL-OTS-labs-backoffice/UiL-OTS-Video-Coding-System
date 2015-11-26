@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
+import java.util.HashMap;
 
 import javax.swing.SwingUtilities;
 import javax.swing.border.MatteBorder;
@@ -20,6 +21,8 @@ public class DetailBar extends ABar{
 	
 	private static final long serialVersionUID = 1L;
 	private static final int TYPE = ABar.TYPE_DETAIL;
+	
+	private final Object MUTEX = new Object();
 	
 	/**
 	 * Construct a new detail bar JPanel
@@ -37,23 +40,14 @@ public class DetailBar extends ABar{
 		});
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 */
-	protected void paintTimeFrame(final PanelTimeframe tf)
+	public Rectangle getTfRect(long start, long end, int type)
 	{
-		int left = xByTime(tf.getStart());
-		int right = xByTime((tf.getEnd() == -1L) ? Globals.getInstance().getVideoController().getMediaTime() : tf.getEnd());
-		int y = (tf.getType() == AbstractTimeFrame.TYPE_LOOK) ? getHeight() / 2 + 20
+		int left = xByTime(start);
+		int right = xByTime((end == -1L) ? Globals.getInstance().getVideoController().getMediaTime() : end);
+		int y = (type == AbstractTimeFrame.TYPE_LOOK) ?  getHeight() / 2 + 20
 				: 35;
-		final Rectangle r = new Rectangle(left, y, right - left,
+		return new Rectangle(left, y, right - left,
 				(getHeight() / 2) - 30);
-		
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				tf.setSize(r);
-			}
-		});
 	}
 	
 	/**
@@ -148,6 +142,23 @@ public class DetailBar extends ABar{
 		{
 			return y;
 		}
+	}
+
+	@Override
+	public void visibleAreaChanged(long begin, long end, long visibleTime,
+			float visiblePercentage) {
+		final HashMap<AbstractTimeFrame, PanelTimeframe> ptfLocal;
+		synchronized (MUTEX) {
+			ptfLocal = new HashMap<AbstractTimeFrame, PanelTimeframe>(timeFrames);
+		}
+		new Thread() {
+			public void run(){
+				for(PanelTimeframe ptf : ptfLocal.values()){
+					ptf.resize();
+				}
+				repaint();
+			}
+		}.start();
 	}
 	
 }

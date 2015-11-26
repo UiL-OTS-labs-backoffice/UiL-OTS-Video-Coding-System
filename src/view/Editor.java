@@ -54,12 +54,23 @@ public class Editor {
 			}
 		});
 		addControlBar();
-    }
-    
-    public void videoInstantiated()
-    {
-    	bottom_bar.videoInstantiated();
-    	frame.setTitle(String.format("UiL OTS Labs Video Coding Software - %s", c.getUrl()));
+		g.getVideoController().register(new IVideoControllerObserver(){
+
+			@Override
+			public void mediaTimeChanged(long time) { }
+
+			@Override
+			public void playerStarted() { }
+
+			@Override
+			public void playerPaused() { }
+
+			@Override
+			public void videoInstantiated() {
+		    	frame.setTitle(String.format("UiL OTS Labs Video Coding Software - %s", c.getUrl()));
+			}
+			
+		});
     }
     
     /**

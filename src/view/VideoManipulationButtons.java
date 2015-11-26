@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import controller.Globals;
+import controller.IVideoControllerObserver;
 import controller.IVideoControls;
 
 import java.awt.BorderLayout;
@@ -61,9 +62,31 @@ public class VideoManipulationButtons extends JPanel {
 				addNextTrialButton();
 			}
 		});
+		
+		g.getVideoController().register(new IVideoControllerObserver(){
+
+			@Override
+			public void mediaTimeChanged(long time) { }
+
+			@Override
+			public void playerStarted() {
+				setPlay(true);
+			}
+
+			@Override
+			public void playerPaused() {
+				setPlay(false);
+			}
+
+			@Override
+			public void videoInstantiated() {
+				setEnableButtons(true);
+			}
+			
+		});
 	}
 	
-	public void setEnableButtons(final boolean state)
+	private void setEnableButtons(final boolean state)
 	{
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -221,7 +244,7 @@ public class VideoManipulationButtons extends JPanel {
 		panel.add(playPause);
 	}
 	
-	public void setPlay(final boolean state)
+	private void setPlay(final boolean state)
 	{
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {

@@ -74,10 +74,21 @@ public class PanelTimeframe extends JPanel implements model.TimeObserver.ITimeFr
 		this.margin = (pane.getType() == ABar.TYPE_DETAIL) ? DETAIL_MARGIN : OVERVIEW_MARGIN;
 		createLayout();
 	}
+	
+	public void resize()
+	{
+		final Rectangle rect = pane.getTfRect(getStart(), getEnd(), tf.getType());
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				panel.setSize(rect);
+			}
+		});
+	}
 		
 	@Override
 	public void timeChanged(AbstractTimeFrame tf) {
 		// repaint
+		resize();
 	}
 	
 	/**

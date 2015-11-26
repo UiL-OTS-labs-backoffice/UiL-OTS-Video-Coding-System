@@ -92,7 +92,7 @@ public class Controller {
 		g.getEditor().addVideoPlayerSurface(player);
 		g.getVideoController().setPlayer(player);
 		g.getExperimentModel().setEnd(player.getMediaDuration());
-		g.getEditor().videoInstantiated();
+		g.getVideoController().videoInstantiated();
 		g.getEditor().show();
 	}
 	

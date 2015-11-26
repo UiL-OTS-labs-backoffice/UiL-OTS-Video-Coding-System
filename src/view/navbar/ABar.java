@@ -3,22 +3,27 @@ package view.navbar;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
-import java.util.concurrent.ConcurrentHashMap;
+import java.awt.geom.Line2D;
+import java.util.HashMap;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import model.AbstractTimeContainer;
 import model.AbstractTimeFrame;
+import model.TimeObserver.ITimeContainerObserver;
 import controller.Globals;
+import controller.IVideoControllerObserver;
 import controller.IVideoControls;
 import view.navbar.listeners.TimeMouseListener;
 import view.navbar.listeners.TimeMouseMotionListener;
 import view.navbar.paneltimeframe.PanelTimeframe;
+import view.navbar.utilities.INavbarObserver;
 import view.player.IMediaPlayer;
 
-public abstract class ABar extends JPanel implements model.TimeObserver.ITimeContainerObserver{
+public abstract class ABar extends JPanel implements ITimeContainerObserver, INavbarObserver, IVideoControllerObserver{
 
 	private static final long serialVersionUID = 1L;
 	private static final int ALLOWED_DRAG_MARGIN = 10;
@@ -31,8 +36,8 @@ public abstract class ABar extends JPanel implements model.TimeObserver.ITimeCon
 	protected IVideoControls vc;
 	
 	protected Navbar navbar;
-	protected ConcurrentHashMap<AbstractTimeFrame, PanelTimeframe> timeFrames = 
-			new ConcurrentHashMap<AbstractTimeFrame, PanelTimeframe>();
+	protected HashMap<AbstractTimeFrame, PanelTimeframe> timeFrames = 
+			new HashMap<AbstractTimeFrame, PanelTimeframe>();
 	
 	protected TimeIndicator indicator;
 	
@@ -45,9 +50,11 @@ public abstract class ABar extends JPanel implements model.TimeObserver.ITimeCon
 	{
 		this.g = g;
 		this.vc = g.getVideoController();
+		vc.register(this);
 		this.navbar = navbar;
 		this.setLayout(null);
 		this.setBackground(new Color(220,227,232));
+		navbar.register(this);
 	}
 	
 	protected void loadTimeframes()
@@ -59,7 +66,9 @@ public abstract class ABar extends JPanel implements model.TimeObserver.ITimeCon
 			timeFrames.put(trial, new PanelTimeframe(trial, this, g, navbar));
 			for(AbstractTimeFrame l : trial.getItems())
 			{
-				timeFrames.put(l, new PanelTimeframe(l, this, g, navbar));
+				PanelTimeframe ptf = new PanelTimeframe(l, this, g, navbar);
+				timeFrames.put(l, ptf);
+				ptf.resize();
 			}
 		}
 	}
@@ -82,33 +91,9 @@ public abstract class ABar extends JPanel implements model.TimeObserver.ITimeCon
 	}
 	
 	@Override
-	public void numberOfItemsChanged(AbstractTimeContainer container) {
-		// TODO Auto-generated method stub
-		// TODO what do we do with this? Don't really need to do anything i'spose?
-	}
+	public void numberOfItemsChanged(AbstractTimeContainer container) { }
 	
-	/**
-	 * Add a new time frame to the view
-	 * @param tf	Reference to abstract time frame object
-	 */
-//	private void addTimeFrame(AbstractTimeFrame tf)
-//	{
-//		// TODO make this redundant, then remove
-//		timeFrames.put(tf, new PanelTimeframe(tf, this, g, navbar));
-//	}
-	
-	/**
-	 * Remove a time frame from the view
-	 * @param tf 	Reference to abstract time frame object that is to be removed
-	 */
-//	private void removeTimeFrame(AbstractTimeFrame tf)
-//	{
-//		// TODO make this redundant, then remove
-//		timeFrames.get(tf).remove();
-//		timeFrames.remove(tf);
-//	}
-	
-	// TODO make this registered event
+	@Override
 	public void videoInstantiated()
 	{
 		g.getExperimentModel().registerContainerListener(this);
@@ -117,7 +102,6 @@ public abstract class ABar extends JPanel implements model.TimeObserver.ITimeCon
 		indicator = new TimeIndicator(this, player);
 		
 		loadTimeframes();
-		paintTimeFrames();
 		
 		addMouseListener(new TimeMouseListener(this, navbar, vc));
 		addMouseMotionListener(new TimeMouseMotionListener(this, navbar, vc));
@@ -128,7 +112,10 @@ public abstract class ABar extends JPanel implements model.TimeObserver.ITimeCon
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setColor(Color.RED);
-		g2.draw(indicator.getLine());
+		Line2D l = indicator.getLine();
+//		g2.draw(
+//				l
+//			);
 	}
 	
 	/**
@@ -137,9 +124,9 @@ public abstract class ABar extends JPanel implements model.TimeObserver.ITimeCon
 	 */
 	protected void paintTimeFrames()
 	{
-		for(AbstractTimeFrame tf : timeFrames.keySet())
+		for(PanelTimeframe ptf : timeFrames.values())
 		{
-			paintTimeFrame(timeFrames.get(tf));
+			ptf.resize();
 		}
 	}
 	
@@ -147,12 +134,11 @@ public abstract class ABar extends JPanel implements model.TimeObserver.ITimeCon
 	 * Method to call if media time changed. Updates indicators for
 	 * current media time
 	 */
-	public void mediaTimeChanged()
+	public void mediaTimeChanged(long time)
 	{
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				indicator.repositionIndicator();
-				paintTimeFrames();
 			}
 		});
 	}
@@ -170,11 +156,14 @@ public abstract class ABar extends JPanel implements model.TimeObserver.ITimeCon
 	}
 	
 	/**
-	 * Resizes a single time frame based on current visible area and 
-	 * width of the canvas
-	 * @param tf	time frame to be resized
+	 * Returns the rectangle bounds for a time frame, calculated
+	 * based on the start and end time and the type of time frame
+	 * @param start	Start time of the time frame
+	 * @param end	End time of the time frame
+	 * @param type	Type of the time frame
+	 * @return		Rectangle containing new dimensions for time frame
 	 */
-	protected abstract void paintTimeFrame(PanelTimeframe tf);
+	public abstract Rectangle getTfRect(long start, long end, int type);
 	
 	/**
 	 * Calculate the x coordinate for a certain video time
@@ -199,4 +188,10 @@ public abstract class ABar extends JPanel implements model.TimeObserver.ITimeCon
 	 * @return	1 if detail, 2 if overview
 	 */
 	public abstract int getType();
+	
+	/**
+	 * Events that are unnecessary for this object
+	 */
+	public void playerStarted() { };
+	public void playerPaused() { };
 }

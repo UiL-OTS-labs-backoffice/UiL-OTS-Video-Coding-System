@@ -35,11 +35,6 @@ public class BottomBar extends JPanel {
 		addDetailBar();
 	}
 	
-	public void videoInstantiated(){
-		playButtons.setEnableButtons(true);
-		navbar.videoInstantiated();
-	}
-	
     /**
      * Method to update the buttons in the bottom bar
      * @param trial		The currently active trial number
@@ -83,19 +78,9 @@ public class BottomBar extends JPanel {
 			}
 		});
     }
-	
-	public void setPlayState(final boolean state)
-    {
-		playButtons.setPlay(state);
-	}
     
     public void setTimeoutText(final boolean state)
     {
 		playButtons.setTimeoutText(state);
-    }
-    
-    public Navbar getNavbar()
-    {
-    	return this.navbar;
     }
 }
