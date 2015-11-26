@@ -3,7 +3,9 @@ package view.navbar.paneltimeframe;
 import controller.Globals;
 import view.navbar.ABar;
 import view.navbar.Navbar;
+import view.player.IMediaPlayerListener;
 import model.AbstractTimeFrame;
+import model.TimeObserver.ITimeFrameObserver;
 
 import java.awt.Color;
 import java.awt.SystemColor;
@@ -14,6 +16,8 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+
+
 
 
 
@@ -56,6 +60,18 @@ public class PanelTimeframe extends JPanel implements model.TimeObserver.ITimeFr
 	private int margin;
 	
 	/**
+	 * TODO: 
+	 * 1) In constructor, check if tf.getEnd() >= 0
+	 * 2) if tf.getEnd() == -1L:
+	 * 2a) 	register mediaChangedListener @ media player, wherein:
+	 * 2a.1) 	repaint time frame with pretended end time = getMediaTime() 
+	 * 				(this exists already)
+	 * 3) if tf.timeChanged and endTime no longer == -1L:
+	 * 3a)	deregister(mpl);
+	 */
+	private IMediaPlayerListener mpl;
+	
+	/**
 	 * Constructor for a new Panel time frame tuple
 	 * @param tf			The time frame
 	 * @param parentPane	The pane this panel should be added to
@@ -72,6 +88,43 @@ public class PanelTimeframe extends JPanel implements model.TimeObserver.ITimeFr
 		this.navbar = navbar;
 		
 		this.margin = (pane.getType() == ABar.TYPE_DETAIL) ? DETAIL_MARGIN : OVERVIEW_MARGIN;
+		
+		tf.registerFrameListener(new ITimeFrameObserver(){
+
+			@Override
+			public void timeChanged(AbstractTimeFrame tf) {
+				resize();
+				if(mpl != null && tf.getEnd() >= 0L)
+				{
+					
+				}
+			}
+			
+		});
+		
+		g.getVideoController().getPlayer().register(new IMediaPlayerListener(){
+
+			@Override
+			public void mediaStarted() { }
+
+			@Override
+			public void mediaPaused() { }
+
+			@Override
+			public void mediaTimeChanged() {
+				final AbstractTimeFrame tfFinal;
+//				long time = g.getVideoController().getMediaTime();
+				// TODO fix this still
+				final Rectangle rect = pane.getTfRect(getStart(), time, tfFinal.getType());
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						panel.setSize(rect);
+					}
+				});
+			}
+			
+		});
+		
 		createLayout();
 	}
 	
@@ -85,12 +138,6 @@ public class PanelTimeframe extends JPanel implements model.TimeObserver.ITimeFr
 		});
 	}
 		
-	@Override
-	public void timeChanged(AbstractTimeFrame tf) {
-		// repaint
-		resize();
-	}
-	
 	/**
 	 * Method to ensure complete removal of Panel time frame from view
 	 */
@@ -210,7 +257,7 @@ public class PanelTimeframe extends JPanel implements model.TimeObserver.ITimeFr
 	}
 	
 	/**
-	 * Method to paint the timeout area on the panel
+	 * Paints the timeout area once the frame is painted
 	 */
 	public void paintComponent(final Graphics g)
 	{
