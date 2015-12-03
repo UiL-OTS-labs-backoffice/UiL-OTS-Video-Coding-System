@@ -31,7 +31,7 @@ import javax.swing.border.EmptyBorder;
 /**
  *	Each time frame has its own panel.
  */
-public class PanelTimeframe extends JPanel implements model.TimeObserver.ITimeFrameObserver
+public class PanelTimeframe extends JPanel
 {
 	/**
 	 * 
@@ -82,7 +82,6 @@ public class PanelTimeframe extends JPanel implements model.TimeObserver.ITimeFr
 	{
 		this.panel = this;
 		this.tf = tf;
-		tf.registerFrameListener(this);
 		this.pane = parentPane;
 		this.g = g;
 		this.navbar = navbar;
@@ -94,15 +93,15 @@ public class PanelTimeframe extends JPanel implements model.TimeObserver.ITimeFr
 			@Override
 			public void timeChanged(AbstractTimeFrame tf) {
 				resize();
-				if(mpl != null && tf.getEnd() >= 0L)
+				if(mpl != null && tf.hasEnded())
 				{
-					
+					deregisterMpl();
 				}
 			}
 			
 		});
 		
-		g.getVideoController().getPlayer().register(new IMediaPlayerListener(){
+		this.mpl = new IMediaPlayerListener(){
 
 			@Override
 			public void mediaStarted() { }
@@ -112,20 +111,32 @@ public class PanelTimeframe extends JPanel implements model.TimeObserver.ITimeFr
 
 			@Override
 			public void mediaTimeChanged() {
-				final AbstractTimeFrame tfFinal;
-//				long time = g.getVideoController().getMediaTime();
-				// TODO fix this still
-				final Rectangle rect = pane.getTfRect(getStart(), time, tfFinal.getType());
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						panel.setSize(rect);
-					}
-				});
+				timeChanged();
 			}
 			
-		});
+		};
+		
+		if(!tf.hasEnded()){
+			g.getVideoController().getPlayer().register(this.mpl);
+		}
 		
 		createLayout();
+	}
+	
+	private void deregisterMpl(){
+		g.getVideoController().getPlayer().deregister(mpl);
+	}
+	
+	private void timeChanged(){
+		long time = Globals.getInstance().getVideoController().getMediaTime();
+		long endTime = (tf.getEnd() >= 0L) ? Math.min(tf.getEnd(), time) : time;
+		// TODO fix this still
+		final Rectangle rect = pane.getTfRect(getStart(), endTime, tf.getType());
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				panel.setSize(rect);
+			}
+		});
 	}
 	
 	public void resize()

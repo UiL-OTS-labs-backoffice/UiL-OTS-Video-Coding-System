@@ -268,6 +268,7 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 			if (canAdd < items.size()){
 				synchronized (ITEMS_MUTEX) {
 					tf.setEnd(items.get(canAdd).getBegin()-1);
+					tf.ended = AbstractTimeFrame.ENDED_FALSE;
 				}
 			}
 			synchronized (ITEMS_MUTEX) {

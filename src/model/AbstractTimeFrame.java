@@ -27,6 +27,10 @@ public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubje
 	public static final int TYPE_TRIAL = 1;
 	public static final int TYPE_EXPERIMENT = 2;
 	
+	protected static final int ENDED_UNINSTANTIATED = 0;
+	protected static final int ENDED_FALSE = 1;
+	protected static final int ENDED_TRUE = 2;
+	
 	/**
 	 * Fields for begin- and end time, and duration
 	 * which are given as longs and based on the
@@ -41,6 +45,8 @@ public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubje
 	protected int type;
 	
 	protected long timeout;
+	
+	protected int ended;
 	
 	private transient List<ITimeFrameObserver> observers;
 	private transient Object MUTEX;
@@ -59,6 +65,7 @@ public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubje
 		this.observers = new ArrayList<ITimeFrameObserver>();
 		this.begintime = time;
 		this.type = type;
+		this.ended = ENDED_FALSE;
 	}
 
 	/**
@@ -126,6 +133,7 @@ public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubje
 		if(canEnd(time))
 		{
 			this.endtime = time;
+			this.ended = ENDED_TRUE;
 			calculateDuration();
 			timeChanged();
 		} else {
@@ -224,7 +232,7 @@ public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubje
 	
 	public boolean hasEnded()
 	{
-		return this.endtime >= 0;
+		return this.ended == ENDED_TRUE;
 	}
 	
 	/**
@@ -283,5 +291,8 @@ public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubje
 
         this.MUTEX = new Object();
         this.observers = new ArrayList<ITimeFrameObserver>();
+        if(this.ended == ENDED_UNINSTANTIATED){
+        	this.ended = (this.endtime >= 0L) ? ENDED_TRUE : ENDED_FALSE;
+        }
     }
 }

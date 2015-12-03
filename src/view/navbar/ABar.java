@@ -3,9 +3,13 @@ package view.navbar;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
+
 import javax.swing.JPanel;
+
 import model.AbstractTimeContainer;
 import model.AbstractTimeFrame;
 import model.TimeObserver.ITimeContainerObserver;
@@ -259,12 +263,28 @@ public abstract class ABar extends JPanel{
 		minVisibleTime = (long) Math.round((float) player.getMediaDuration() / 100.0);
 		
 		loadTimeframes();
-		paintTimeFrames();
 		
 		addMouseListener(new TimeMouseListener(this, navbar, vc));
 		addMouseMotionListener(new TimeMouseMotionListener(this, navbar, vc));
 		registerTimeContainerObserver(g.getExperimentModel());
 		registerVCObserver();
+		
+		this.addComponentListener(new ComponentListener(){
+
+			@Override
+			public void componentResized(ComponentEvent e) {
+				paintTimeFrames();
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent e) { }
+
+			@Override
+			public void componentShown(ComponentEvent e) { }
+
+			@Override
+			public void componentHidden(ComponentEvent e) { }
+		});
 	}
 	
 	
