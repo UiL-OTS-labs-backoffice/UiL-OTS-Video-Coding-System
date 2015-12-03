@@ -1,6 +1,5 @@
 package view.bottombar;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -19,14 +18,19 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import model.Look;
+import model.Trial;
+import view.player.IMediaPlayerListener;
 import controller.Controller;
 import controller.Globals;
+import controller.IVideoControllerObserver;
 
 public class TrialControls extends JPanel {
 	
 	private static final long serialVersionUID = -2015592156911727320L;
 	private static ArrayList<ImageIcon> buttonIcons;
 	private Controller c;
+	private IVideoControllerObserver vidObserver;
 	
 	// Buttons
 	private JButton newTrial, endTrial, newLook, endLook;
@@ -34,7 +38,7 @@ public class TrialControls extends JPanel {
 	private static final int BUTTON_HEIGHT = 30;
 	private static final int BUTTON_TEXT_MARGIN = 20;
 
-	public TrialControls(Globals g)
+	public TrialControls(final Globals g)
 	{
 		readButtonIcons();
 		
@@ -46,50 +50,131 @@ public class TrialControls extends JPanel {
 				addEndTrialButton();
 				addNewLookButton();
 				addEndLookButton();
+				
+				
+				vidObserver = new IVideoControllerObserver(){
+					@Override
+					public void videoInstantiated() {
+						registerTimeListener();
+						g.getVideoController().deregister(vidObserver);
+						updateButtons();
+					}
+				};
+				
+				g.getVideoController().register(vidObserver);
+			}
+		});
+	}
+	
+	
+	/**
+	 * Private method to register an IMediaPlayer listener, to update buttons
+	 * on changing of media time
+	 */
+	private void registerTimeListener(){
+		Globals.getInstance().getVideoController().getPlayer().register(new IMediaPlayerListener(){
+
+			@Override
+			public void mediaStarted() { }
+
+			@Override
+			public void mediaPaused() { }
+
+			@Override
+			public void mediaTimeChanged() {
+				updateButtons();
 			}
 		});
 	}
 	
 	/**
-	 * Method to update the text and state of the experiment buttons
-	 * @param newTrial		new trial button text
-	 * @param endTrial		end trial button text
-	 * @param newLook		new look button text
-	 * @param endLook		end look button text
-	 * @param nt			new trial enabled state
-	 * @param et			end trial enabled state
-	 * @param nl			new look enabled sate 
-	 * @param el			end look enabled state
-	 * @param lookComment 
-	 * @param trialComment 
+	 * Method to update the trial manipulation buttons based on current time
 	 */
-	public void update(
-			final int trial, final int look,
-			final boolean nt, final boolean et, final boolean nl, final boolean el
-		)
-	{
+	private void updateButtons(){
+		new Thread(){
+			public void run(){
+				Globals g = Globals.getInstance();
+				long time = g.getVideoController().getMediaTime();
+				int tnr = g.getExperimentModel().getItemForTime(time);
+				
+				final boolean nt = g.getExperimentModel().canAddItem(time) >= 0 & tnr <= 0;
+				boolean et = false, nl = false, el = false;
+				
+				int lnr = 0;
+				if(tnr != 0)
+				{
+					Trial t = (Trial) g.getExperimentModel().getItem(Math.abs(tnr));
+					lnr = t.getItemForTime(time);
+					et = t.canEnd(time) && lnr <= 0;
+					nl = t.canAddItem(time) >= 0 && lnr <= 0;
+					
+					if(lnr != 0)
+					{
+						Look l = (Look) t.getItem(Math.abs(lnr));
+						el = tnr > 0 && l.canEnd(time);
+					}
+				}
+				
+				final boolean canNewLook = nl;
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						newTrial.setEnabled(nt);
+						newLook.setEnabled(canNewLook);
+					}
+				});
+				
+				setEndTrial(tnr, et);
+				setEndLook(lnr, el);
+			}
+		}.start();
+	}
+	
+	/**
+	 * Method to update the end trial button based on current trial number and
+	 * can end status
+	 * @param tnr			Current trial number
+	 * @param canEndTrial	Can end status of trial
+	 */
+	private void setEndTrial(final int tnr, final boolean canEndTrial){
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				TrialControls.this.newTrial.setEnabled(nt);
-				
-				TrialControls.this.endTrial.setIcon(trial >= 0 ? buttonIcons.get(5) : buttonIcons.get(4));
-				TrialControls.this.endTrial.setToolTipText(formatLookTrial("trial", trial));
-				TrialControls.this.endTrial.setText(et ? Integer.toString(Math.abs(trial)) : "");
-				TrialControls.this.endTrial.setEnabled(et);
-				
-				TrialControls.this.newLook.setEnabled(nl);
-				
-				TrialControls.this.endLook.setIcon(buttonIcons.get(look >= 0 ? 2 : 1));
-				TrialControls.this.endLook.setToolTipText(formatLookTrial("look", look));
-				TrialControls.this.endLook.setText(el ? Integer.toString(Math.abs(look)) : "");
-				TrialControls.this.endLook.setEnabled(el);
+				endTrial.setIcon(tnr >= 0 || !canEndTrial? buttonIcons.get(5) : buttonIcons
+						.get(4));
+				endTrial.setToolTipText(formatLookTrial("trial", tnr, canEndTrial));
+				endTrial.setText(canEndTrial ? Integer.toString(Math.abs(tnr))
+						: "");
+				endTrial.setEnabled(canEndTrial);
 			}
 		});
 	}
 	
-	private static String formatLookTrial(String text, int number)
+	/**
+	 * Method to update the end look button based on current look number and
+	 * can end status
+	 * @param lnr			Current look number
+	 * @param canEndLook	Can end status of look
+	 */
+	private void setEndLook(final int lnr, final boolean canEndLook){
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				endLook.setIcon(buttonIcons.get(lnr >= 0 || !canEndLook ? 2 : 1));
+				endLook.setToolTipText(formatLookTrial("look", lnr, canEndLook));
+				endLook.setText(canEndLook ? Integer.toString(Math.abs(lnr))
+						: "");
+				endLook.setEnabled(canEndLook);
+			}
+		});
+	}
+	
+	/**
+	 * Formatter function for look and trial button hover text
+	 * @param text		The base text of the button
+	 * @param number	The number of the trial or look
+	 * @return			Formatted text
+	 */
+	private static String formatLookTrial(String text, int number, boolean canEnd)
 	{
-		String endOrExtend = number >= 0 ? "End" : "Extend";
+		String endOrExtend = number >= 0 || !canEnd ? "End" : "Extend";
 		return String.format("%s %s %d", endOrExtend, text, Math.abs(number));
 	}
 
@@ -107,6 +192,7 @@ public class TrialControls extends JPanel {
 					}
 				};
 				ntT.start();
+				updateButtons();
 			}
 		});
 		
@@ -135,6 +221,7 @@ public class TrialControls extends JPanel {
 					}
 				};
 				etT.start();
+				updateButtons();
 			}
 			
 		});
@@ -161,6 +248,7 @@ public class TrialControls extends JPanel {
 					}
 				};
 				nlT.start();
+				updateButtons();
 			}
 		});
 		
@@ -189,6 +277,7 @@ public class TrialControls extends JPanel {
 					}
 				};
 				elT.start();
+				updateButtons();
 			}
 		});
 		
@@ -200,11 +289,19 @@ public class TrialControls extends JPanel {
 		endLook.setContentAreaFilled(false);
 	}
 	
+	/**
+	 * Calculates button dimensions based on button icon and some settings
+	 * @param ico		The button icon
+	 * @return			A dimension object for the buttons
+	 */
 	private static Dimension getButtonDimension(Icon ico)
 	{
 		return new Dimension(ico.getIconWidth() + BUTTON_TEXT_MARGIN, BUTTON_HEIGHT);
 	}
 	
+	/**
+	 * Method to read the icons for the buttons from the files
+	 */
 	private static void readButtonIcons()
 	{
 		buttonIcons = new ArrayList<ImageIcon>();
@@ -222,9 +319,6 @@ public class TrialControls extends JPanel {
 				System.out.format("Couldn't read file '%s'\n", filename);
 			}
 		}
-		
-		
 	}
-	
 	
 }

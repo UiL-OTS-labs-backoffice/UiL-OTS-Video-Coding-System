@@ -13,7 +13,6 @@ import javax.swing.border.MatteBorder;
 
 import model.AbstractTimeFrame;
 import controller.Globals;
-import view.navbar.paneltimeframe.PanelTimeframe;
 
 public class OverviewBar extends ABar {
 
@@ -27,7 +26,7 @@ public class OverviewBar extends ABar {
 	private int xStart;
 	private long visibleEndTime;
 	private boolean resizeRight = false, resizeLeft = false;
-	private long minVisibleTime;
+	
 	
 	/**
 	 * Constructor method for OverviewBar object
@@ -47,30 +46,14 @@ public class OverviewBar extends ABar {
 		});
 	}
 	
-	public void videoInstantiated()
+	public Rectangle getTfRect(long start, long end, int type)
 	{
-		super.videoInstantiated();
-		minVisibleTime = (long) Math.round((float) player.getMediaDuration() / 100.0);
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void paintTimeFrame(final PanelTimeframe tf)
-	{
-		int left = xByTime(tf.getStart());
-		int right = xByTime((tf.getEnd() == -1L) ? Globals.getInstance().getVideoController().getMediaTime() : tf.getEnd());
-		int y = (tf.getType() == AbstractTimeFrame.TYPE_LOOK) ? getHeight() / 2
+		int left = xByTime(start);
+		int right = xByTime((end == -1L) ? Globals.getInstance().getVideoController().getMediaTime() : end);
+		int y = (type == AbstractTimeFrame.TYPE_LOOK) ? getHeight() / 2
 				: BOX_BORDER_WIDTH;
-		final Rectangle r2 = new Rectangle(left, y, right - left, getHeight()
+		return new Rectangle(left, y, right - left, getHeight()
 				/ 2 - BOX_BORDER_WIDTH);
-		
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				tf.setSize(r2);
-			}
-		});
 	}
 	
 	/**
@@ -117,6 +100,7 @@ public class OverviewBar extends ABar {
 	/**
 	 * Resize- and paint the overview box
 	 */
+	@Override
 	public void paintBox() {
 		int left = (int) ((float) navbar.getCurrentStartVisibleTime()
 				/ (float) player.getMediaDuration() * (float) getWidth());

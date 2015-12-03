@@ -1,5 +1,8 @@
 package view.navbar;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 
 import javax.swing.SwingUtilities;
@@ -31,24 +34,12 @@ public class TimeIndicator
 		
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
-				parent.repaint();
+				Graphics g = parent.getGraphics();
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setColor(Color.RED);
+				g2.draw(verticalLine);
 			}
 		});
-	}
-	
-	public Line2D getLine()
-	{
-		return verticalLine;
-	}
-	
-	public String getLabel()
-	{
-		return currentPositionLabel;
-	}
-	
-	public int getPosition()
-	{
-		return curX;
 	}
 	
 }

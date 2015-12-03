@@ -8,10 +8,10 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import controller.Controller;
 import controller.Globals;
+import controller.IVideoControllerObserver;
 import controller.IVideoControls;
-
-import java.awt.BorderLayout;
 
 import javax.swing.SwingConstants;
 
@@ -19,6 +19,9 @@ import java.awt.Font;
 import java.awt.Color;
 
 import javax.swing.JLabel;
+
+import model.Trial;
+import view.player.IMediaPlayerListener;
 
 /**
  * Panel with buttons for video manipulation
@@ -50,9 +53,8 @@ public class VideoManipulationButtons extends JPanel {
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				setLayout(new BorderLayout());
 				panel = new JPanel();
-				add(panel, BorderLayout.NORTH);
+				add(panel);
 				addTimeoutText();
 				addPrevTrialButton();
 				addPrevFrameButton();
@@ -61,9 +63,57 @@ public class VideoManipulationButtons extends JPanel {
 				addNextTrialButton();
 			}
 		});
+		
+		g.getVideoController().register(new IVideoControllerObserver() {
+			@Override
+			public void videoInstantiated() {
+				setEnableButtons(true);
+				
+				c.getPlayer().register(new IMediaPlayerListener() {
+					@Override
+					public void mediaTimeChanged() { 
+						
+						new Thread(){
+							public void run(){
+								long time = c.getMediaTime();
+								Controller ctrl = Globals.getInstance().getController();
+								int tnr = Globals.getInstance().getExperimentModel().getItemForTime(time);
+								if(tnr > 0) {
+									Trial t = ctrl.getTrial(tnr);
+									setTimeoutText(t.getTimeout() >= 0 && t.getTimeout() <= time);
+								} else {
+									setTimeoutText(false);
+								}
+							}
+						}.start();
+						
+					}
+					
+					@Override
+					public void mediaStarted() {
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								playPause.setText("||");
+								playPause.setToolTipText("Pause (now playing)");
+							}
+						});
+					}
+
+					@Override
+					public void mediaPaused() {
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								playPause.setText("\u25b6");
+								playPause.setToolTipText("Play (now paused)");
+							}
+						});
+					}
+				});
+			}
+		});
 	}
 	
-	public void setEnableButtons(final boolean state)
+	private void setEnableButtons(final boolean state)
 	{
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -80,10 +130,9 @@ public class VideoManipulationButtons extends JPanel {
 	{
 		lblTimeout = new JLabel("Timeout");
 		lblTimeout.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTimeout.setFont(new Font("Tahoma", Font.PLAIN, 35));
-		lblTimeout.setForeground(Color.RED);
-		lblTimeout.setVisible(false);
-		add(lblTimeout, BorderLayout.CENTER);
+		lblTimeout.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		lblTimeout.setForeground(this.getBackground());
+		add(lblTimeout);
 	}
 	
 	/**
@@ -221,19 +270,6 @@ public class VideoManipulationButtons extends JPanel {
 		panel.add(playPause);
 	}
 	
-	public void setPlay(final boolean state)
-	{
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				if (state) {
-					playPause.setText("\u25b6");
-				} else {
-					playPause.setText("||");
-				}
-			}
-		});	
-	}
-	
 	/**
 	 * Method to show or hide the text that indicates a timeout
 	 * @param state	Boolean. True iff text is to show
@@ -242,7 +278,7 @@ public class VideoManipulationButtons extends JPanel {
 	{
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				lblTimeout.setVisible(state);
+				lblTimeout.setForeground(state ? Color.RED : getBackground());
 			}
 		});
 	}

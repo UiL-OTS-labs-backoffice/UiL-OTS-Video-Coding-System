@@ -12,9 +12,6 @@ import javax.swing.border.MatteBorder;
 import model.AbstractTimeFrame;
 import controller.Globals;
 import view.formatter.Time;
-import view.navbar.paneltimeframe.PanelTimeframe;
-
-
 
 public class DetailBar extends ABar{
 	
@@ -37,23 +34,14 @@ public class DetailBar extends ABar{
 		});
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 */
-	protected void paintTimeFrame(final PanelTimeframe tf)
+	public Rectangle getTfRect(long start, long end, int type)
 	{
-		int left = xByTime(tf.getStart());
-		int right = xByTime((tf.getEnd() == -1L) ? Globals.getInstance().getVideoController().getMediaTime() : tf.getEnd());
-		int y = (tf.getType() == AbstractTimeFrame.TYPE_LOOK) ? getHeight() / 2 + 20
+		int left = xByTime(start);
+		int right = xByTime((end == -1L) ? Globals.getInstance().getVideoController().getMediaTime() : end);
+		int y = (type == AbstractTimeFrame.TYPE_LOOK) ?  getHeight() / 2 + 20
 				: 35;
-		final Rectangle r = new Rectangle(left, y, right - left,
+		return new Rectangle(left, y, right - left,
 				(getHeight() / 2) - 30);
-		
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				tf.setSize(r);
-			}
-		});
 	}
 	
 	/**
@@ -149,6 +137,7 @@ public class DetailBar extends ABar{
 			return y;
 		}
 	}
+
 	
 	
 }

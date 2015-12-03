@@ -1,15 +1,23 @@
 package model;
 import java.awt.Rectangle;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
+
+import controller.Globals;
+import model.TimeObserver.ITimeFrameObserver;
+import model.TimeObserver.ITimeFrameSubject;
 
 /**
  * A timeframe is an object that has a begin time and an end time
  * These times can be changed if necessary and the duration of a time frame
  * can be requested
  */
-public abstract class AbstractTimeFrame implements Serializable
+public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubject
 {
 	/**
 	 * SerialVersion UID
@@ -19,6 +27,10 @@ public abstract class AbstractTimeFrame implements Serializable
 	public static final int TYPE_LOOK = 0;
 	public static final int TYPE_TRIAL = 1;
 	public static final int TYPE_EXPERIMENT = 2;
+	
+	protected static final int ENDED_UNINSTANTIATED = 0;
+	protected static final int ENDED_FALSE = 1;
+	protected static final int ENDED_TRUE = 2;
 	
 	/**
 	 * Fields for begin- and end time, and duration
@@ -35,6 +47,11 @@ public abstract class AbstractTimeFrame implements Serializable
 	
 	protected long timeout;
 	
+	protected int ended;
+	
+	private transient List<ITimeFrameObserver> observers;
+	private transient Object MUTEX;
+	
 	/**
 	 * Constructor for this class
 	 * Creates a new time frame with begin time set to
@@ -45,8 +62,11 @@ public abstract class AbstractTimeFrame implements Serializable
 	 */
 	public AbstractTimeFrame(long time, int type)
 	{
+		this.MUTEX = new Object();
+		this.observers = new ArrayList<ITimeFrameObserver>();
 		this.begintime = time;
 		this.type = type;
+		this.ended = ENDED_FALSE;
 	}
 
 	/**
@@ -91,6 +111,7 @@ public abstract class AbstractTimeFrame implements Serializable
 		{
 			this.begintime = time;
 			calculateDuration();
+			timeChanged();
 		} else {
 			String e = String.format("Requested new begin time is %d, but the "
 					+ "current end time is %d. The begin time should be less "
@@ -113,7 +134,9 @@ public abstract class AbstractTimeFrame implements Serializable
 		if(canEnd(time))
 		{
 			this.endtime = time;
+			this.ended = ENDED_TRUE;
 			calculateDuration();
+			timeChanged();
 		} else {
 			String e = String.format("Requested new end time is %d, but the "
 					+ "current begin time is %d. The end time should "
@@ -180,6 +203,13 @@ public abstract class AbstractTimeFrame implements Serializable
 	public void setComment(String comment)
 	{
 		this.comment = comment;
+		ArrayList<ITimeFrameObserver> localObservers;
+		synchronized(MUTEX) {
+			localObservers = new ArrayList<ITimeFrameObserver>(observers);
+		}
+		for(ITimeFrameObserver o : localObservers){
+			o.commentChanged(this, comment);
+		}
 	}
 	
 	/**
@@ -210,7 +240,7 @@ public abstract class AbstractTimeFrame implements Serializable
 	
 	public boolean hasEnded()
 	{
-		return this.endtime >= 0;
+		return this.ended == ENDED_TRUE;
 	}
 	
 	/**
@@ -220,7 +250,7 @@ public abstract class AbstractTimeFrame implements Serializable
 	 */
 	public long getTimeout()
 	{
-		return this.timeout;
+		return (Globals.getInstance().getExperimentModel().getUseTimeout()) ? this.timeout : -1L;
 	}
 	
 	/**
@@ -232,4 +262,45 @@ public abstract class AbstractTimeFrame implements Serializable
 	{
 		this.timeout = timeout;
 	}
+	
+	@Override
+	public void registerFrameListener(ITimeFrameObserver obj)
+	{
+		if(obj == null) throw new NullPointerException("Null Observer");
+		synchronized (MUTEX) {
+			if(!observers.contains(obj)) observers.add(obj);
+		}
+	}
+	
+	@Override
+	public void unregisterFrameListener(ITimeFrameObserver obj)
+	{
+		synchronized (MUTEX) {
+			observers.remove(obj);
+		}
+	}
+	
+	@Override
+	public void timeChanged()
+	{
+		List<ITimeFrameObserver> observersLocal = null;
+		synchronized (MUTEX) {
+			observersLocal = new ArrayList<ITimeFrameObserver>(this.observers);
+		}
+		for(ITimeFrameObserver obj : observersLocal)
+		{
+			obj.timeChanged(this);
+		}
+	}
+	
+	private void readObject (final ObjectInputStream s ) throws ClassNotFoundException, IOException
+    {
+        s.defaultReadObject( );
+
+        this.MUTEX = new Object();
+        this.observers = new ArrayList<ITimeFrameObserver>();
+        if(this.ended == ENDED_UNINSTANTIATED){
+        	this.ended = (this.endtime >= 0L) ? ENDED_TRUE : ENDED_FALSE;
+        }
+    }
 }

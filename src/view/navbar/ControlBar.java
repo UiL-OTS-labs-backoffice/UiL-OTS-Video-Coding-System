@@ -11,10 +11,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import view.navbar.utilities.INavbarObserver;
 import view.player.IMediaPlayer;
 import controller.Globals;
+import controller.IVideoControllerObserver;
 
-public class ControlBar  extends JPanel {
+public class ControlBar  extends JPanel implements INavbarObserver{
 
 	private static final long serialVersionUID = 1L;
 	private static final int MAX_INT_VALUE = 2147483647;
@@ -34,7 +36,13 @@ public class ControlBar  extends JPanel {
 		setLayout(new BorderLayout(0, 0));
 		addSizeSlider();
 		addScrollBar();
-		
+		this.g.getVideoController().register(new IVideoControllerObserver(){
+			@Override
+			public void videoInstantiated() {
+				ControlBar.this.videoInstantiated();
+			}
+		});
+		navbar.register(this);
 	}
 	
 	public void videoInstantiated()
@@ -107,8 +115,6 @@ public class ControlBar  extends JPanel {
 					}
 				};
 				valueAdjustedThread.start();
-				
-				
 			}
 		});
 	}
@@ -118,7 +124,9 @@ public class ControlBar  extends JPanel {
 	 * the total time of the video
 	 * @param percentage	Percentage of duration of video that is visible
 	 */
-	public void visibleAreaChanged()
+	@Override
+	public void visibleAreaChanged(final long begin, long end, final long visibleTime,
+			float visiblePercentage)
 	{
 		SwingUtilities.invokeLater(new Runnable(){
 			
@@ -126,12 +134,12 @@ public class ControlBar  extends JPanel {
 			public void run() {
 				if(!slider.getValueIsAdjusting())
 				{
-					slider.setValue(percentageFromVisibleTime(navbar.getVisibleTime()));
+					slider.setValue(percentageFromVisibleTime(visibleTime));
 				}
 				if(!scrollBar.getValueIsAdjusting())
 				{
-					scrollBar.setValue(fromLong(navbar.getCurrentStartVisibleTime())); 
-					scrollBar.setVisibleAmount(fromLong(navbar.getVisibleTime()));
+					scrollBar.setValue(fromLong(begin)); 
+					scrollBar.setVisibleAmount(fromLong(visibleTime));
 				}
 			}
 		});

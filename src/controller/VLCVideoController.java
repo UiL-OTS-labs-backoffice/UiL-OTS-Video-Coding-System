@@ -1,6 +1,8 @@
 package controller;
 
 import java.awt.Component;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementation of IVideoController for the VLC Video Player Object
@@ -15,12 +17,23 @@ public class VLCVideoController implements IVideoControls {
 	private Globals g;
 	
 	/**
+	 * Observers
+	 */
+	private List<IVideoControllerObserver> observers;
+	
+	/**
+	 * Immutable object
+	 */
+	private final Object MUTEX = new Object();
+	
+	/**
 	 * Instance of media player
 	 */
 	private view.player.IMediaPlayer player;
 	
 	protected VLCVideoController(Globals globals){
 		this.g = globals;
+		this.observers = new ArrayList<IVideoControllerObserver>();
 	}
 	
 	@Override
@@ -41,19 +54,16 @@ public class VLCVideoController implements IVideoControls {
 	@Override
 	public void play() {
 		player.start();
-		g.getEditor().getBottomBar().setPlayState(player.isPlaying());
 	}
 
 	@Override
 	public void nextFrame() {
 		player.nextFrame();
-		g.getEditor().getBottomBar().getNavbar().updateLabels();
 	}
 
 	@Override
 	public void prevFrame() {
 		player.previousFrame();
-		g.getEditor().getBottomBar().getNavbar().updateLabels();
 	}
 
 	@Override
@@ -211,4 +221,29 @@ public class VLCVideoController implements IVideoControls {
 		player.setPosition(position);
 	}
 
+	@Override
+	public void register(IVideoControllerObserver obj) {
+		if(obj == null) throw new NullPointerException("Null Observer");
+        synchronized (MUTEX) {
+        	if(!observers.contains(obj)) observers.add(obj);
+        }		
+	}
+
+	@Override
+	public void deregister(IVideoControllerObserver obj) {
+		synchronized (MUTEX) {
+			observers.remove(obj);
+		}
+	}
+
+	@Override
+	public void videoInstantiated() {
+		ArrayList<IVideoControllerObserver> localObservers;
+		synchronized(MUTEX) {
+			localObservers = new ArrayList<IVideoControllerObserver>(this.observers);
+		}
+		for(IVideoControllerObserver obj : localObservers) {
+			obj.videoInstantiated();
+		}
+	}
 }

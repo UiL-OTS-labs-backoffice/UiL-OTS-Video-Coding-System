@@ -54,12 +54,12 @@ public class Editor {
 			}
 		});
 		addControlBar();
-    }
-    
-    public void videoInstantiated()
-    {
-    	bottom_bar.videoInstantiated();
-    	frame.setTitle(String.format("UiL OTS Labs Video Coding Software - %s", c.getUrl()));
+		g.getVideoController().register(new IVideoControllerObserver(){
+			@Override
+			public void videoInstantiated() {
+		    	frame.setTitle(String.format("UiL OTS Labs Video Coding Software - %s", c.getUrl()));
+			}
+		});
     }
     
     /**
@@ -159,31 +159,4 @@ public class Editor {
 			}
 		});
     }
-    
-    /**
-     * Method to set state of buttons
-     * @param trial		Text for end trial button
-     * @param look		Text for end look button
-     * @param nt			State of new trial button
-     * @param et			State of end trial button
-     * @param nl			State of new look button
-     * @param el			State of end look button
-     * @param rmt			Currently in trial
-     * @param rml			Currently in look
-     */
-    public void updateButtons(
-			final int trial, final int look,
-			final boolean nt, final boolean et, final boolean nl, final boolean el,
-			final boolean rmt, final boolean rml
-		)
-    {
-			bottom_bar.updateButtons(trial, look, nt, et, nl, el);
-	    	menu.updateButtons(rmt, rml);
-    }
-    
-	public BottomBar getBottomBar()
-	{
-		return this.bottom_bar;
-	}
-    
 }

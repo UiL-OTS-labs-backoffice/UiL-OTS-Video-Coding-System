@@ -39,6 +39,8 @@ public class CommentEditor extends JOptionPane {
 						JOptionPane.ERROR_MESSAGE);
 			}
 			fr.setComment(comment);
+		} else {
+			fr.setComment(null);
 		}
 	}
 

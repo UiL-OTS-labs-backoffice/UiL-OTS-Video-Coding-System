@@ -92,7 +92,7 @@ public class Controller {
 		g.getEditor().addVideoPlayerSurface(player);
 		g.getVideoController().setPlayer(player);
 		g.getExperimentModel().setEnd(player.getMediaDuration());
-		g.getEditor().videoInstantiated();
+		g.getVideoController().videoInstantiated();
 		g.getEditor().show();
 	}
 	
@@ -154,7 +154,6 @@ public class Controller {
 			g.getEditor();
 			g.getEditor().show();
 			setVideo(exp.getUrl());
-			g.getEditor().getBottomBar().getNavbar().updateLabels();
 			return true;
 		} else {
 			return false;
@@ -223,9 +222,7 @@ public class Controller {
 	public void newTrial()
 	{
 		long time = g.getVideoController().getMediaTime();
-		AbstractTimeFrame nt = g.getExperimentModel().addItem(time);
-		g.getEditor().getBottomBar().getNavbar().addTimeFrame(nt);
-		g.getEditor().getBottomBar().getNavbar().updateLabels();
+		g.getExperimentModel().addItem(time);
 	}
 	
 	/**
@@ -238,9 +235,7 @@ public class Controller {
 		if(tnr != 0)
 		{
 			Trial trial = (Trial) g.getExperimentModel().getItem(Math.abs(tnr));
-			AbstractTimeFrame nl = trial.addItem(time);
-			g.getEditor().getBottomBar().getNavbar().addTimeFrame(nl);
-			g.getEditor().getBottomBar().getNavbar().updateLabels();
+			trial.addItem(time);
 		} else {
 			throw new IllegalStateException("Not currently in a trial");
 		}
@@ -255,7 +250,6 @@ public class Controller {
 		int tnr = Math.abs(g.getExperimentModel().getItemForTime(time));
 		Trial t = (Trial) g.getExperimentModel().getItem(tnr);
 		t.setEnd(time);
-		g.getEditor().getBottomBar().getNavbar().updateLabels();
 	}
 	
 	
@@ -270,7 +264,6 @@ public class Controller {
 		int lnr = Math.abs(t.getItemForTime(time));
 		Look l = (Look) t.getItem(lnr);
 		l.setEnd(time);
-		g.getEditor().getBottomBar().getNavbar().updateLabels();
 		t.calculateTimeout();
 	}
 	
@@ -289,12 +282,13 @@ public class Controller {
 	public void removeTrial(int tnr)
 	{
 		if(tnr > 0 && g.getExperimentModel().getItems().size() >= tnr){
-			AbstractTimeFrame trial = g.getExperimentModel().getItem(tnr);
-			for(AbstractTimeFrame look : ((Trial) trial).getItems())
-			{
-				g.getEditor().getBottomBar().getNavbar().removeTimeFrame(look);
-			}
-			g.getEditor().getBottomBar().getNavbar().removeTimeFrame(trial);
+			AbstractTimeContainer trial = (AbstractTimeContainer) g.getExperimentModel().getItem(tnr);
+//			for(AbstractTimeFrame look : ((Trial) trial).getItems())
+//			{
+//				g.getEditor().getBottomBar().getNavbar().removeTimeFrame(look);
+//			}
+//			g.getEditor().getBottomBar().getNavbar().removeTimeFrame(trial);
+			trial.removeAll();
 			g.getExperimentModel().removeItem(tnr);
 		}
 	}
@@ -322,7 +316,7 @@ public class Controller {
 			Trial trial = (Trial) g.getExperimentModel().getItem(tnr);
 			if (lnr > 0 && lnr <= trial.getItems().size())
 			{
-				g.getEditor().getBottomBar().getNavbar().removeTimeFrame(trial.getItem(lnr));
+//				g.getEditor().getBottomBar().getNavbar().removeTimeFrame(trial.getItem(lnr));
 				trial.removeItem(lnr);
 			}
 		}
@@ -339,11 +333,12 @@ public class Controller {
 		if(tnr > 0)
 		{
 			Trial t = (Trial) g.getExperimentModel().getItem(tnr);
-			while(t.getNumberOfItems() > 0)
-			{
-				g.getEditor().getBottomBar().getNavbar().removeTimeFrame(t.getItem(1));
-				t.removeItem(1);
-			}
+			t.removeAll();
+//			while(t.getNumberOfItems() > 0)
+//			{
+//				g.getEditor().getBottomBar().getNavbar().removeTimeFrame(t.getItem(1));
+//				t.removeItem(1);
+//			}
 		}	
 	}
 	
@@ -352,10 +347,10 @@ public class Controller {
 		if(tnr > 0 && tnr <= g.getExperimentModel().getItems().size())
 		{
 			Trial trial = (Trial) g.getExperimentModel().getItem(tnr);
-			for(AbstractTimeFrame look : trial.getItems())
-			{
-				g.getEditor().getBottomBar().getNavbar().removeTimeFrame(look);
-			}
+//			for(AbstractTimeFrame look : trial.getItems())
+//			{
+//				g.getEditor().getBottomBar().getNavbar().removeTimeFrame(look);
+//			}
 			trial.removeAll();
 		}
 	}

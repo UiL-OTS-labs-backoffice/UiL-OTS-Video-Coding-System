@@ -3,7 +3,9 @@ package view.navbar.paneltimeframe;
 import controller.Globals;
 import view.navbar.ABar;
 import view.navbar.Navbar;
+import view.player.IMediaPlayerListener;
 import model.AbstractTimeFrame;
+import model.TimeObserver.ITimeFrameObserver;
 
 import java.awt.Color;
 import java.awt.SystemColor;
@@ -14,8 +16,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-
-
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -54,6 +54,8 @@ public class PanelTimeframe extends JPanel
 	private TexturePaint slate;
 	private int margin;
 	
+	private IMediaPlayerListener mpl;
+	
 	/**
 	 * Constructor for a new Panel time frame tuple
 	 * @param tf			The time frame
@@ -70,9 +72,70 @@ public class PanelTimeframe extends JPanel
 		this.navbar = navbar;
 		
 		this.margin = (pane.getType() == ABar.TYPE_DETAIL) ? DETAIL_MARGIN : OVERVIEW_MARGIN;
+		
+		tf.registerFrameListener(new ITimeFrameObserver(){
+
+			@Override
+			public void timeChanged(AbstractTimeFrame tf) {
+				resize();
+				if(mpl != null && tf.hasEnded())
+				{
+					deregisterMpl();
+				}
+			}
+
+			@Override
+			public void commentChanged(AbstractTimeFrame tf, String comment) {
+				updateInfo();
+			}
+		});
+		
+		this.mpl = new IMediaPlayerListener(){
+
+			@Override
+			public void mediaStarted() { }
+
+			@Override
+			public void mediaPaused() { }
+
+			@Override
+			public void mediaTimeChanged() {
+				timeChanged();
+			}
+		};
+		
+		if(!tf.hasEnded()){
+			g.getVideoController().getPlayer().register(this.mpl);
+		}
+		
 		createLayout();
 	}
 	
+	private void deregisterMpl(){
+		g.getVideoController().getPlayer().deregister(mpl);
+	}
+	
+	private void timeChanged(){
+		long time = Globals.getInstance().getVideoController().getMediaTime();
+		long endTime = (tf.getEnd() >= 0L) ? Math.min(tf.getEnd(), time) : time;
+		final Rectangle rect = pane.getTfRect(getStart(), endTime, tf.getType());
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				panel.setSize(rect);
+			}
+		});
+	}
+	
+	public void resize()
+	{
+		final Rectangle rect = pane.getTfRect(getStart(), getEnd(), tf.getType());
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				panel.setSize(rect);
+			}
+		});
+	}
+		
 	/**
 	 * Method to ensure complete removal of Panel time frame from view
 	 */
@@ -192,7 +255,7 @@ public class PanelTimeframe extends JPanel
 	}
 	
 	/**
-	 * Method to paint the timeout area on the panel
+	 * Paints the timeout area once the frame is painted
 	 */
 	public void paintComponent(final Graphics g)
 	{
@@ -261,5 +324,4 @@ public class PanelTimeframe extends JPanel
 		g2.draw(diagonal);
 		return bi;
 	}
-	
 }
