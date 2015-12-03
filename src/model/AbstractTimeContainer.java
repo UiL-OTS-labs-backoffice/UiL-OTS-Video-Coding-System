@@ -57,12 +57,15 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 	 */
 	public LinkedList<AbstractTimeFrame> getItems()
 	{
-		// TODO this should probably only return a copy, to prevent concurrent modification
-		return items;
+		LinkedList<AbstractTimeFrame> localItems;
+		synchronized(ITEMS_MUTEX){
+			localItems = new LinkedList<AbstractTimeFrame>(items);
+		}
+		return localItems;
 	}
 	
 	/**
-	 * Get a specific item in this container
+	 * Get a read only copy of a specific item in this container
 	 * @param item		The item number
 	 * @return			The item with item number 'item'
 	 */
@@ -127,7 +130,7 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 	public int canAddItem(long time)
 	{
 		Integer canAdd = null;
-		if (!this.timeInRange(time)) {
+		if (!this.timeInRange(time) || getEnd() == time) {
 			canAdd = -1;
 		} else {
 			LinkedList<AbstractTimeFrame> itemsLocal;
@@ -270,6 +273,9 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 					tf.setEnd(items.get(canAdd).getBegin()-1);
 					tf.ended = AbstractTimeFrame.ENDED_FALSE;
 				}
+			} else {
+				tf.setEnd(getEnd()-1);
+				tf.ended = AbstractTimeFrame.ENDED_FALSE;
 			}
 			synchronized (ITEMS_MUTEX) {
 				items.add(canAdd, tf);
@@ -355,17 +361,18 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 		synchronized (ITEMS_MUTEX) {
 			itemsLocal = new LinkedList<AbstractTimeFrame>(items);
 		}
+		
 		for(int i = 0; i < itemsLocal.size(); i++)
 		{
 			AbstractTimeFrame tf = itemsLocal.get(i);
-			if(tf.getEnd() >= 0 && tf.getEnd() < time) {
+			if(tf.hasEnded() && tf.getEnd() < time) {
 				if(i == itemsLocal.size()-1)
 					return 0 - i - 1;
 				continue;
-			} else if (tf.getBegin() <= time || tf.getEnd() == -1) {
+			} else if (tf.getBegin() <= time || !tf.hasEnded()) {
 				return i + 1;
 			} else {
-				return 0 - i - 1;
+				return 0 - i;
 			}
 		}
 		
@@ -438,7 +445,7 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 		synchronized (ITEMS_MUTEX) {
 			itemsLocal = new LinkedList<AbstractTimeFrame>(items);
 		}
-		if(!m.getUseTimeout() || itemsLocal.size() == 0)
+		if(itemsLocal.size() == 0)
 		{
 			this.timeout = -1l;
 		} else {
@@ -457,10 +464,11 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 	/**
 	 * Disabled for time containers
 	 */
-	protected void setTimeout(long timeout)
-	{
-	}
+	protected void setTimeout(long timeout) { }
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
     public void registerContainerListener(ITimeContainerObserver obj) {
         if(obj == null) throw new NullPointerException("Null Observer");
@@ -468,7 +476,10 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
         	if(!containerObservers.contains(obj)) containerObservers.add(obj);
         }
     }
- 
+	
+	/**
+	 * {@inheritDoc}
+	 */
     @Override
     public void unregisterContainerListener(ITimeContainerObserver obj) {
         synchronized (CONTAINER_MUTEX) {
@@ -476,6 +487,9 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
         }
     }
     
+    /**
+	 * {@inheritDoc}
+	 */
     @Override
     public void itemAdded(AbstractTimeFrame item, int itemNumber){
     	List<ITimeContainerObserver> observersLocal = null;
@@ -485,9 +499,13 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
     	for(ITimeContainerObserver obj : observersLocal)
     	{
     		obj.itemAdded(this, item, itemNumber);
+    		obj.numberOfItemsChanged(this);
     	}
     }
     
+    /**
+	 * {@inheritDoc}
+	 */
     @Override
 	public void itemRemoved(AbstractTimeFrame item){
     	List<ITimeContainerObserver> observersLocal = null;
@@ -497,17 +515,6 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
     	for(ITimeContainerObserver obj : observersLocal)
     	{
     		obj.itemRemoved(this, item);
-    	}
-    }
-    
-    @Override
-	public void numberOfItemsChanged(){
-    	List<ITimeContainerObserver> observersLocal = null;
-    	synchronized(CONTAINER_MUTEX) {
-    		observersLocal = new ArrayList<ITimeContainerObserver>(this.containerObservers);
-    	}
-    	for(ITimeContainerObserver obj : observersLocal)
-    	{
     		obj.numberOfItemsChanged(this);
     	}
     }

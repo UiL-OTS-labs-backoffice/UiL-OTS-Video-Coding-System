@@ -34,25 +34,6 @@ public class BottomBar extends JPanel {
 		addControlPanel();
 		addDetailBar();
 	}
-	
-    /**
-     * Method to update the buttons in the bottom bar
-     * @param trial		The currently active trial number
-     * @param look		The currently active look number
-     * @param nt		The state of the new trial button
-     * @param et		The state of the end trial button
-     * @param nl		The state of the new look button
-     * @param el		The state of the end look button
-     * @param lookComment 
-     * @param trialComment 
-     */
-    public void updateButtons(
-			int trial, int look,
-			boolean nt, boolean et, boolean nl, boolean el
-		)
-	{
-    	trial_controls.update(trial, look, nt, et, nl, el);
-	}
     
 	private void addControlPanel()
 	{

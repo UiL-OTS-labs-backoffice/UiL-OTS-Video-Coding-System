@@ -9,8 +9,6 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import model.Look;
-import model.Trial;
 import view.navbar.utilities.INavbarObserver;
 import view.navbar.utilities.INavbarSubject;
 import view.player.IMediaPlayer;
@@ -138,7 +136,6 @@ public class Navbar extends JPanel implements INavbarSubject{
 								setCurrentStartVisibleTime(begin - 250);
 							}
 						}
-						updateButtons();
 					}
 				});
 			}
@@ -146,42 +143,6 @@ public class Navbar extends JPanel implements INavbarSubject{
 		});
 		
 		new DebugInfo(this, g.getVideoController());
-	}
-	
-	/**
-	 * Updates the button text and state
-	 * @param tnr		Current trial number
-	 * @param t			Current trial
-	 * @param lnr		Current look number
-	 * @param l			Current look
-	 * @param time		Current time
-	 */
-	public void updateButtons()
-	{
-		long time = g.getVideoController().getMediaTime();
-		int tnr = g.getExperimentModel().getItemForTime(time);
-		
-		boolean nt = g.getExperimentModel().canAddItem(time) >= 0 & tnr <= 0;
-		boolean et = false, nl = false, el = false;
-		boolean tm = false; // Timeout?
-		int lnr = 0;
-		if(tnr != 0)
-		{
-			Trial t = (Trial) g.getExperimentModel().getItem(Math.abs(tnr));
-			lnr = t.getItemForTime(time);
-			et = t.canEnd(time) && lnr <= 0;
-			nl = t.canAddItem(time) >= 0 && lnr <= 0;
-			
-			if(lnr != 0)
-			{
-				Look l = (Look) t.getItem(Math.abs(lnr));
-				tm = tnr > 0 && l.getEnd() > -1 && time - l.getEnd() > g.getExperimentModel().getTimeout() && g.getExperimentModel().getUseTimeout();
-				el = tnr > 0 && l.canEnd(time);
-			}
-		}
-		
-		g.getEditor().updateButtons(tnr, lnr, nt, et, nl, el, tnr > 0, lnr > 0);
-		g.getEditor().getBottomBar().setTimeoutText(tm);
 	}
 	
 	/**

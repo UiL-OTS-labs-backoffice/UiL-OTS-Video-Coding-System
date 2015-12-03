@@ -8,9 +8,11 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import controller.Controller;
 import controller.Globals;
 import controller.IVideoControllerObserver;
 import controller.IVideoControls;
+
 import javax.swing.SwingConstants;
 
 import java.awt.Font;
@@ -18,6 +20,7 @@ import java.awt.Color;
 
 import javax.swing.JLabel;
 
+import model.Trial;
 import view.player.IMediaPlayerListener;
 
 /**
@@ -65,10 +68,27 @@ public class VideoManipulationButtons extends JPanel {
 			@Override
 			public void videoInstantiated() {
 				setEnableButtons(true);
+				
 				c.getPlayer().register(new IMediaPlayerListener() {
 					@Override
-					public void mediaTimeChanged() { }
-
+					public void mediaTimeChanged() { 
+						
+						new Thread(){
+							public void run(){
+								long time = c.getMediaTime();
+								Controller ctrl = Globals.getInstance().getController();
+								int tnr = Globals.getInstance().getExperimentModel().getItemForTime(time);
+								if(tnr > 0) {
+									Trial t = ctrl.getTrial(tnr);
+									setTimeoutText(t.getTimeout() >= 0 && t.getTimeout() <= time);
+								} else {
+									setTimeoutText(false);
+								}
+							}
+						}.start();
+						
+					}
+					
 					@Override
 					public void mediaStarted() {
 						SwingUtilities.invokeLater(new Runnable() {
@@ -111,8 +131,6 @@ public class VideoManipulationButtons extends JPanel {
 		lblTimeout = new JLabel("Timeout");
 		lblTimeout.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTimeout.setFont(new Font("Tahoma", Font.PLAIN, 30));
-//		lblTimeout.setForeground(Color.RED);
-//		lblTimeout.setVisible(false);
 		lblTimeout.setForeground(this.getBackground());
 		add(lblTimeout);
 	}

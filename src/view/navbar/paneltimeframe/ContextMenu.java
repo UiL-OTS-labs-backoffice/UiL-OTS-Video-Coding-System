@@ -45,7 +45,7 @@ class ContextMenu extends JPopupMenu
 	
 	private void addCommentMenu()
 	{
-		JMenuItem addComment = new JMenuItem("Add comment");
+		JMenuItem addComment = new JMenuItem("Edit comment");
 		addComment.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {

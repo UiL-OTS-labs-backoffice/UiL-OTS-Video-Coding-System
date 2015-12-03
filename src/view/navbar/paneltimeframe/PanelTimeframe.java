@@ -17,11 +17,6 @@ import java.awt.Rectangle;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 
-
-
-
-
-
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -59,16 +54,6 @@ public class PanelTimeframe extends JPanel
 	private TexturePaint slate;
 	private int margin;
 	
-	/**
-	 * TODO: 
-	 * 1) In constructor, check if tf.getEnd() >= 0
-	 * 2) if tf.getEnd() == -1L:
-	 * 2a) 	register mediaChangedListener @ media player, wherein:
-	 * 2a.1) 	repaint time frame with pretended end time = getMediaTime() 
-	 * 				(this exists already)
-	 * 3) if tf.timeChanged and endTime no longer == -1L:
-	 * 3a)	deregister(mpl);
-	 */
 	private IMediaPlayerListener mpl;
 	
 	/**
@@ -98,7 +83,11 @@ public class PanelTimeframe extends JPanel
 					deregisterMpl();
 				}
 			}
-			
+
+			@Override
+			public void commentChanged(AbstractTimeFrame tf, String comment) {
+				updateInfo();
+			}
 		});
 		
 		this.mpl = new IMediaPlayerListener(){
@@ -113,7 +102,6 @@ public class PanelTimeframe extends JPanel
 			public void mediaTimeChanged() {
 				timeChanged();
 			}
-			
 		};
 		
 		if(!tf.hasEnded()){
@@ -130,7 +118,6 @@ public class PanelTimeframe extends JPanel
 	private void timeChanged(){
 		long time = Globals.getInstance().getVideoController().getMediaTime();
 		long endTime = (tf.getEnd() >= 0L) ? Math.min(tf.getEnd(), time) : time;
-		// TODO fix this still
 		final Rectangle rect = pane.getTfRect(getStart(), endTime, tf.getType());
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {

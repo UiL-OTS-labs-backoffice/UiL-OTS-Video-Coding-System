@@ -18,23 +18,19 @@ public interface ITimeContainerSubject {
 	
 	/**
 	 * Method to notify all observers a time frame was added
+	 * Should also notify observers of numberOfItemsChanged
 	 * @param item			The added item
 	 * @param itemNumber	The new item number of the added item
 	 */
 	public void itemAdded(AbstractTimeFrame item, int itemNumber);
 	
 	/**
-	 * Method to notify all observers a time frame was deleted
+	 * Method to notify all observers a time frame was deleted.
+	 * Should also notify observers of numberOfItemsChanged
 	 * @param item			The removed item
 	 * @param itemNumber	The item number of the removed item from
 	 * 						before it was removed
 	 */
 	public void itemRemoved(AbstractTimeFrame item);
-	
-	/**
-	 * Method to notify all observers the amount of items was changed,
-	 * either by insertion or deletion
-	 */
-	public void numberOfItemsChanged();
 	
 }

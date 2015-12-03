@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+import controller.Globals;
 import model.TimeObserver.ITimeFrameObserver;
 import model.TimeObserver.ITimeFrameSubject;
 
@@ -202,6 +203,13 @@ public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubje
 	public void setComment(String comment)
 	{
 		this.comment = comment;
+		ArrayList<ITimeFrameObserver> localObservers;
+		synchronized(MUTEX) {
+			localObservers = new ArrayList<ITimeFrameObserver>(observers);
+		}
+		for(ITimeFrameObserver o : localObservers){
+			o.commentChanged(this, comment);
+		}
 	}
 	
 	/**
@@ -242,7 +250,7 @@ public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubje
 	 */
 	public long getTimeout()
 	{
-		return this.timeout;
+		return (Globals.getInstance().getExperimentModel().getUseTimeout()) ? this.timeout : -1L;
 	}
 	
 	/**
