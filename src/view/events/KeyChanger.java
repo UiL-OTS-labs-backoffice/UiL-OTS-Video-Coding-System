@@ -28,6 +28,7 @@ public class KeyChanger implements KeyListener {
 	public void keyPressed(KeyEvent e) {
 		final int code = e.getKeyCode();
 		
+		
 		Thread setActionCodeThread = new Thread(){
 			public void run(){
 				c.setKey(action, code);
@@ -52,7 +53,13 @@ public class KeyChanger implements KeyListener {
 	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+		System.out.print(e.getKeyChar());
+		System.out.print(" ");
+		System.out.print(e.getKeyCode());
+		System.out.print(" ");
+		System.out.println(e.getKeyLocation());
+		System.out.println(e);
+		System.out.println();
 	}
 
 }

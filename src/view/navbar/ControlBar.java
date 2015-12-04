@@ -83,6 +83,7 @@ public class ControlBar  extends JPanel{
 	private void addSizeSlider()
 	{
 		slider = new JSlider();
+		slider.setFocusable(false);
 		slider.setPaintTicks(true);
 		slider.setMinimum(1);
 		slider.setMaximum(100);
