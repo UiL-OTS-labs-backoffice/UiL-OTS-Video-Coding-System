@@ -16,7 +16,7 @@ import view.player.IMediaPlayer;
 import controller.Globals;
 import controller.IVideoControllerObserver;
 
-public class ControlBar  extends JPanel implements INavbarObserver{
+public class ControlBar  extends JPanel{
 
 	private static final long serialVersionUID = 1L;
 	private static final int MAX_INT_VALUE = 2147483647;
@@ -42,7 +42,31 @@ public class ControlBar  extends JPanel implements INavbarObserver{
 				ControlBar.this.videoInstantiated();
 			}
 		});
-		navbar.register(this);
+		
+		navbar.register(new INavbarObserver(){
+
+			@Override
+			public void visibleAreaChanged(final long begin, long end,
+					final long visibleTime, float visiblePercentage) {
+				// TODO Auto-generated method stub
+				SwingUtilities.invokeLater(new Runnable(){
+					
+					@Override
+					public void run() {
+						if(!slider.getValueIsAdjusting())
+						{
+							slider.setValue(percentageFromVisibleTime(visibleTime));
+						}
+						if(!scrollBar.getValueIsAdjusting())
+						{
+							scrollBar.setValue(fromLong(begin)); 
+							scrollBar.setVisibleAmount(fromLong(visibleTime));
+						}
+					}
+				});
+			}
+			
+		});
 	}
 	
 	public void videoInstantiated()
@@ -115,32 +139,6 @@ public class ControlBar  extends JPanel implements INavbarObserver{
 					}
 				};
 				valueAdjustedThread.start();
-			}
-		});
-	}
-	
-	/**
-	 * Set the percentage of the visible part of the video in relation to
-	 * the total time of the video
-	 * @param percentage	Percentage of duration of video that is visible
-	 */
-	@Override
-	public void visibleAreaChanged(final long begin, long end, final long visibleTime,
-			float visiblePercentage)
-	{
-		SwingUtilities.invokeLater(new Runnable(){
-			
-			@Override
-			public void run() {
-				if(!slider.getValueIsAdjusting())
-				{
-					slider.setValue(percentageFromVisibleTime(visibleTime));
-				}
-				if(!scrollBar.getValueIsAdjusting())
-				{
-					scrollBar.setValue(fromLong(begin)); 
-					scrollBar.setVisibleAmount(fromLong(visibleTime));
-				}
 			}
 		});
 	}

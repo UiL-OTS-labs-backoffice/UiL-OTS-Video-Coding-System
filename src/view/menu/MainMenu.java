@@ -257,8 +257,7 @@ public class MainMenu extends JMenuBar {
 		overview.setToolTipText("Show an overview of the experiment so far");
 		overview.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		view.panels.ExperimentOverview kdp = new view.panels.ExperimentOverview();
-        		kdp.setVisible(true);
+        		Globals.getInstance().showExperimentOverview();
         	}
         });
 		

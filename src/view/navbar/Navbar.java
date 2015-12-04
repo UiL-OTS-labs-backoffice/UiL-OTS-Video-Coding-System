@@ -1,8 +1,6 @@
 package view.navbar;
 
 import java.awt.BorderLayout;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +29,7 @@ public class Navbar extends JPanel implements INavbarSubject{
 	private IMediaPlayer player;
 	private InformationPanel information;
 	private ControlBar controls;
+	private Timecodes timecodes;
 	
 	private long visibleTime;
 	private long currentStartVisibleTime;
@@ -64,34 +63,14 @@ public class Navbar extends JPanel implements INavbarSubject{
 	{
 		information = new InformationPanel(this, g);
 		controls = new ControlBar(this, g);
+		timecodes = new Timecodes(g);
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				setLayout(new BorderLayout(0, 0));
+				add(timecodes, BorderLayout.NORTH);
 				add(information, BorderLayout.CENTER);
 				add(controls, BorderLayout.SOUTH);
-				addComponentListener(new ComponentListener(){
-					@Override
-					public void componentResized(ComponentEvent e) {
-						final Navbar com = (Navbar) e.getComponent();
-						new Thread(){
-							public void run()
-							{
-								com.componentResized();
-							}
-						}.start();
-					}
-
-					@Override
-					public void componentMoved(ComponentEvent e) { }
-
-					@Override
-					public void componentShown(ComponentEvent e) { }
-
-					@Override
-					public void componentHidden(ComponentEvent e) { }
-					
-				});
 			}
 		});
 	}
@@ -141,18 +120,6 @@ public class Navbar extends JPanel implements INavbarSubject{
 			}
 			
 		});
-		
-		new DebugInfo(this, g.getVideoController());
-	}
-	
-	/**
-	 * Method to call if the component was resized, because sub-panels don't
-	 * always listen to this correctly.
-	 * The method makes sure all panels are redrawn in the correct proportions
-	 */
-	public void componentResized()
-	{
-		information.componentResized();
 	}
 	
 	/**

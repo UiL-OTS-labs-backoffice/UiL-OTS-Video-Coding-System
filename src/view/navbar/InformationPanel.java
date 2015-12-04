@@ -21,43 +21,10 @@ public class InformationPanel extends JPanel{
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				setLayout(new MigLayout("", "[grow,fill]", "[20px:40px:40px,grow,fill][150px:n,grow,fill]"));
+				setLayout(new MigLayout("insets 2 10 10 10", "[grow,fill]", "[20px:40px:40px,grow,fill][150px:n,grow,fill]"));
 				add(overview, "cell 0 0,grow");
 				add(detail, "cell 0 1,grow");
 			}
 		});
 	}
-	
-//	public void videoInstantiated()
-//	{
-//		overview.videoInstantiated();
-//		detail.videoInstantiated();
-//		componentResized();
-//	}
-	
-	/**
-	 * If the component is resized, everything (all panels, overview box and indicators)
-	 * has to be updated 
-	 */
-	public void componentResized()
-	{
-		// TODO what? This should not be like this
-//		overview.paintTimeFrames();
-//		overview.paintBox();
-//		detail.paintTimeFrames();
-		
-		// TODO go away
-//		mediaTimeChanged();
-	}
-	
-	/**
-	 * Update indicators only
-	 */
-	// TODO delete entirely
-//	public void mediaTimeChanged()
-//	{
-////		overview.mediaTimeChanged();
-////		detail.mediaTimeChanged();
-//	}
-	
 }
