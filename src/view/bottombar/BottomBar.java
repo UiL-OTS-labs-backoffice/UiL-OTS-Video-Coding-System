@@ -7,20 +7,16 @@ import controller.*;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import view.VideoManipulationButtons;
 import view.navbar.Navbar;
 
 public class BottomBar extends JPanel {
 	
 	private static final long serialVersionUID = 8873779601345831556L;
 	
-	// Trial information panel instance
 	private JPanel controlPanel;
 	private TrialControls trial_controls;
 	private VideoManipulationButtons playButtons;
-	
 	private Navbar navbar;
-	
 	private Globals g;
 	
 	public BottomBar(Globals g)
@@ -58,10 +54,5 @@ public class BottomBar extends JPanel {
 				add(navbar, BorderLayout.CENTER);
 			}
 		});
-    }
-    
-    public void setTimeoutText(final boolean state)
-    {
-		playButtons.setTimeoutText(state);
     }
 }

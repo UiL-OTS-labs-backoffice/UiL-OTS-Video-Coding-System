@@ -67,7 +67,7 @@ public class Editor {
      */
     private void createFrame()
     {
-        frame = new JFrame("UiL OTS Labs Video Coding Software");
+        frame = new JFrame("UiL OTS Labs Video Coding Software - %s");
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setLocation(400, 150);
         frame.setSize(1024, 768);
