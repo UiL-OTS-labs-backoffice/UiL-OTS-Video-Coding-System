@@ -20,4 +20,20 @@ public class Time {
         		)        			
         	);
     }
+    
+    /**
+     * Formats a time in a nice detailed format (including milliseconds)
+     * @param millis	The number of milliseconds more than time 0
+     * @return			A string displaying the time nicely, including milliseconds
+     */
+    public static String formatDetail(long millis){
+    	if(millis == -1L)
+			return "--";
+		String s = String.format("%s.%03d", 
+	    		format(millis),
+	    		millis - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(millis))
+	    	);
+		return s;
+    }
+    
 }

@@ -12,7 +12,6 @@ import view.player.IMediaPlayer;
 
 public class TimeIndicator
 {
-	
 	IMediaPlayer player;
 	ABar parent;
 	

@@ -14,6 +14,7 @@ import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
 import view.*;
+import view.panels.ExperimentOverview;
 import view.panels.ExperimentSettings;
 import model.*;
 
@@ -36,6 +37,7 @@ public class Globals {
 	// Views
 	private Editor editorView;
 	private ExperimentSettings settingsView;
+	private ExperimentOverview overview;
 	
 	// Experiment model instance
 	private Experiment experimentModel;
@@ -173,5 +175,16 @@ public class Globals {
 	public ApplicationPreferences getPreferencesModel()
 	{
 		return preferences;
+	}
+	
+	public void showExperimentOverview(){
+		if(this.overview == null){
+			this.overview = new view.panels.ExperimentOverview();
+		}
+		this.overview.setVisible(true);
+	}
+	
+	public void disposeExperimentOverview(){
+		this.overview = null;
 	}
 }
