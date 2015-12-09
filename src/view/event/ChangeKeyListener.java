@@ -1,4 +1,4 @@
-package view.events;
+package view.event;
 
 import java.awt.Color;
 import java.awt.event.FocusEvent;
@@ -10,7 +10,7 @@ import javax.swing.SwingUtilities;
 
 import controller.Controller;
 import controller.Globals;
-import view.panels.QuickKeys;
+import view.panels.QuickKeysPanel;
 
 /**
  * Allows clicking of a hotkey field to assign a new key
@@ -30,7 +30,7 @@ public class ChangeKeyListener implements FocusListener {
 	/**
 	 * QuickKeys instance
 	 */
-	QuickKeys quickKeys;
+	QuickKeysPanel quickKeys;
 	
 	/**
 	 * Controller instance
@@ -47,7 +47,7 @@ public class ChangeKeyListener implements FocusListener {
 	 * @param field		The field where the keyListener listens to
 	 * @param action	The action of the field
 	 */
-	public ChangeKeyListener(JTextField field, String action, QuickKeys quickKeys)
+	public ChangeKeyListener(JTextField field, String action, QuickKeysPanel quickKeys)
 	{
 		c = Globals.getInstance().getController();
 		this.field = field;

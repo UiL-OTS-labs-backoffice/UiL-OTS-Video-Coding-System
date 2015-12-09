@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import view.bottombar.BottomBar;
-import view.events.bindings.KeyBindingHandler;
+import view.event.binding.KeyBindingHandler;
 //import view.events.CodingKeyListener;
 import view.menu.MainMenu;
 import view.player.IMediaPlayer;

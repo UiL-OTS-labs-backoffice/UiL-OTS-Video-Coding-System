@@ -1,4 +1,5 @@
 package model;
+import java.io.File;
 import java.util.prefs.Preferences;
 
 /**
@@ -30,7 +31,7 @@ public class ApplicationPreferences {
 	 */
 	public String getVLCUrl()
 	{
-		return prefs.get("vlcURL", null);
+		return prefs.get("vlcURL", new File(".").getAbsolutePath());
 	}
 	
 	/**

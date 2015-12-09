@@ -1,4 +1,4 @@
-package view.events;
+package view.event;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -6,7 +6,7 @@ import java.awt.event.KeyListener;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import view.panels.QuickKeys;
+import view.panels.QuickKeysPanel;
 import controller.*;
 
 public class KeyChanger implements KeyListener {
@@ -15,12 +15,12 @@ public class KeyChanger implements KeyListener {
 	
 	String action;
 	JTextField field;
-	QuickKeys quickKeys;
+	QuickKeysPanel quickKeysPanel;
 	
-	public KeyChanger(String action, JTextField field, QuickKeys quickKeys){
+	public KeyChanger(String action, JTextField field, QuickKeysPanel quickKeys){
 		this.action = action;
 		this.field = field;
-		this.quickKeys = quickKeys;
+		this.quickKeysPanel = quickKeys;
 		c = Globals.getInstance().getController();
 	}
 	
@@ -39,16 +39,13 @@ public class KeyChanger implements KeyListener {
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
 				field.setText(KeyEvent.getKeyText(code));
-				quickKeys.update();
+				quickKeysPanel.update();
 			}
 		});
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void keyReleased(KeyEvent e) { }
 
 	@Override
 	public void keyTyped(KeyEvent e) {
