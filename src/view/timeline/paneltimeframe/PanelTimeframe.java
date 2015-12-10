@@ -1,9 +1,9 @@
-package view.navbar.paneltimeframe;
+package view.timeline.paneltimeframe;
 
 import controller.Globals;
-import view.navbar.ABar;
-import view.navbar.Navbar;
 import view.player.IMediaPlayerListener;
+import view.timeline.ABar;
+import view.timeline.TimeLineBar;
 import model.AbstractTimeFrame;
 import model.TimeObserver.ITimeFrameObserver;
 
@@ -48,7 +48,7 @@ public class PanelTimeframe extends JPanel
 	private ContextMenu contextMenu;
 	private ABar pane;
 	private Globals g;
-	private Navbar navbar;
+	private TimeLineBar navbar;
 	private PanelTimeframe panel;
 	
 	private TexturePaint slate;
@@ -63,7 +63,7 @@ public class PanelTimeframe extends JPanel
 	 * @param g				Reference to Globals instance
 	 * @param navbar		Reference to navbar instance
 	 */
-	public PanelTimeframe(AbstractTimeFrame tf, ABar parentPane, Globals g, Navbar navbar)
+	public PanelTimeframe(AbstractTimeFrame tf, ABar parentPane, Globals g, TimeLineBar navbar)
 	{
 		this.panel = this;
 		this.tf = tf;

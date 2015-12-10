@@ -1,4 +1,4 @@
-package view.navbar.paneltimeframe;
+package view.timeline.paneltimeframe;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

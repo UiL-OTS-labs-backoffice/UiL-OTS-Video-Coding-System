@@ -1,4 +1,4 @@
-package view.navbar;
+package view.timeline;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -14,7 +14,7 @@ public class InformationPanel extends JPanel{
 	public static final int TYPE_TRIAL = 0;
 	public static final int TYPE_LOOK = 1;
 	
-	protected InformationPanel(Navbar navbar, Globals g)
+	protected InformationPanel(TimeLineBar navbar, Globals g)
 	{
 		overview = new OverviewBar(navbar, g);
 		detail = new DetailBar(navbar, g);

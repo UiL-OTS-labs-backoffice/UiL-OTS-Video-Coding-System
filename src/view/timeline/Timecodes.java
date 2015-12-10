@@ -1,4 +1,4 @@
-package view.navbar;
+package view.timeline;
 
 import java.awt.BorderLayout;
 import java.awt.event.MouseEvent;
@@ -61,6 +61,7 @@ public class Timecodes extends JPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				Timecodes.this.remaining = !Timecodes.this.remaining;
+				updateLabels();
 			}
 
 			@Override

@@ -306,7 +306,7 @@ public class TrialControls extends JPanel {
 		buttonIcons = new ArrayList<ImageIcon>();
 		for(int i = 1; i <= 6; i++)
 		{
-			String filename = String.format("../../img/TrialButtonIcons/TrialButtons-%02d.png", i);
+			String filename = String.format("/img/TrialButtonIcons/TrialButtons-%02d.png", i);
 			try{
 				BufferedImage buttonIcon = ImageIO.read(TrialControls.class.getResource(filename));
 				ImageIcon icon = new ImageIcon(buttonIcon);

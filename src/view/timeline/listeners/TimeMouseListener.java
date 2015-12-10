@@ -1,17 +1,17 @@
-package view.navbar.listeners;
+package view.timeline.listeners;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import view.navbar.ABar;
-import view.navbar.Navbar;
+import view.timeline.ABar;
+import view.timeline.TimeLineBar;
 import controller.IVideoControls;
 
 public class TimeMouseListener implements MouseListener{
 	
-	private ABar comp; private Navbar navbar; private IVideoControls vc;
+	private ABar comp; private TimeLineBar navbar; private IVideoControls vc;
 	
-	public TimeMouseListener(ABar comp, Navbar navbar, IVideoControls vc)
+	public TimeMouseListener(ABar comp, TimeLineBar navbar, IVideoControls vc)
 	{
 		this.comp = comp;
 		this.navbar = navbar;

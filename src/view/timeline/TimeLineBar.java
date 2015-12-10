@@ -1,4 +1,4 @@
-package view.navbar;
+package view.timeline;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
@@ -7,18 +7,18 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import view.navbar.utilities.INavbarObserver;
-import view.navbar.utilities.INavbarSubject;
 import view.player.IMediaPlayer;
 import view.player.IMediaPlayerListener;
+import view.timeline.utilities.INavbarObserver;
+import view.timeline.utilities.INavbarSubject;
 import controller.Globals;
 import controller.IVideoControllerObserver;
 import controller.IVideoControls;
 
 /**
- * Navbar is the controller class for all the time bar elements in the view
+ * TimeLineBar is the controller class for all the time bar elements in the view
  */
-public class Navbar extends JPanel implements INavbarSubject{
+public class TimeLineBar extends JPanel implements INavbarSubject{
 
 	private static final long serialVersionUID = 1L;
 	
@@ -41,13 +41,13 @@ public class Navbar extends JPanel implements INavbarSubject{
 	 * Constructor
 	 * @param g 	Reference to Globals instance
 	 */
-	public Navbar(Globals g)
+	public TimeLineBar(Globals g)
 	{
 		this.g = g;
 		this.g.getVideoController().register(new IVideoControllerObserver(){
 			@Override
 			public void videoInstantiated() {
-				Navbar.this.videoInstantiated();
+				TimeLineBar.this.videoInstantiated();
 			}
 		});
 		this.observers = new ArrayList<INavbarObserver>();

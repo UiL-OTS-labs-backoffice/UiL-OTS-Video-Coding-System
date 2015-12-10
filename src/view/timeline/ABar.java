@@ -1,4 +1,4 @@
-package view.navbar;
+package view.timeline;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -17,12 +17,12 @@ import model.TimeObserver.ITimeContainerSubject;
 import controller.Globals;
 import controller.IVideoControllerObserver;
 import controller.IVideoControls;
-import view.navbar.listeners.TimeMouseListener;
-import view.navbar.listeners.TimeMouseMotionListener;
-import view.navbar.paneltimeframe.PanelTimeframe;
-import view.navbar.utilities.INavbarObserver;
 import view.player.IMediaPlayer;
 import view.player.IMediaPlayerListener;
+import view.timeline.listeners.TimeMouseListener;
+import view.timeline.listeners.TimeMouseMotionListener;
+import view.timeline.paneltimeframe.PanelTimeframe;
+import view.timeline.utilities.INavbarObserver;
 
 public abstract class ABar extends JPanel{
 
@@ -37,7 +37,7 @@ public abstract class ABar extends JPanel{
 	protected IVideoControls vc;
 	private IVideoControllerObserver vcObserver;
 	
-	protected Navbar navbar;
+	protected TimeLineBar navbar;
 	protected HashMap<AbstractTimeFrame, PanelTimeframe> timeFrames = 
 			new HashMap<AbstractTimeFrame, PanelTimeframe>();
 	
@@ -47,9 +47,9 @@ public abstract class ABar extends JPanel{
 	/**
 	 * Constructor method creates a new ABar object.
 	 * @param duration	Total video duration
-	 * @param navbar	Reference to parent Navbar object
+	 * @param navbar	Reference to parent TimeLineBar object
 	 */
-	protected ABar(Navbar navbar, Globals g)
+	protected ABar(TimeLineBar navbar, Globals g)
 	{
 		this.g = g;
 		this.vc = g.getVideoController();
