@@ -164,38 +164,46 @@ public class Controller {
 	 * Method to export the experiment information to a CSV file
 	 * @return
 	 */
-	public boolean export()
+	public boolean export(String name, int type)
 	{
-		view.panels.CSVExportSelector.getInstance();
-		String name = CSVExportSelector.show();
-		if (name == null)
-			return false;
-		else{
-			if (!(name.endsWith(".csv") || name.endsWith(".CSV")))
-				name += ".csv";
-			controller.export.CSVExport exporter = new controller.export.CSVExport();
-			return exporter.exportTotalLookTime(name);
-		}
+//		view.panels.CSVExportSelector.getInstance();
+//		String name = CSVExportSelector.show();
+//		if (name == null)
+//			return false;
+//		else{
+//			if (!(name.endsWith(".csv") || name.endsWith(".CSV")))
+//				name += ".csv";
+//			controller.export.CSVExport exporter = new controller.export.CSVExport();
+//			return exporter.exportTotalLookTime(name);
+//		}
 		
+		controller.export.CSVExport exporter = new controller.export.CSVExport();
+		boolean result;
+		if(type == CSVExportSelector.EXPORT_AS_OVERVIEW){
+			result = exporter.exportExtendedInformation(name);
+		} else {
+			result = exporter.exportTotalLookTime(name);
+		}
+		return result;
 	}
 	
-	/**
-	 * Method to export the overview information
-	 * @return
-	 */
-	public boolean exportOverview()
-	{
-		view.panels.CSVExportSelector.getInstance();
-		String name = CSVExportSelector.show();
-		if(name == null)
-			return false;
-		else{
-			if (!(name.endsWith(".csv") || name.endsWith(".CSV")))
-				name += ".csv";
-			controller.export.CSVExport exporter = new controller.export.CSVExport();
-			return exporter.exportExtendedInformation(name);
-		}
-	}
+//	/**
+//	 * Method to export the overview information
+//	 * @return
+//	 */
+//	public boolean exportOverview()
+//	{
+//		view.panels.CSVExportSelector.getInstance();
+//		String name = CSVExportSelector.show();
+//		if(name == null)
+//			return false;
+//		else{
+//			if (!(name.endsWith(".csv") || name.endsWith(".CSV")))
+//				name += ".csv";
+//			controller.export.CSVExport exporter = new controller.export.CSVExport();
+//			return exporter.exportExtendedInformation(name);
+//		}
+//	}
 	
 	/**
 	 * Get the number of an item

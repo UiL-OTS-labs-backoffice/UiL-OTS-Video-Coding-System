@@ -11,11 +11,19 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
+import view.panels.CSVExportSelector;
 import controller.*;
 
 public class MainMenu extends JMenuBar {
 
 	private static final long serialVersionUID = 5103817458709866267L;
+	
+	private static final KeyStroke SAVE_ACCELERATOR = KeyStroke.getKeyStroke("control S");
+	private static final KeyStroke SAVE_AS_ACCELERATOR = KeyStroke.getKeyStroke("control alt S");
+//	private static final KeyStroke EXPORT_OVERVIEW_ACCELERATOR = KeyStroke.getKeyStroke("control alt O");
+	private static final KeyStroke EXPORT_PROJECT_ACCELERATOR = KeyStroke.getKeyStroke("control alt P");
+	private static final KeyStroke OPEN_OVERVIEW_ACCELERATOR = KeyStroke.getKeyStroke("control O");
+	private static final KeyStroke EXPERIMENT_INFORMATION_ACCELERATOR = KeyStroke.getKeyStroke("control E");
 	
 	private static Controller c;
 	
@@ -43,12 +51,9 @@ public class MainMenu extends JMenuBar {
 	private void addFileMenu()
 	{
 		final JMenu fileMenu = new JMenu("File");
-		fileMenu.setMnemonic('F');
 		
 		final JMenuItem save = new JMenuItem("Save");
-		save.setMnemonic('S');
-		save.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S,
-                java.awt.Event.CTRL_MASK));
+		save.setAccelerator(SAVE_ACCELERATOR);
 		save.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				Thread saveThread = new Thread(){ 
@@ -60,6 +65,7 @@ public class MainMenu extends JMenuBar {
 			}
 		});
 		final JMenuItem saveas = new JMenuItem("Save As");
+		saveas.setAccelerator(SAVE_AS_ACCELERATOR);
 		saveas.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				Thread saveAsThread = new Thread(){
@@ -70,24 +76,26 @@ public class MainMenu extends JMenuBar {
 				saveAsThread.start();
 			}
 		});
-		saveas.setMnemonic('A');
 		
 		final JMenuItem exportProject = new JMenuItem("Export project to CSV");
-		exportProject.setMnemonic('E');
+		exportProject.setAccelerator(EXPORT_PROJECT_ACCELERATOR);
 		exportProject.setToolTipText("This will export all the trials and the total of the time of all the looks in each of those trials");
 		exportProject.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				Thread exportThread = new Thread()
 				{
 					public void run(){
-						if (!c.export())
-						{
-							JOptionPane.showMessageDialog(
-									new JPanel(), 
-									"Sorry! Looks like the file couldn't exported!", 
-									"Exporting failed", 
-									JOptionPane.ERROR_MESSAGE
-								);
+						CSVExportSelector exporter = new CSVExportSelector();
+						if(exporter.isApproved() || exporter.getFilePath() != null){
+							if (!c.export(exporter.getFilePath(), exporter.getExporterMethod()))
+							{
+								JOptionPane.showMessageDialog(
+										new JPanel(), 
+										"Sorry! Looks like the file couldn't exported!", 
+										"Exporting failed", 
+										JOptionPane.ERROR_MESSAGE
+									);
+							}
 						}
 					}
 				};
@@ -95,36 +103,45 @@ public class MainMenu extends JMenuBar {
 			}
 		});
 		
-		final JMenuItem exportOverview = new JMenuItem("Export overview to CSV");
-		exportOverview.setToolTipText("This will export an extended overview of the project, including the begin- and end times for all trials and looks");
-		exportOverview.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				Thread exportThread = new Thread()
-				{
-					public void run(){
-						if (!c.exportOverview())
-						{
-							JOptionPane.showMessageDialog(
-									new JPanel(), 
-									"Sorry! Looks like the file couldn't exported!", 
-									"Exporting failed", 
-								JOptionPane.ERROR_MESSAGE
-							);
-						}
-					}
-				};
-				exportThread.start();
-			}
-		});
+//		final JMenuItem exportOverview = new JMenuItem("Export overview to CSV");
+//		exportOverview.setAccelerator(EXPORT_OVERVIEW_ACCELERATOR);
+//		exportOverview.setToolTipText("Export the project to CSV");
+//		
+//		exportOverview.addActionListener(new ActionListener(){
+//			
+//			
+//			
+//			public void actionPerformed(ActionEvent e){
+//				Thread exportThread = new Thread()
+//				{
+//					public void run(){
+//						CSVExportSelector exporter = new CSVExportSelector();
+//						if(exporter.isApproved() || exporter.getName() != null){
+//							
+//						}
+//						
+//						if (!c.exportOverview())
+//						{
+//							JOptionPane.showMessageDialog(
+//									new JPanel(), 
+//									"Sorry! Looks like the file couldn't exported!", 
+//									"Exporting failed", 
+//								JOptionPane.ERROR_MESSAGE
+//							);
+//						}
+//					}
+//				};
+//				exportThread.start();
+//			}
+//		});
 		
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
 				fileMenu.add(save);
 				fileMenu.add(saveas);
-//				fileMenu.add(openProject); // TODO remove
 				fileMenu.addSeparator();
 				fileMenu.add(exportProject);
-				fileMenu.add(exportOverview);
+//				fileMenu.add(exportOverview);
 				add(fileMenu);
 			}
 		});
@@ -139,10 +156,9 @@ public class MainMenu extends JMenuBar {
 	private void addSettingsMenu()
 	{
 		final JMenu settingsMenu = new JMenu("Settings");
-		settingsMenu.setMnemonic('E');
 		
 		final JMenuItem setExpInfo = new JMenuItem("Experiment Information");
-		setExpInfo.setMnemonic('I');
+		setExpInfo.setAccelerator(EXPERIMENT_INFORMATION_ACCELERATOR);
 		
 		setExpInfo.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
@@ -180,9 +196,9 @@ public class MainMenu extends JMenuBar {
 	private void addTrialMenu()
 	{
 		final JMenu experimentMenu = new JMenu("Project");
-		experimentMenu.setMnemonic('P');
 		
 		final JMenuItem overview = new JMenuItem("Show overview");
+		overview.setAccelerator(OPEN_OVERVIEW_ACCELERATOR);
 		overview.setToolTipText("Show an overview of the experiment so far");
 		overview.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
