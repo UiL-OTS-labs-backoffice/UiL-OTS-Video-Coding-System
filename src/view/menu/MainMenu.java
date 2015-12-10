@@ -32,8 +32,7 @@ public class MainMenu extends JMenuBar {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				addFileMenu();
-				addTrialMenu();
-				addSettingsMenu();
+				addExperimentMenu();
 				addHelpMenu();
 			}
 		});
@@ -115,15 +114,32 @@ public class MainMenu extends JMenuBar {
 	}
 	
 	/**
-	 * Adds the settings menu
+	 * Adds the trial menu
 	 * Contains:
-	 * 		- Experiment settings
+	 * 		- Edit current trial number
+	 * 		- Remove current trial
+	 * 		- Remove current look
+	 * 		- Remove looks (removes all looks in current trial)
+	 * 		- Go to trial:
+	 * 			- List of trials
+	 * 		- Go to look:
+	 * 			- List of looks
+	 * 		- Overview (of currently set trials and looks)
 	 */
-	private void addSettingsMenu()
+	private void addExperimentMenu()
 	{
-		final JMenu settingsMenu = new JMenu("Settings");
+		final JMenu experimentMenu = new JMenu("Project");
 		
-		final JMenuItem setExpInfo = new JMenuItem("Experiment Information");
+		final JMenuItem overview = new JMenuItem("Show overview");
+		overview.setAccelerator(OPEN_OVERVIEW_ACCELERATOR);
+		overview.setToolTipText("Show an overview of the experiment so far");
+		overview.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		Globals.getInstance().showExperimentOverview();
+        	}
+        });
+		
+		final JMenuItem setExpInfo = new JMenuItem("Experiment Settings");
 		setExpInfo.setAccelerator(EXPERIMENT_INFORMATION_ACCELERATOR);
 		
 		setExpInfo.addActionListener(new ActionListener() {
@@ -139,42 +155,8 @@ public class MainMenu extends JMenuBar {
 		
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
-				settingsMenu.add(setExpInfo);
-				add(settingsMenu);
-			}
-		});
-		
-	}
-	
-	/**
-	 * Adds the trial menu
-	 * Contains:
-	 * 		- Edit current trial number
-	 * 		- Remove current trial
-	 * 		- Remove current look
-	 * 		- Remove looks (removes all looks in current trial)
-	 * 		- Go to trial:
-	 * 			- List of trials
-	 * 		- Go to look:
-	 * 			- List of looks
-	 * 		- Overview (of currently set trials and looks)
-	 */
-	private void addTrialMenu()
-	{
-		final JMenu experimentMenu = new JMenu("Project");
-		
-		final JMenuItem overview = new JMenuItem("Show overview");
-		overview.setAccelerator(OPEN_OVERVIEW_ACCELERATOR);
-		overview.setToolTipText("Show an overview of the experiment so far");
-		overview.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		Globals.getInstance().showExperimentOverview();
-        	}
-        });
-		
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run(){
 				experimentMenu.add(overview);
+				experimentMenu.add(setExpInfo);
 				add(experimentMenu);
 			}
 		});
