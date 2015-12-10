@@ -20,13 +20,10 @@ public class CodingKeyListener implements KeyListener {
 	}
 	
 	@Override
-	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-	}
+	public void keyTyped(KeyEvent e) { }
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
 		if(vc.IsLoaded())
     	{
     		final int keycode = e.getKeyCode();
@@ -44,15 +41,12 @@ public class CodingKeyListener implements KeyListener {
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void keyReleased(KeyEvent e) { }
 	
 	/**
 	 * Finds the function to execute for the key that
 	 * is pressed
-	 * @param keycode	The keycode of the key that was pressed
+	 * @param keycode	The key code of the key that was pressed
 	 */
 	private void executeCodeForKey(int keycode)
 	{		

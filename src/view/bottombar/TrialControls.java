@@ -51,7 +51,6 @@ public class TrialControls extends JPanel {
 				addNewLookButton();
 				addEndLookButton();
 				
-				
 				vidObserver = new IVideoControllerObserver(){
 					@Override
 					public void videoInstantiated() {

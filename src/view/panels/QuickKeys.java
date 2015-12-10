@@ -50,6 +50,7 @@ public class QuickKeys extends JFrame{
 	 */
 	public QuickKeys() {
 		c = Globals.getInstance().getController();
+		
 		// Frame options
 		setTitle("Quick key commands");
 		setResizable(false);
