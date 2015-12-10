@@ -293,7 +293,7 @@ public class MainMenu extends JMenuBar {
 		shortKeys.setToolTipText("Show a list of quick keys");
 		shortKeys.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		view.panels.QuickKeys kdp = new view.panels.QuickKeys();
+        		view.panels.QuickKeysPanel kdp = new view.panels.QuickKeysPanel();
         		kdp.setVisible(true);
         	}
         });

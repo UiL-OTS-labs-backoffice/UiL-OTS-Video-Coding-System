@@ -10,7 +10,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import view.bottombar.BottomBar;
-import view.events.CodingKeyListener;
+import view.event.binding.KeyBindingHandler;
+//import view.events.CodingKeyListener;
 import view.menu.MainMenu;
 import view.player.IMediaPlayer;
 import view.player.VLCMediaPlayer;
@@ -73,8 +74,9 @@ public class Editor {
         frame.setSize(1024, 768);
         frame.setIconImages(Globals.getIcons());
         frame.getContentPane().setLayout(new BorderLayout(0, 0));
-        frame.addKeyListener(new CodingKeyListener(g));
-        frame.setFocusable(true);
+        
+//        frame.addKeyListener(new CodingKeyListener(g));
+//        frame.setFocusable(true);
         
         frame.addWindowListener(new WindowListener(){
 			@Override
@@ -125,6 +127,7 @@ public class Editor {
         SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				frame.getContentPane().add(bottom_bar, BorderLayout.SOUTH);
+				new KeyBindingHandler(bottom_bar);
 			}
 		});
     }

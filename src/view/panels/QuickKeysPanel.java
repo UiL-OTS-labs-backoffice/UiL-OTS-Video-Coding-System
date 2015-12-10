@@ -5,7 +5,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import view.events.ChangeKeyListener;
+import view.event.ChangeKeyListener;
 import controller.Controller;
 import controller.Globals;
 
@@ -19,7 +19,7 @@ import java.awt.event.MouseListener;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class QuickKeys extends JFrame{
+public class QuickKeysPanel extends JFrame{
 	/**
 	 * 
 	 */
@@ -48,7 +48,7 @@ public class QuickKeys extends JFrame{
 	/**
 	 * Constructor
 	 */
-	public QuickKeys() {
+	public QuickKeysPanel() {
 		c = Globals.getInstance().getController();
 		
 		// Frame options
