@@ -44,6 +44,7 @@ public class CSVExportSelector {
 	{
 		ApplicationPreferences prefs = Globals.getInstance().getPreferencesModel();
 		chooser = new JFileChooser();
+		chooser.setDialogTitle("Export project to CSV");
 		
 		FileNameExtensionFilter export_project = new FileNameExtensionFilter(
 				EXPORT_AS_PROJECT_FILTER, extensions);
@@ -60,7 +61,6 @@ public class CSVExportSelector {
 		chooser.setAcceptAllFileFilterUsed(false);
 	    
 	    returnVal = chooser.showSaveDialog(chooser);
-	    
 	    
 	    if(isApproved()) {
 	    	prefs.setLastCSVDirectory(chooser.getSelectedFile().getParent());

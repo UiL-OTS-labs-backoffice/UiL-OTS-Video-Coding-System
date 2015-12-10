@@ -84,7 +84,7 @@ public class MainMenu extends JMenuBar {
 				{
 					public void run(){
 						CSVExportSelector exporter = new CSVExportSelector();
-						if(exporter.isApproved() || exporter.getFilePath() != null){
+						if(exporter.isApproved() && exporter.getFilePath() != null){
 							if (!c.export(exporter.getFilePath(), exporter.getExporterMethod()))
 							{
 								JOptionPane.showMessageDialog(
