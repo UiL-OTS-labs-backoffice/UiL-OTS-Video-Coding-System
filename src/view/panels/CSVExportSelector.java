@@ -3,6 +3,8 @@ package view.panels;
 import java.io.File;
 
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import model.ApplicationPreferences;
@@ -45,6 +47,18 @@ public class CSVExportSelector {
 		ApplicationPreferences prefs = Globals.getInstance().getPreferencesModel();
 		chooser = new JFileChooser();
 		chooser.setDialogTitle("Export project to CSV");
+		
+		JLabel lbl = new JLabel("<html><body>Again, this is just a shitload of text<br/>"
+				+ "to see what would happen of we did this on the ground<br>"
+				+ "of I don't even know what I am lorum ipsum dolem anymore"
+				+ "if you catch my drift that is the only thing that is important"
+				+ "is to keep talking as the bomb would explode if I stopped talking now"
+				+ "and we don't want no bombs to explode also beware of punctuation as "
+				+ "the grammar nazi's will show up if you start with that one</body></html>");
+		
+//		lbl.setUI(MultiLineLabelUI.labelUI);
+		
+		chooser.add(lbl);
 		
 		FileNameExtensionFilter export_project = new FileNameExtensionFilter(
 				EXPORT_AS_PROJECT_FILTER, extensions);
