@@ -19,8 +19,6 @@ public class MainMenu extends JMenuBar {
 	
 	private static Controller c;
 	
-	private JMenuItem removeTrial, removeLook, removeLooks;
-	
 	public MainMenu(Globals g)
 	{
 		c = g.getController();
@@ -123,7 +121,7 @@ public class MainMenu extends JMenuBar {
 			public void run(){
 				fileMenu.add(save);
 				fileMenu.add(saveas);
-//				fileMenu.add(openProject);
+//				fileMenu.add(openProject); // TODO remove
 				fileMenu.addSeparator();
 				fileMenu.add(exportProject);
 				fileMenu.add(exportOverview);
@@ -131,22 +129,6 @@ public class MainMenu extends JMenuBar {
 			}
 		});
 		
-	}
-	
-	/**
-	 * Sets the state of the remove trial, remove look and remove all look
-	 * options in the menu.
-	 * @param rmt	True iff currently in trial
-	 * @param rml	True iff currently in look
-	 */
-	public void updateButtons(final boolean rmt, final boolean rml){
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run(){
-				removeTrial.setEnabled(rmt);
-				removeLook.setEnabled(rml);
-				removeLooks.setEnabled(rmt);
-			}
-		});
 	}
 	
 	/**
@@ -197,61 +179,8 @@ public class MainMenu extends JMenuBar {
 	 */
 	private void addTrialMenu()
 	{
-		final JMenu trialMenu = new JMenu("Trial");
-		trialMenu.setMnemonic('T');
-		
-		
-		removeTrial = new JMenuItem("Remove current trial");
-		removeTrial.setToolTipText("Removes the current trial");
-		removeTrial.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Thread removeTrialThread = new Thread(){
-					public void run(){
-						c.removeCurrentTrial();
-					}
-				};
-				removeTrialThread.start();
-			}
-			
-		});
-		
-		removeLook = new JMenuItem("Remove current look");
-		removeLook.setToolTipText("Removes the current look");
-		removeLook.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Thread removeLookThread = new Thread(){
-					public void run(){
-						c.removeCurrentLook();
-					}
-				};
-				removeLookThread.start();
-			}
-			
-		});
-		
-		removeLooks = new JMenuItem("Remove looks in trial");
-		removeLooks.setToolTipText("Removes all the looks from the current "
-				+ "trial");
-		removeLooks.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Thread removeAllLooks = new Thread(){
-					public void run(){
-						c.removeAllCurrentLooks();
-					}
-				};
-				removeAllLooks.start();
-			}
-			
-		});
-		
-		final JMenu goToTrial = new TrialNavigator("Go to trial");
-		final JMenu addCommentMenu = new TimeframeCommentEditor("Add a comment");
+		final JMenu experimentMenu = new JMenu("Project");
+		experimentMenu.setMnemonic('P');
 		
 		final JMenuItem overview = new JMenuItem("Show overview");
 		overview.setToolTipText("Show an overview of the experiment so far");
@@ -263,17 +192,8 @@ public class MainMenu extends JMenuBar {
 		
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
-				trialMenu.add(removeTrial);
-				trialMenu.add(removeLook);
-				trialMenu.add(removeLooks);
-				trialMenu.add(goToTrial);
-				trialMenu.add(addCommentMenu);
-				trialMenu.add(overview);
-				add(trialMenu);
-				
-				removeTrial.setEnabled(false);
-				removeLook.setEnabled(false);
-				removeLooks.setEnabled(false);
+				experimentMenu.add(overview);
+				add(experimentMenu);
 			}
 		});
 		
