@@ -18,7 +18,6 @@ public class CSVExportSelector {
 	/**
 	 * Single instance
 	 */
-//	private static CSVExportSelector instance;
 	
 	private JFileChooser chooser;
 	private int returnVal;
@@ -36,17 +35,6 @@ public class CSVExportSelector {
 	public CSVExportSelector() { 
 		show();
 	}
-	
-//	/**
-//	 * getmethod for instance of videoselector
-//	 * @return		video selector instance
-//	 */
-//	public static CSVExportSelector getInstance()
-//	{
-//		if(instance == null)
-//			instance = new CSVExportSelector();
-//		return instance;
-//	}
 	
 	/**
 	 * Shows a file selector for the video file to be used
@@ -76,12 +64,7 @@ public class CSVExportSelector {
 	    
 	    if(isApproved()) {
 	    	prefs.setLastCSVDirectory(chooser.getSelectedFile().getParent());
-//	    	return chooser.getSelectedFile().getPath();
 	    }
-//	    else{
-//	    	System.out.println(exporterMethod(chooser));
-//	    	return null;
-//	    }
 	}
 	
 	/**

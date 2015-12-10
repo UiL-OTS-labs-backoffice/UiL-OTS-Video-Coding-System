@@ -20,8 +20,7 @@ public class MainMenu extends JMenuBar {
 	
 	private static final KeyStroke SAVE_ACCELERATOR = KeyStroke.getKeyStroke("control S");
 	private static final KeyStroke SAVE_AS_ACCELERATOR = KeyStroke.getKeyStroke("control alt S");
-//	private static final KeyStroke EXPORT_OVERVIEW_ACCELERATOR = KeyStroke.getKeyStroke("control alt O");
-	private static final KeyStroke EXPORT_PROJECT_ACCELERATOR = KeyStroke.getKeyStroke("control alt P");
+	private static final KeyStroke EXPORT_PROJECT_ACCELERATOR = KeyStroke.getKeyStroke("control alt E");
 	private static final KeyStroke OPEN_OVERVIEW_ACCELERATOR = KeyStroke.getKeyStroke("control O");
 	private static final KeyStroke EXPERIMENT_INFORMATION_ACCELERATOR = KeyStroke.getKeyStroke("control E");
 	
@@ -79,7 +78,7 @@ public class MainMenu extends JMenuBar {
 		
 		final JMenuItem exportProject = new JMenuItem("Export project to CSV");
 		exportProject.setAccelerator(EXPORT_PROJECT_ACCELERATOR);
-		exportProject.setToolTipText("This will export all the trials and the total of the time of all the looks in each of those trials");
+		exportProject.setToolTipText("Export the coding data to CSV");
 		exportProject.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				Thread exportThread = new Thread()
@@ -103,45 +102,12 @@ public class MainMenu extends JMenuBar {
 			}
 		});
 		
-//		final JMenuItem exportOverview = new JMenuItem("Export overview to CSV");
-//		exportOverview.setAccelerator(EXPORT_OVERVIEW_ACCELERATOR);
-//		exportOverview.setToolTipText("Export the project to CSV");
-//		
-//		exportOverview.addActionListener(new ActionListener(){
-//			
-//			
-//			
-//			public void actionPerformed(ActionEvent e){
-//				Thread exportThread = new Thread()
-//				{
-//					public void run(){
-//						CSVExportSelector exporter = new CSVExportSelector();
-//						if(exporter.isApproved() || exporter.getName() != null){
-//							
-//						}
-//						
-//						if (!c.exportOverview())
-//						{
-//							JOptionPane.showMessageDialog(
-//									new JPanel(), 
-//									"Sorry! Looks like the file couldn't exported!", 
-//									"Exporting failed", 
-//								JOptionPane.ERROR_MESSAGE
-//							);
-//						}
-//					}
-//				};
-//				exportThread.start();
-//			}
-//		});
-		
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
 				fileMenu.add(save);
 				fileMenu.add(saveas);
 				fileMenu.addSeparator();
 				fileMenu.add(exportProject);
-//				fileMenu.add(exportOverview);
 				add(fileMenu);
 			}
 		});
