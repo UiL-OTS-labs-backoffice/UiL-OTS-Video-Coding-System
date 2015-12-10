@@ -86,19 +86,23 @@ public class VLCVideoController implements IVideoControls {
 	@Override
 	public void nextTrial() {
 		int tnr = Math.abs(g.getExperimentModel().getItemForTime(getMediaTime()));
+		System.out.println("Next trial: " + tnr);
 		if(tnr > 0 && tnr < g.getExperimentModel().getNumberOfItems())
 		{
 			model.AbstractTimeFrame t = g.getExperimentModel().getItem(tnr+1);
 			long time = t.getBegin();
 			player.setMediaTime(time);
+			System.out.println("\tSet to " + (tnr + 1));
 		} else {
 			player.setMediaTime(player.getMediaDuration());
+			System.out.println("\tSet to end of experiment");
 		}
 	}		
 
 	@Override
 	public void prevTrial() {
-		int tnr = Math.abs(g.getExperimentModel().getItemForTime(getMediaTime()));
+		int tnr = g.getExperimentModel().getItemForTime(getMediaTime());
+		System.out.println("Prev trial: " + tnr);
 		if (tnr > 1) tnr--;
 		else if (tnr < 0) tnr = Math.abs(tnr);
 		if(tnr > 0)
@@ -106,8 +110,10 @@ public class VLCVideoController implements IVideoControls {
 			model.AbstractTimeFrame t = g.getExperimentModel().getItem(tnr);
 			long time = t.getBegin();
 			player.setMediaTime(time);
+			System.out.println("\tSet to " + tnr);
 		} else {
 			player.setMediaTime(0);
+			System.out.println("\tSet to beginning of experiment");
 		}
 	}
 

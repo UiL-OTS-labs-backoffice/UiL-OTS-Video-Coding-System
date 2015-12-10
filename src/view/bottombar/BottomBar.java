@@ -7,7 +7,7 @@ import controller.*;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import view.navbar.Navbar;
+import view.timeline.TimeLineBar;
 
 public class BottomBar extends JPanel {
 	
@@ -16,7 +16,7 @@ public class BottomBar extends JPanel {
 	private JPanel controlPanel;
 	private TrialControls trial_controls;
 	private VideoManipulationButtons playButtons;
-	private Navbar navbar;
+	private TimeLineBar navbar;
 	private Globals g;
 	
 	public BottomBar(Globals g)
@@ -48,7 +48,7 @@ public class BottomBar extends JPanel {
     
     private void addDetailBar()
     {
-		navbar = new Navbar(g);
+		navbar = new TimeLineBar(g);
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				add(navbar, BorderLayout.CENTER);

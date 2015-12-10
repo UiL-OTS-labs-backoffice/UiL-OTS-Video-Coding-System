@@ -1,4 +1,4 @@
-package view.navbar;
+package view.timeline;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -21,9 +21,9 @@ public class DetailBar extends ABar{
 	/**
 	 * Construct a new detail bar JPanel
 	 * @param duration		Total video duration
-	 * @param navbar		Reference to parent Navbar object
+	 * @param navbar		Reference to parent TimeLineBar object
 	 */
-	protected DetailBar(Navbar navbar, Globals g)
+	protected DetailBar(TimeLineBar navbar, Globals g)
 	{
 		super(navbar, g);
 		SwingUtilities.invokeLater(new Runnable() {

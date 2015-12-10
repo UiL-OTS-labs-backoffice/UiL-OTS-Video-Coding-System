@@ -1,4 +1,4 @@
-package view.navbar;
+package view.timeline;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -30,9 +30,9 @@ public class OverviewBar extends ABar {
 	
 	/**
 	 * Constructor method for OverviewBar object
-	 * @param navbar		Reference to the Navbar object
+	 * @param navbar		Reference to the TimeLineBar object
 	 */
-	protected OverviewBar(Navbar navbar, Globals g)
+	protected OverviewBar(TimeLineBar navbar, Globals g)
 	{
 		super(navbar, g);
 		minVisibleTime = 0;

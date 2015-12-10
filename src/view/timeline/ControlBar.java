@@ -1,18 +1,26 @@
-package view.navbar;
+package view.timeline;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JSlider;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import view.navbar.utilities.INavbarObserver;
 import view.player.IMediaPlayer;
+import view.timeline.utilities.INavbarObserver;
 import controller.Globals;
 import controller.IVideoControllerObserver;
 
@@ -23,13 +31,13 @@ public class ControlBar  extends JPanel{
 	
 	private Globals g;
 	private IMediaPlayer player;
-	private Navbar navbar;
+	private TimeLineBar navbar;
 	private JScrollBar scrollBar;
 	private JSlider slider;
 	
 	private boolean useLongConversion; // if video duration > MAX_INT_VALUE, devide/64
 	
-	protected ControlBar(Navbar navbar, Globals g)
+	protected ControlBar(TimeLineBar navbar, Globals g)
 	{
 		this.g = g;
 		this.navbar = navbar;
@@ -82,13 +90,22 @@ public class ControlBar  extends JPanel{
 	 */
 	private void addSizeSlider()
 	{
+		JPanel sliderPanel = new JPanel();
+		FlowLayout layout = (FlowLayout)sliderPanel.getLayout();
+		layout.setVgap(0);
+		layout.setAlignment(SwingConstants.VERTICAL);
+		
 		slider = new JSlider();
 		slider.setFocusable(false);
 		slider.setPaintTicks(true);
 		slider.setMinimum(1);
 		slider.setMaximum(100);
 		slider.setValue(100);
-		add(slider, BorderLayout.EAST);
+		slider.setToolTipText("Zoom in or out");
+		sliderPanel.add(slider);
+		sliderPanel.add(getLookingGlass());
+		
+		add(sliderPanel, BorderLayout.EAST);
 		
 		slider.addChangeListener(new ChangeListener(){
 			@Override
@@ -108,6 +125,27 @@ public class ControlBar  extends JPanel{
 				stateChangerThread.start();
 			}
 		});
+	}
+	
+	private JLabel getLookingGlass(){
+		ImageIcon glass = readLookingGlassIcon();
+		JLabel glassLabel = new JLabel("100%");
+		glassLabel.setIcon(glass);
+		glassLabel.setToolTipText("Use the slider to zoom in or out on the time line");
+		glassLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
+		glassLabel.setPreferredSize(new Dimension(65, 27));
+		
+		final JLabel referencedLabel = glassLabel;
+		navbar.register(new INavbarObserver() {
+			
+			@Override
+			public void visibleAreaChanged(long begin, long end,
+					long visibleTime, final float visiblePercentage) {
+				referencedLabel.setText(String.format("%.0f%%", visiblePercentage));				
+			}
+			
+		});
+		return glassLabel;
 	}
 	
 	/**
@@ -186,5 +224,19 @@ public class ControlBar  extends JPanel{
 	private long fromInt(int value)
 	{
 		return (useLongConversion) ? value * MAX_INT_VALUE : (long) value;
+	}
+	
+	/**
+	 * Method to read the looking glass icon for the zoom slider
+	 * @return
+	 */
+	private static ImageIcon readLookingGlassIcon(){
+		try {
+			BufferedImage image = ImageIO.read(ControlBar.class.getResource("/img/looking_glass.png"));
+			ImageIcon icon = new ImageIcon(image);
+			return icon;
+		} catch (IOException e) {
+			return null;
+		}
 	}
 }

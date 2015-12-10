@@ -1,4 +1,4 @@
-package view.navbar;
+package view.timeline;
 
 import java.awt.Color;
 import java.awt.Graphics;

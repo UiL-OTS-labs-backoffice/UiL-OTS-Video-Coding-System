@@ -1,4 +1,4 @@
-package view.navbar.utilities;
+package view.timeline.utilities;
 
 public interface INavbarSubject {
 	
