@@ -14,6 +14,8 @@ import java.awt.TexturePaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 
@@ -103,6 +105,31 @@ public class PanelTimeframe extends JPanel
 				timeChanged();
 			}
 		};
+		
+		
+		panel.addMouseListener(new MouseListener(){
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int x = e.getX() + panel.getX();
+				final long newTime = pane.timeByX(x);
+				new Thread(){
+					public void run()
+					{
+						Globals.getInstance().getVideoController().setMediaTime(newTime);
+					}
+				}.start();				
+			}
+			@Override
+			public void mousePressed(MouseEvent e) { }
+			@Override
+			public void mouseReleased(MouseEvent e) { }
+			@Override
+			public void mouseEntered(MouseEvent e) { }
+			@Override
+			public void mouseExited(MouseEvent e) { }
+			
+		});
 		
 		if(!tf.hasEnded()){
 			g.getVideoController().getPlayer().register(this.mpl);
