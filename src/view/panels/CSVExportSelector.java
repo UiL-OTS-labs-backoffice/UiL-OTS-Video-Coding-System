@@ -1,9 +1,21 @@
 package view.panels;
 
+import java.awt.BorderLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+
+
+
 
 import model.ApplicationPreferences;
 import controller.Globals;
@@ -44,24 +56,53 @@ public class CSVExportSelector {
 	{
 		ApplicationPreferences prefs = Globals.getInstance().getPreferencesModel();
 		chooser = new JFileChooser();
+		chooser.setDialogTitle("Export project to CSV");
 		
-		FileNameExtensionFilter export_project = new FileNameExtensionFilter(
+		final String exportOverview ="<html><body>The 'Export Overview' method, generates a CSV file containing <i>all</i> coded data. This means each trial and look, including every start, end, and look time, is exported</body></html>";
+		final String exportProject = "<html><body>The 'Export Project' method generates a CSV file, containing only the total time of all looks in a trial, and no information about the seperate looks</body></html>";
+		final JLabel methodDescription = new JLabel(exportProject);
+		
+		methodDescription.setBorder(new EmptyBorder(0,0,10,0));
+		
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		panel.add(methodDescription, BorderLayout.NORTH);
+		panel.add(chooser.getComponent(3), BorderLayout.CENTER);
+		chooser.add(panel, BorderLayout.SOUTH);
+		
+		final FileNameExtensionFilter export_project = new FileNameExtensionFilter(
 				EXPORT_AS_PROJECT_FILTER, extensions);
-		
-		FileNameExtensionFilter export_overview = new FileNameExtensionFilter(EXPORT_AS_OVERVIEW_FILTER, extensions);
-	    
+		final FileNameExtensionFilter export_overview = new FileNameExtensionFilter(
+				EXPORT_AS_OVERVIEW_FILTER, extensions);
 	 
 	    chooser.addChoosableFileFilter(export_project);
 	    chooser.addChoosableFileFilter(export_overview);
 	    chooser.setFileFilter(export_project);
 	    
-	    File here2go = new File(prefs.getLastCSVDirectory(prefs.getLastProjectDirectory(System.getProperty("user.home"))));
-	    chooser.setCurrentDirectory(here2go);
+	    File here2go = new File(prefs.getLastCSVDirectory(
+	    		prefs.getLastProjectDirectory(System.getProperty("user.home")))
+	    	);
+	    
+	    try{
+	    	 chooser.setCurrentDirectory(here2go);
+	    } catch(IndexOutOfBoundsException e){
+	    	// This is OK. It's trying to fire an event that's useless in this circumstance.
+	    }
+	   
+	    
 		chooser.setAcceptAllFileFilterUsed(false);
+		chooser.addPropertyChangeListener(JFileChooser.FILE_FILTER_CHANGED_PROPERTY, new PropertyChangeListener(){
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if(evt.getNewValue() == export_project){
+					methodDescription.setText(exportProject);
+				} else {
+					methodDescription.setText(exportOverview);
+				}
+			}
+		});
 	    
 	    returnVal = chooser.showSaveDialog(chooser);
-	    
-	    
 	    if(isApproved()) {
 	    	prefs.setLastCSVDirectory(chooser.getSelectedFile().getParent());
 	    }
@@ -101,5 +142,17 @@ public class CSVExportSelector {
 		} else {
 			return EXPORT_AS_PROJECT;
 		}
+	}
+	
+	/**
+	 * Method to show a confirmation dialog if the saving went successfully
+	 */
+	public void showConfirmationWindow(){
+		String msg = String.format(
+				"%s was successfully exported to %s",
+				(getExporterMethod() == EXPORT_AS_OVERVIEW) ? "Overview" : "Project",
+				getFilePath()
+			);
+		JOptionPane.showMessageDialog(new JFrame(), msg);
 	}
 }

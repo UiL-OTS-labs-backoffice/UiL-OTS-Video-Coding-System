@@ -2,6 +2,7 @@ package view.bottombar;
 
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -9,8 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -35,7 +34,7 @@ public class TrialControls extends JPanel {
 	// Buttons
 	private JButton newTrial, endTrial, newLook, endLook;
 	
-	private static final int BUTTON_HEIGHT = 30;
+	private static final int BUTTON_HEIGHT = 26;
 	private static final int BUTTON_TEXT_MARGIN = 20;
 
 	public TrialControls(final Globals g)
@@ -45,7 +44,6 @@ public class TrialControls extends JPanel {
 		this.c = g.getController();
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				setLayout(new BoxLayout(TrialControls.this, BoxLayout.LINE_AXIS));
 				addNewTrialButton();
 				addEndTrialButton();
 				addNewLookButton();
@@ -181,35 +179,29 @@ public class TrialControls extends JPanel {
 	{
 		newTrial = new JButton(buttonIcons.get(3));
 		newTrial.setToolTipText("Star a new Trial");
-		
+		setTrialControlButtonSettings(newTrial, false);
 		newTrial.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Thread ntT = new Thread(){
 					public void run(){
 						c.newTrial();
+						updateButtons();
 					}
 				};
 				ntT.start();
-				updateButtons();
 			}
 		});
 		
 		add(newTrial);
-		newTrial.setPreferredSize(getButtonDimension(newTrial.getIcon()));
-		newTrial.setMaximumSize(getButtonDimension(newTrial.getIcon()));
-		newTrial.setFocusable(false);
-		newTrial.setBorder(BorderFactory.createEmptyBorder());
-		newTrial.setContentAreaFilled(false);
+
 	}
 	
 	private void addEndTrialButton()
 	{
 		endTrial = new JButton(buttonIcons.get(5));
 		endTrial.setToolTipText("End trial");
-		endTrial.setHorizontalAlignment(SwingConstants.CENTER);
-		endTrial.setHorizontalTextPosition(SwingConstants.LEADING);
-		
+		setTrialControlButtonSettings(endTrial, true);
 		endTrial.addActionListener(new ActionListener(){
 
 			@Override
@@ -217,55 +209,43 @@ public class TrialControls extends JPanel {
 				Thread etT = new Thread(){
 					public void run(){
 						c.setEndTrial();
+						updateButtons();
 					}
 				};
 				etT.start();
-				updateButtons();
 			}
 			
 		});
-		
 		add(endTrial);
-		endTrial.setPreferredSize(getButtonDimension(endTrial.getIcon()));
-		endTrial.setMaximumSize(getButtonDimension(endTrial.getIcon()));
-		endTrial.setFocusable(false);
-		endTrial.setBorder(BorderFactory.createEmptyBorder());
-		endTrial.setContentAreaFilled(false);
 	}
 	
 	private void addNewLookButton()
 	{
 		newLook = new JButton(buttonIcons.get(0));
 		newLook.setToolTipText("New look");
-		
+		setTrialControlButtonSettings(newLook, false);
 		newLook.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Thread nlT = new Thread(){
 					public void run(){
 						c.newLook();
+						updateButtons();
 					}
 				};
 				nlT.start();
-				updateButtons();
 			}
 		});
 		
 		add(newLook);
-		newLook.setPreferredSize(getButtonDimension(newLook.getIcon()));
-		newLook.setMaximumSize(getButtonDimension(newLook.getIcon()));
-		newLook.setFocusable(false);
-		newLook.setBorder(BorderFactory.createEmptyBorder());
-		newLook.setContentAreaFilled(false);
+//		
 	}
 	
 	private void addEndLookButton()
 	{
 		endLook = new JButton(buttonIcons.get(2));
 		endLook.setToolTipText("End look");
-		endLook.setHorizontalAlignment(SwingConstants.CENTER);
-		endLook.setHorizontalTextPosition(SwingConstants.LEADING);
-		endLook.setContentAreaFilled(false);
+		setTrialControlButtonSettings(endLook, true);
 		endLook.addActionListener(new ActionListener(){
 
 			@Override
@@ -273,19 +253,22 @@ public class TrialControls extends JPanel {
 				Thread elT = new Thread(){
 					public void run(){
 						c.setEndLook();
+						updateButtons();
 					}
 				};
 				elT.start();
-				updateButtons();
 			}
 		});
 		
 		add(endLook);
-		endLook.setPreferredSize(getButtonDimension(endLook.getIcon()));
-		endLook.setMaximumSize(getButtonDimension(endLook.getIcon()));
-		endLook.setFocusable(false);
-		endLook.setBorder(BorderFactory.createEmptyBorder());
-		endLook.setContentAreaFilled(false);
+	}
+	
+	private static void setTrialControlButtonSettings(JButton button, Boolean label){
+		button.setMargin(new Insets(0,0,0,0));
+		button.setHorizontalAlignment(SwingConstants.RIGHT);
+		button.setHorizontalTextPosition(SwingConstants.LEFT);
+		button.setPreferredSize(getButtonDimension(button.getIcon(), label));
+		button.setFocusable(false);
 	}
 	
 	/**
@@ -293,9 +276,12 @@ public class TrialControls extends JPanel {
 	 * @param ico		The button icon
 	 * @return			A dimension object for the buttons
 	 */
-	private static Dimension getButtonDimension(Icon ico)
+	private static Dimension getButtonDimension(Icon ico, boolean label)
 	{
-		return new Dimension(ico.getIconWidth() + BUTTON_TEXT_MARGIN, BUTTON_HEIGHT);
+		int width = ico.getIconWidth() + 10;
+		if(label) width += BUTTON_TEXT_MARGIN;
+		Dimension d = new Dimension(width, BUTTON_HEIGHT);
+		return d;
 	}
 	
 	/**
@@ -311,8 +297,8 @@ public class TrialControls extends JPanel {
 				BufferedImage buttonIcon = ImageIO.read(TrialControls.class.getResource(filename));
 				ImageIcon icon = new ImageIcon(buttonIcon);
 				Image img = icon.getImage();
-				int width = Math.round(25f / (float) buttonIcon.getHeight() * (float) buttonIcon.getWidth()); 
-				img = img.getScaledInstance(width, 25, Image.SCALE_SMOOTH);
+				int width = Math.round(BUTTON_HEIGHT / (float) buttonIcon.getHeight() * (float) buttonIcon.getWidth()); 
+				img = img.getScaledInstance(width, BUTTON_HEIGHT, Image.SCALE_SMOOTH);
 				buttonIcons.add(new ImageIcon(img));
 			} catch (IOException e) {
 				System.out.format("Couldn't read file '%s'\n", filename);
