@@ -93,6 +93,8 @@ public class MainMenu extends JMenuBar {
 										"Exporting failed", 
 										JOptionPane.ERROR_MESSAGE
 									);
+							} else {
+								exporter.showConfirmationWindow();
 							}
 						}
 					}

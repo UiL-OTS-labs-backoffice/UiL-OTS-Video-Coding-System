@@ -191,7 +191,7 @@ public class CSVExport {
 	/**
 	 * Exports the experiment to a csv
 	 * @param filename
-	 * @return	True if succesful
+	 * @return	True if successful
 	 */
 	private boolean writeCsv(String filename, ArrayList<String> list)
 	{
