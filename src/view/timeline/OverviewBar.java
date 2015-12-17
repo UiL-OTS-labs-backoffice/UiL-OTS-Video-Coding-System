@@ -27,7 +27,6 @@ public class OverviewBar extends ABar {
 	private long visibleEndTime;
 	private boolean resizeRight = false, resizeLeft = false;
 	
-	
 	/**
 	 * Constructor method for OverviewBar object
 	 * @param navbar		Reference to the TimeLineBar object
@@ -115,6 +114,7 @@ public class OverviewBar extends ABar {
 		});
 	}
 	
+	
 	/**
 	 * Add the panel that indicates what part of the timeline a user is seeing
 	 */
@@ -129,6 +129,14 @@ public class OverviewBar extends ABar {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				int x = e.getX() + overviewBox.getX();
+				final long newTime = OverviewBar.this.timeByXinView(x);
+				new Thread(){
+					public void run()
+					{
+						vc.setMediaTime(newTime);
+					}
+				}.start();
 			}
 
 			@Override
