@@ -102,7 +102,7 @@ public class PanelTimeframe extends JPanel
 
 			@Override
 			public void mediaTimeChanged() {
-				timeChanged();
+				resize();
 			}
 		};
 		
@@ -142,20 +142,11 @@ public class PanelTimeframe extends JPanel
 		g.getVideoController().getPlayer().deregister(mpl);
 	}
 	
-	private void timeChanged(){
-		long time = Globals.getInstance().getVideoController().getMediaTime();
-		long endTime = (tf.getEnd() >= 0L) ? Math.min(tf.getEnd(), time) : time;
-		final Rectangle rect = pane.getTfRect(getStart(), endTime, tf.getType());
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				panel.setSize(rect);
-			}
-		});
-	}
-	
 	public void resize()
 	{
-		final Rectangle rect = pane.getTfRect(getStart(), getEnd(), tf.getType());
+		long time = Globals.getInstance().getVideoController().getMediaTime();
+		long endTime = (tf.hasEnded()) ? tf.getEnd() : Math.min(tf.getEnd(), Math.max(time, tf.getMinimumEndTime()));
+		final Rectangle rect = pane.getTfRect(getStart(), endTime, tf.getType());
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				panel.setSize(rect);

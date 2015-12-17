@@ -113,7 +113,7 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 		boolean itemCanEnd = super.canEnd(time);
 		boolean containerCanEnd;
 		synchronized (ITEMS_MUTEX) {
-			containerCanEnd = items.size() == 0 || items.peekLast().getEnd() == -1 ||items.peekLast().getEnd() <= time;
+			containerCanEnd = items.size() == 0 || !items.peekLast().hasEnded() ||items.peekLast().getEnd() <= time;
 		}
 		return itemCanEnd && containerCanEnd;
 	}
@@ -144,7 +144,7 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 				{
 					canAdd = i;
 					break;
-				} else if (tf.getEnd() < time || tf.getEnd() == -1)
+				} else if (tf.getEnd() < time || !tf.hasEnded())
 				{
 					continue;
 				} else {
@@ -309,6 +309,24 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 		calculateTimeout();
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public long getMinimumEndTime(){
+		long minimumEndTime;
+		if(items.isEmpty()){
+			minimumEndTime = getBegin();
+		} else {
+			AbstractTimeFrame last = items.peekLast();
+			minimumEndTime = last.hasEnded() ? last.getEnd() : last.getBegin();
+		}
+		return minimumEndTime + 1;
+	}
+	
+	/**
+	 * Method to remove all abstract time frames from this container
+	 */
 	public void removeAll()
 	{
 		LinkedList<AbstractTimeFrame> itemsLocal;

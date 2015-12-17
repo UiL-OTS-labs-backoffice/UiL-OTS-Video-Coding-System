@@ -77,7 +77,7 @@ public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubje
 	 */
 	public boolean timeInRange(long time)
 	{
-		return time >= begintime && (endtime == -1L || time <= endtime);
+		return time >= begintime && (!hasEnded() || time <= endtime);
 	}
 	
 	/**
@@ -97,6 +97,19 @@ public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubje
 	public long getEnd()
 	{
 		return this.endtime;
+	}
+	
+	/**
+	 * Get the minimum time at which the current abstract time frame
+	 * could end, based on the last item in abstract time container.
+	 * If the last item doesn't have an end time, the start time of
+	 * the last item + 1 is returned. If no items exist, the start time
+	 * of the abstract time container + 1 is returned
+	 * @return Minimum time at which the current container can end
+	 */
+	public long getMinimumEndTime(){
+		long minimumEndTime = getBegin();
+		return minimumEndTime + 1;
 	}
 
 	/**
@@ -155,7 +168,7 @@ public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubje
 	 */
 	public boolean canBegin(long time)
 	{
-		return endtime == -1L || time < endtime;
+		return !hasEnded() || time < endtime;
 	}
 
 	/**
