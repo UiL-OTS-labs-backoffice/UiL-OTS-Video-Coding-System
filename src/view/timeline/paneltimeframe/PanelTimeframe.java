@@ -50,7 +50,7 @@ public class PanelTimeframe extends JPanel
 	private ContextMenu contextMenu;
 	private ABar pane;
 	private Globals g;
-	private TimeLineBar navbar;
+	private TimeLineBar timeline;
 	private PanelTimeframe panel;
 	
 	private TexturePaint slate;
@@ -63,15 +63,15 @@ public class PanelTimeframe extends JPanel
 	 * @param tf			The time frame
 	 * @param parentPane	The pane this panel should be added to
 	 * @param g				Reference to Globals instance
-	 * @param navbar		Reference to navbar instance
+	 * @param timeline		Reference to time line instance
 	 */
-	public PanelTimeframe(AbstractTimeFrame tf, ABar parentPane, Globals g, TimeLineBar navbar)
+	public PanelTimeframe(AbstractTimeFrame tf, ABar parentPane, Globals g, TimeLineBar timeline)
 	{
 		this.panel = this;
 		this.tf = tf;
 		this.pane = parentPane;
 		this.g = g;
-		this.navbar = navbar;
+		this.timeline = timeline;
 		
 		this.margin = (pane.getType() == ABar.TYPE_DETAIL) ? DETAIL_MARGIN : OVERVIEW_MARGIN;
 		
@@ -102,10 +102,9 @@ public class PanelTimeframe extends JPanel
 
 			@Override
 			public void mediaTimeChanged() {
-				timeChanged();
+				resize();
 			}
 		};
-		
 		
 		panel.addMouseListener(new MouseListener(){
 
@@ -142,20 +141,11 @@ public class PanelTimeframe extends JPanel
 		g.getVideoController().getPlayer().deregister(mpl);
 	}
 	
-	private void timeChanged(){
-		long time = Globals.getInstance().getVideoController().getMediaTime();
-		long endTime = (tf.getEnd() >= 0L) ? Math.min(tf.getEnd(), time) : time;
-		final Rectangle rect = pane.getTfRect(getStart(), endTime, tf.getType());
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				panel.setSize(rect);
-			}
-		});
-	}
-	
 	public void resize()
 	{
-		final Rectangle rect = pane.getTfRect(getStart(), getEnd(), tf.getType());
+		long time = Globals.getInstance().getVideoController().getMediaTime();
+		long endTime = (tf.hasEnded()) ? tf.getEnd() : Math.min(tf.getEnd(), Math.max(time, tf.getMinimumEndTime()));
+		final Rectangle rect = pane.getTfRect(getStart(), endTime, tf.getType());
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				panel.setSize(rect);
@@ -269,11 +259,11 @@ public class PanelTimeframe extends JPanel
 	private void updateBorder()
 	{
 		int left = margin;
-		if(pane.getType() == ABar.TYPE_DETAIL && tf.getBegin() <  navbar.getCurrentStartVisibleTime())
+		if(pane.getType() == ABar.TYPE_DETAIL && tf.getBegin() <  timeline.getCurrentStartVisibleTime())
 		{
 			long end = (tf.hasEnded()) ? tf.getEnd() : g.getVideoController().getMediaTime();
 			left = (int) Math.round(
-					(double) (navbar.getCurrentStartVisibleTime() - tf.getBegin()) / 
+					(double) (timeline.getCurrentStartVisibleTime() - tf.getBegin()) / 
 					(double) (end - tf.getBegin()) 
 					* getWidth() + left); 
 		}
@@ -287,6 +277,7 @@ public class PanelTimeframe extends JPanel
 	public void paintComponent(final Graphics g)
 	{
 		super.paintComponent(g);
+		
 		long timeout = tf.getTimeout();
 		if(timeout > -1l)
 		{
@@ -333,7 +324,7 @@ public class PanelTimeframe extends JPanel
 	 */
 	private int xByTime(long time)
 	{
-		long end = tf.hasEnded() ? tf.getEnd() : g.getVideoController().getMediaTime(); 
+		long end = tf.hasEnded() ? tf.getEnd() : Math.max(tf.getMinimumEndTime(), g.getVideoController().getMediaTime()); 
 		int x = Math.round(((float) time - (float) tf.getBegin()) / ((float) end - (float) tf.getBegin()) * (float) getWidth());
 		return x;
 	}
