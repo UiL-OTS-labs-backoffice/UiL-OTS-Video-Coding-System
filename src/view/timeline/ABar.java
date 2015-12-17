@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.util.HashMap;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import model.AbstractTimeContainer;
 import model.AbstractTimeFrame;
@@ -232,24 +233,39 @@ public abstract class ABar extends JPanel{
 		subject.registerContainerListener(new ITimeContainerObserver(){
 
 			@Override
-			public void itemAdded(AbstractTimeContainer container, AbstractTimeFrame item, int itemNumber)
+			public void itemAdded(AbstractTimeContainer container, final AbstractTimeFrame item, int itemNumber)
 			{
 				if(item.getType() == model.AbstractTimeFrame.TYPE_TRIAL)
 				{
 					((AbstractTimeContainer) item).registerContainerListener(this);
 				}
-				timeFrames.put(item, new PanelTimeframe(item, ABar.this, g, navbar));
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						timeFrames.put(item, new PanelTimeframe(item,
+								ABar.this, g, navbar));
+					}
+				});
 			}
 			
 			@Override
-			public void itemRemoved(AbstractTimeContainer container, AbstractTimeFrame item)
+			public void itemRemoved(AbstractTimeContainer container, final AbstractTimeFrame item)
 			{
 				timeFrames.get(item).remove();
-				timeFrames.remove(item);
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						timeFrames.remove(item);
+					}
+				});
 			}
 			
 			@Override
-			public void numberOfItemsChanged(AbstractTimeContainer container) { }
+			public void numberOfItemsChanged(AbstractTimeContainer container) { 
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						repaint();
+					}
+				});
+			}
 		});
 	}
 	
