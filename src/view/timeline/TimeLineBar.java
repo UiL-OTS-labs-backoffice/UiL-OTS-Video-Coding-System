@@ -192,9 +192,17 @@ public class TimeLineBar extends JPanel implements INavbarSubject{
 	 * point (i.e. when zooming in or out occurs)
 	 * @param time	amount of visible time in the detail view bar
 	 */
-	public void setVisibleTime(long time)
+	public void setVisibleTime(long time, long centerTime)
 	{
+		float pct = (float)(centerTime - this.currentStartVisibleTime) / (float)this.visibleTime;
+		long newStart = Math.round(centerTime - (pct * time));
+		if(newStart + time > player.getMediaDuration()){
+			newStart = player.getMediaDuration() - time;
+		} else if (newStart < 0){
+			newStart = 0;
+		}
 		this.visibleTime = time;
+		this.setCurrentStartVisibleTime(newStart);
 		this.currentEndVisibleTime = this.currentStartVisibleTime + time;
 		calculateVisiblePercentage();
 		visibleAreaChanged();
