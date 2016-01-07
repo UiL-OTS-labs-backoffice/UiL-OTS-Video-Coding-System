@@ -56,7 +56,6 @@ public class ControlBar  extends JPanel{
 			@Override
 			public void visibleAreaChanged(final long begin, long end,
 					final long visibleTime, float visiblePercentage) {
-				// TODO Auto-generated method stub
 				SwingUtilities.invokeLater(new Runnable(){
 					
 					@Override
@@ -114,11 +113,7 @@ public class ControlBar  extends JPanel{
 					public void run(){
 						if(slider.getValueIsAdjusting())
 						{
-							navbar.setVisibleTime(visibleTimeFromPercentage(slider.getValue()));
-							if(navbar.getCurrentStartVisibleTime() + navbar.getVisibleTime() > player.getMediaDuration())
-							{
-								navbar.setCurrentStartVisibleTime(player.getMediaDuration() - navbar.getVisibleTime());
-							}
+							navbar.setVisibleTime(visibleTimeFromPercentage(slider.getValue()), player.getMediaTime());
 						}
 					}
 				};
