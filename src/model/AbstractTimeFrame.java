@@ -315,5 +315,6 @@ public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubje
         if(this.ended == ENDED_UNINSTANTIATED){
         	this.ended = (this.endtime >= 0L) ? ENDED_TRUE : ENDED_FALSE;
         }
+        controller.Globals.getInstance().getExperimentModel().registerTimeFrameListener(this);
     }
 }

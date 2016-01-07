@@ -396,9 +396,8 @@ public class projectOpener extends JFrame {
 				
 				exp.setSaveURL(saveUrl);
 				exp.setSaveName(saveName);
-				
+				Globals.getInstance().getPreferencesModel().setOpened();
 				c.save();
-				
 				dispose();
 			}
 		});

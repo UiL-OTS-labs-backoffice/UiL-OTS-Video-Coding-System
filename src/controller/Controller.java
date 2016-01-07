@@ -4,11 +4,14 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import controller.serializer.Serializer;
 import view.panels.CSVExportSelector;
 import view.panels.ExperimentSettings;
 import view.panels.SaveAs;
@@ -102,7 +105,7 @@ public class Controller {
 	 */
 	public boolean save()
 	{
-		return controller.serializer.Serializer.writeExperimentModel();
+		return controller.serializer.Serializer.save();
 	}
 	
 	/**
@@ -150,9 +153,10 @@ public class Controller {
 			
 			exp.setGlobals(g);
 			g.setExperimentModel(exp);
-			
+			g.getPreferencesModel().setOpened();
 			g.getEditor();
 			g.getEditor().show();
+			startBackupDaemon();
 			setVideo(exp.getUrl());
 			return true;
 		} else {
@@ -413,5 +417,15 @@ public class Controller {
 	{
 		int key = getKey(ID);
 		return (key > 0) ? KeyEvent.getKeyText(key) : "";
+	}
+	
+	private void startBackupDaemon(){
+		Timer t = new Timer();
+		t.scheduleAtFixedRate(new TimerTask(){
+			@Override
+			public void run() {
+				Serializer.backup();
+			}
+		}, 0, 5*60*1000);
 	}
 }

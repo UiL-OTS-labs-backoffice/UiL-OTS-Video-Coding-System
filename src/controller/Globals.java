@@ -7,15 +7,20 @@ package controller;
  */
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import view.*;
 import view.panels.ExperimentOverview;
 import view.panels.ExperimentSettings;
+import view.panels.ProjectSelector;
 import model.*;
 
 /**
@@ -66,12 +71,31 @@ public class Globals {
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				if(!preferences.getClosedProperly()) {
+					int recover = JOptionPane.showConfirmDialog(null, 
+							"It looks like the program was exited without saving last time.\nDo you want to check for backup files?",
+							"UiL OTS Video Coding System - Recovery", JOptionPane.YES_NO_OPTION);
+					if(recover == JOptionPane.YES_OPTION){
+				
+						String url = ProjectSelector.show(getBackupLocation());
+						
+						if (url != null)
+						{
+							if(controller.open(url))
+							{
+								return;
+							}
+							else {
+								JOptionPane.showMessageDialog(new JPanel(), "Sorry! It looks like the project couldn't be opened", "Opening project failed", JOptionPane.ERROR_MESSAGE);
+							}
+						}
+					}
+				}
 				view.panels.projectOpener opener = new view.panels.projectOpener(
 						instance);
 				opener.setVisible(true);
 			}
 		});
-	
 	}
 	
 	private static void readIcons(){
@@ -186,5 +210,20 @@ public class Globals {
 	
 	public void disposeExperimentOverview(){
 		this.overview = null;
+	}
+	
+	public static File getBackupLocation(){
+		String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
+		File dir;
+		if (OS.indexOf("win") >= 0) {
+			String location = System.getenv("APPDATA");
+			dir = new File(location + File.separator + "UiLOTSVideoCodingSystem");
+		} else {
+			String location = System.getProperty("user.home");
+			dir = new File(location + File.separator + ".UiLOTSVideoCodingSystem");
+		}
+		dir = new File(dir.getAbsolutePath() + File.separator + "autosave");
+		if(!dir.exists()) dir.mkdirs();
+		return dir;
 	}
 }

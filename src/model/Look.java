@@ -13,6 +13,6 @@ public class Look extends AbstractTimeFrame
 	 */
 	public Look(long time) {
 		super(time, AbstractTimeFrame.TYPE_LOOK);
+		controller.Globals.getInstance().getExperimentModel().registerTimeFrameListener(this);
 	}
-	
 }

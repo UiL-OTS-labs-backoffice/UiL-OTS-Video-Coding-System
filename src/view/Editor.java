@@ -16,6 +16,7 @@ import view.menu.MainMenu;
 import view.player.IMediaPlayer;
 import view.player.VLCMediaPlayer;
 import controller.*;
+import controller.serializer.Serializer;
 
 /**
  * Main view of the program
@@ -75,12 +76,14 @@ public class Editor {
         frame.setIconImages(Globals.getIcons());
         frame.getContentPane().setLayout(new BorderLayout(0, 0));
         
-//        frame.addKeyListener(new CodingKeyListener(g));
-//        frame.setFocusable(true);
-        
         frame.addWindowListener(new WindowListener(){
 			@Override
 			public void windowClosing(WindowEvent e) {
+				if(g.getExperimentModel().isSaved()) {
+					g.getPreferencesModel().setClosed();
+					Serializer.removePreviousAutosavesForExperiment();
+					System.exit(0);
+				}
 				int result = JOptionPane.showConfirmDialog(frame, "Do you want to save before closing?", "alert", JOptionPane.YES_NO_CANCEL_OPTION);
 				switch(result)
 				{
@@ -91,10 +94,14 @@ public class Editor {
 						{
 							JOptionPane.showMessageDialog(new JPanel(), "Sorry! Looks like the file couldn't be saved!", "Save failed", JOptionPane.ERROR_MESSAGE);
 						} else {
+							g.getPreferencesModel().setClosed();
+							Serializer.removePreviousAutosavesForExperiment();
 							System.exit(0);
 						}
 						break;
 					case JOptionPane.NO_OPTION: 
+						g.getPreferencesModel().setClosed();
+						Serializer.removePreviousAutosavesForExperiment();
 						System.exit(0);
 						break;
 				}

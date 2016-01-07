@@ -12,7 +12,7 @@ import model.TimeObserver.ITimeContainerObserver;
 import model.TimeObserver.ITimeContainerSubject;
 
 /**
- * This abstract class extends the timeframe
+ * This abstract class extends the time frame
  * In this class, a time frame can contain one or more sub time frames that
  * need to fall within the range if this time frame
  */
@@ -24,7 +24,7 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 	private static final long serialVersionUID = 1L;
 	
 	/**
-	 * The list of subitems that this container contains
+	 * The list of sub-items that this container contains
 	 */
 	protected LinkedList<AbstractTimeFrame> items;
 	private transient Object ITEMS_MUTEX;
@@ -540,10 +540,11 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
     private void readObject (final ObjectInputStream s ) throws ClassNotFoundException, IOException
     {
         s.defaultReadObject( );
-
         this.CONTAINER_MUTEX = new Object();
         this.ITEMS_MUTEX = new Object();
         this.containerObservers = new ArrayList<ITimeContainerObserver>();
+        controller.Globals.getInstance().getExperimentModel().registerTimeFrameListener(this);
+        controller.Globals.getInstance().getExperimentModel().registerContainerListener(this);
     }
 	
 }
