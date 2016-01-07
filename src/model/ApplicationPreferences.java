@@ -130,5 +130,15 @@ public class ApplicationPreferences {
 		prefs.put("lastProjectDir", LastCsvDirectory);
 	}
 	
+	public void setClosed(){
+		prefs.putBoolean("closedProperly", true);
+	}
 	
+	public void setOpened(){
+		prefs.putBoolean("closedProperly", false);
+	}
+	
+	public boolean getClosedProperly(){
+		return prefs.getBoolean("closedProperly", true);
+	}
 }

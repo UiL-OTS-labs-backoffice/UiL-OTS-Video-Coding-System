@@ -11,8 +11,10 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
+import model.Experiment;
 import view.panels.CSVExportSelector;
 import controller.*;
+import model.TimeObserver.IExperimentListener;
 
 public class MainMenu extends JMenuBar {
 
@@ -25,10 +27,12 @@ public class MainMenu extends JMenuBar {
 	private static final KeyStroke EXPERIMENT_INFORMATION_ACCELERATOR = KeyStroke.getKeyStroke("control E");
 	
 	private static Controller c;
+	private static Experiment m;
 	
 	public MainMenu(Globals g)
 	{
 		c = g.getController();
+		m = g.getExperimentModel();
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				addFileMenu();
@@ -62,6 +66,17 @@ public class MainMenu extends JMenuBar {
 				saveThread.start();
 			}
 		});
+		m.addExperimentListener(new IExperimentListener(){
+
+			@Override
+			public void saveStateChanged(boolean newSavedState) {
+				save.setEnabled(!newSavedState);
+			}
+
+			@Override
+			public void backupstateChanged(boolean newBackupState) { }
+		});
+		
 		final JMenuItem saveas = new JMenuItem("Save As");
 		saveas.setAccelerator(SAVE_AS_ACCELERATOR);
 		saveas.addActionListener(new ActionListener(){
