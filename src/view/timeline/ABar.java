@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -308,15 +309,20 @@ public abstract class ABar extends JPanel{
 	
 	private void registerScrollWheelListener(){
 		this.addMouseWheelListener(new MouseWheelListener(){
-
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
-				long centerTime = ABar.this.timeByXinView(e.getPoint().x);
-				long newVisibleTime = navbar.getVisibleTime() + navbar.getVisibleTime() / 10 * e.getWheelRotation();
-				if(newVisibleTime <= player.getMediaDuration() && newVisibleTime > 100)
-					navbar.setVisibleTime(newVisibleTime, centerTime);
-				else if(newVisibleTime > player.getMediaDuration()){
-					navbar.setVisibleTime(player.getMediaDuration(), centerTime);
+				if(e.getModifiers() == InputEvent.CTRL_MASK){
+					long centerTime = ABar.this.timeByXinView(e.getPoint().x);
+					long newVisibleTime = navbar.getVisibleTime() + navbar.getVisibleTime() / 10 * e.getWheelRotation();
+					if(newVisibleTime <= player.getMediaDuration() && newVisibleTime > 100)
+						navbar.setVisibleTime(newVisibleTime, centerTime);
+					else if(newVisibleTime > player.getMediaDuration()){
+						navbar.setVisibleTime(player.getMediaDuration(), centerTime);
+					}
+				} else {
+					long scrollSpeed = navbar.getVisibleTime() / 10;
+					long newTime = navbar.getCurrentStartVisibleTime() + (scrollSpeed * e.getWheelRotation());
+					navbar.setCurrentStartVisibleTime(newTime);
 				}
 			}
 		});

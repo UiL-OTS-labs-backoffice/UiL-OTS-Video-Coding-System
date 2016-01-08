@@ -148,6 +148,12 @@ public class TimeLineBar extends JPanel implements INavbarSubject{
 	 */
 	public void setCurrentStartVisibleTime(long time)
 	{
+		if(time + this.visibleTime > player.getMediaDuration())
+		{
+			time = player.getMediaDuration() - this.visibleTime;
+		} else if (time < 0){
+			time = 0;
+		}
 		this.currentStartVisibleTime = time;
 		this.currentEndVisibleTime = time + visibleTime;
 		visibleAreaChanged();
@@ -171,6 +177,11 @@ public class TimeLineBar extends JPanel implements INavbarSubject{
 	 */
 	public void setCurrentEndVisibleTime(long time)
 	{
+		if(time > player.getMediaDuration()) {
+			time = player.getMediaDuration();
+		} else if (time < this.currentStartVisibleTime){
+			time = this.currentStartVisibleTime + 100;
+		}
 		this.currentEndVisibleTime = time;
 		this.visibleTime = this.currentEndVisibleTime - this.currentStartVisibleTime;
 		calculateVisiblePercentage();
@@ -196,14 +207,9 @@ public class TimeLineBar extends JPanel implements INavbarSubject{
 	{
 		float pct = (float)(centerTime - this.currentStartVisibleTime) / (float)this.visibleTime;
 		long newStart = Math.round(centerTime - (pct * time));
-		if(newStart + time > player.getMediaDuration()){
-			newStart = player.getMediaDuration() - time;
-		} else if (newStart < 0){
-			newStart = 0;
-		}
 		this.visibleTime = time;
 		this.setCurrentStartVisibleTime(newStart);
-		this.currentEndVisibleTime = this.currentStartVisibleTime + time;
+//		this.currentEndVisibleTime = this.currentStartVisibleTime + time;
 		calculateVisiblePercentage();
 		visibleAreaChanged();
 	}
