@@ -16,6 +16,7 @@ import java.awt.Font;
 import java.util.List;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -44,6 +45,9 @@ public class QuickKeysPanel extends JFrame{
 	 * Controller reference
 	 */
 	private Controller c;
+	
+	private JTextField currentSelection;
+	private List<JTextField> focussable = new ArrayList<JTextField>();
 
 	/**
 	 * Constructor
@@ -62,7 +66,7 @@ public class QuickKeysPanel extends JFrame{
 	}
 	
 	/**
-	 * Update method to update the hotkey codes
+	 * Update method to update the hot key codes
 	 */
 	public void update()
 	{
@@ -72,9 +76,35 @@ public class QuickKeysPanel extends JFrame{
 		}
 	}
 	
+	private void removeCurrentSelection(){
+		if(this.currentSelection != null){
+			currentSelection.setFocusable(false);
+			currentSelection.setBackground(null);
+			currentSelection = null;
+		}
+		for(JTextField f : focussable){
+			f.setFocusable(false);
+			f.setBackground(null);
+		}
+		focussable = new ArrayList<JTextField>();
+	}
+	
+	private void focussable(JTextField field){
+		field.setFocusable(true);
+		focussable.add(field);
+	}
+	
+	private void select(JTextField field){
+		if(field != this.currentSelection) {
+			removeCurrentSelection();
+			currentSelection = field;
+		}
+		field.setFocusable(true);
+		field.requestFocusInWindow();
+	}
 	
 	/**
-	 * Creates the gridbaglayout and adds the header labels to the frame
+	 * Creates the grid bag layout and adds the header labels to the frame
 	 */
 	private void createLayout()
 	{
@@ -112,6 +142,22 @@ public class QuickKeysPanel extends JFrame{
 		gbc_lblKeyAssignment.fill = 2;
 		getContentPane().add(lblKeyAssignment, gbc_lblKeyAssignment);
 		
+		this.addMouseListener(new MouseListener(){
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				removeCurrentSelection();
+			}
+			@Override
+			public void mousePressed(MouseEvent e) { }
+			@Override
+			public void mouseReleased(MouseEvent e) { }
+			@Override
+			public void mouseEntered(MouseEvent e) { }
+			@Override
+			public void mouseExited(MouseEvent e) { }
+			
+		});
 	}
 	
 	// Add the actions to the layout
@@ -146,34 +192,25 @@ public class QuickKeysPanel extends JFrame{
 
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					txtKey.setFocusable(true);
-					
+					select(txtKey);
 				}
 
 				@Override
 				public void mouseEntered(MouseEvent e) {
-					// TODO Auto-generated method stub
-					txtKey.setFocusable(true);
+//					select(txtKey);
+//					txtKey.setFocusable(true);
+					focussable(txtKey);
 				}
 
 				@Override
 				public void mouseExited(MouseEvent e) {
-					// TODO Auto-generated method stub
-					txtKey.setFocusable(false);
-					txtKey.setBackground(null);
+//					removeCurrentSelection();
 				}
 
 				@Override
-				public void mousePressed(MouseEvent e) {
-					// TODO Auto-generated method stub
-				}
-
+				public void mousePressed(MouseEvent e) { }
 				@Override
-				public void mouseReleased(MouseEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-				
+				public void mouseReleased(MouseEvent e) { }
 			});
 			
 			txtKey.addFocusListener(new ChangeKeyListener(txtKey, action, this));
