@@ -78,7 +78,7 @@ public class QuickKeysPanel extends JFrame{
 	 */
 	private void createLayout()
 	{
-		// Gridbag layout
+		// Grid bag layout
 		// Ensures fit
 		
 		gridBagLayout = new GridBagLayout();
@@ -201,7 +201,7 @@ public class QuickKeysPanel extends JFrame{
 	}
 	
 	/**
-	 * Tuple class for textfield and hotkey ID
+	 * Tuple class for text field and hot key ID
 	 */
 	private class Field
 	{
@@ -214,7 +214,7 @@ public class QuickKeysPanel extends JFrame{
 		/**
 		 * Constructor for field
 		 * @param field		JTextField
-		 * @param ID		Hotkey ID
+		 * @param ID		Hot key ID
 		 */
 		public Field(JTextField field, String ID)
 		{
@@ -233,7 +233,7 @@ public class QuickKeysPanel extends JFrame{
 		
 		/**
 		 * Getter for ID
-		 * @return	Hotkey ID for field
+		 * @return	Hot key ID for field
 		 */
 		public String getID()
 		{
