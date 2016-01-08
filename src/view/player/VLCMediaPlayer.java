@@ -122,7 +122,6 @@ public class VLCMediaPlayer implements IMediaPlayer{
         semaphore = new Semaphore(0);	        
         hiddenMediaPlayer.playMedia(media);
         
-        
         try {
         	semaphore.tryAcquire(1000L, TimeUnit.MILLISECONDS);
         	wait(1000);
