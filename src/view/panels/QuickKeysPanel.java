@@ -16,7 +16,6 @@ import java.awt.Font;
 import java.util.List;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 

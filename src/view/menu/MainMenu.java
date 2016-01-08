@@ -10,7 +10,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-
 import model.Experiment;
 import view.panels.CSVExportSelector;
 import controller.*;
@@ -40,6 +39,7 @@ public class MainMenu extends JMenuBar {
 				addHelpMenu();
 			}
 		});
+		
 	}
 	
 	/**
@@ -53,7 +53,6 @@ public class MainMenu extends JMenuBar {
 	private void addFileMenu()
 	{
 		final JMenu fileMenu = new JMenu("File");
-		
 		final JMenuItem save = new JMenuItem("Save");
 		save.setAccelerator(SAVE_ACCELERATOR);
 		save.addActionListener(new ActionListener(){

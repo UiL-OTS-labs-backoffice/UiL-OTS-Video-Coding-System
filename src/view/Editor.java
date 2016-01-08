@@ -7,11 +7,12 @@ import java.awt.event.WindowListener;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 
 import view.bottombar.BottomBar;
 import view.event.binding.KeyBindingHandler;
-//import view.events.CodingKeyListener;
 import view.menu.MainMenu;
 import view.player.IMediaPlayer;
 import view.player.VLCMediaPlayer;
@@ -49,6 +50,11 @@ public class Editor {
     {
     	this.g = g;
     	this.c = this.g.getController();
+    	
+    	// Avoid menu hiding behind video player (heavy weight canvas)
+    	JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+    	ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
+    	
     	SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				createFrame();

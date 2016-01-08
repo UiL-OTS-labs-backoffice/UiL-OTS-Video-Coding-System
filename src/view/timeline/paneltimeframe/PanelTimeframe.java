@@ -187,6 +187,7 @@ public class PanelTimeframe extends JPanel
 				add(commentLbl);
 				setComponentPopupMenu(contextMenu);
 				pane.add(panel);
+				pane.repaint();
 			}
 		});
 	}

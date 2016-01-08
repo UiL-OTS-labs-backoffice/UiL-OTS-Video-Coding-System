@@ -86,7 +86,7 @@ public abstract class ABar extends JPanel{
 	}
 	
 	/**
-	 * Method to paint the indicat for this component
+	 * Method to paint the time indicator for this component
 	 */
 	public void paintComponent(Graphics g)
 	{
