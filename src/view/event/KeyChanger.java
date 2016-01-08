@@ -39,6 +39,8 @@ public class KeyChanger implements KeyListener {
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
 				field.setText(KeyEvent.getKeyText(code));
+				field.setFocusable(false);
+				field.setBackground(null);
 				quickKeysPanel.update();
 			}
 		});

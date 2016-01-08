@@ -47,7 +47,6 @@ public class QuickKeysPanel extends JFrame{
 	private Controller c;
 	
 	private JTextField currentSelection;
-	private List<JTextField> focussable = new ArrayList<JTextField>();
 
 	/**
 	 * Constructor
@@ -82,16 +81,6 @@ public class QuickKeysPanel extends JFrame{
 			currentSelection.setBackground(null);
 			currentSelection = null;
 		}
-		for(JTextField f : focussable){
-			f.setFocusable(false);
-			f.setBackground(null);
-		}
-		focussable = new ArrayList<JTextField>();
-	}
-	
-	private void focussable(JTextField field){
-		field.setFocusable(true);
-		focussable.add(field);
 	}
 	
 	private void select(JTextField field){
@@ -196,16 +185,10 @@ public class QuickKeysPanel extends JFrame{
 				}
 
 				@Override
-				public void mouseEntered(MouseEvent e) {
-//					select(txtKey);
-//					txtKey.setFocusable(true);
-					focussable(txtKey);
-				}
+				public void mouseEntered(MouseEvent e) { }
 
 				@Override
-				public void mouseExited(MouseEvent e) {
-//					removeCurrentSelection();
-				}
+				public void mouseExited(MouseEvent e) { }
 
 				@Override
 				public void mousePressed(MouseEvent e) { }
