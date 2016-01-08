@@ -39,6 +39,8 @@ public class KeyChanger implements KeyListener {
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
 				field.setText(KeyEvent.getKeyText(code));
+				field.setFocusable(false);
+				field.setBackground(null);
 				quickKeysPanel.update();
 			}
 		});
@@ -48,15 +50,6 @@ public class KeyChanger implements KeyListener {
 	public void keyReleased(KeyEvent e) { }
 
 	@Override
-	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-		System.out.print(e.getKeyChar());
-		System.out.print(" ");
-		System.out.print(e.getKeyCode());
-		System.out.print(" ");
-		System.out.println(e.getKeyLocation());
-		System.out.println(e);
-		System.out.println();
-	}
+	public void keyTyped(KeyEvent e) { }
 
 }
