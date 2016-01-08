@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
 import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
@@ -19,6 +22,8 @@ import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 import uk.co.caprica.vlcj.player.direct.RenderCallback;
 import uk.co.caprica.vlcj.player.direct.format.RV32BufferFormat;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
+import view.formatter.Time;
+import view.timeline.utilities.VideoDurationExtractor;
 
 public class VLCMediaPlayer implements IMediaPlayer{
 
@@ -127,8 +132,10 @@ public class VLCMediaPlayer implements IMediaPlayer{
         	wait(1000);
         } catch(InterruptedException ex) {	        		
         }
-
         mediaLength = hiddenMediaPlayer.getLength();
+        
+        checkMediaDuration(media, mediaLength);
+        
         hiddenMediaPlayer.pause();
         long trytime = hiddenMediaPlayer.getLength() / 2;
         hiddenMediaPlayer.setTime(trytime);
@@ -142,6 +149,43 @@ public class VLCMediaPlayer implements IMediaPlayer{
         hiddenMediaPlayer.release();
         hiddenMediaPlayer = null;
         semaphore = null;
+    }
+    
+    private void checkMediaDuration(String media, long duration){
+    	String ffmpegLength = VideoDurationExtractor.getDuration(media);
+    	
+    	if(ffmpegLength == null){
+    		SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					JOptionPane.showMessageDialog(null,
+							"WARNING: Video compatibility could not be checked.\n"
+							+ "If the video is incompatible, results of coding this video might be\n"
+							+ "off by a long way. Check video compatibility manually.", "Warning",
+							JOptionPane.ERROR_MESSAGE);
+				}
+			});
+    	} else {
+	    	long ffmpegDuration = VideoDurationExtractor.getDurationAsLong(media);
+	    	if(Math.abs(ffmpegDuration - duration) > 50){
+	    		final String videoIncompatibleWarning = "CRITICAL WARNING: THIS VIDEO IS INCOMPATIBLE\n"
+	    				+ "Media time cannot be read properly from this video. This will cause the results of coding this video to be worthless!\n"
+	    				+ "We recommend to use a video converter, to create a more suitable video format.\nContinue at your own risk.\n\n"
+	    				+ "Do you want to close this project?";
+	    		
+	    		SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						int result = JOptionPane.showConfirmDialog(null,
+								videoIncompatibleWarning, "VIDEO INCOMPATIBLE",
+								JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+						if (result == JOptionPane.YES_OPTION) {
+							System.exit(0);
+						}
+					}
+				});
+				System.out.println("DEFINITELY A PROBLEM HERE!");
+	    		System.out.format("ffmpeg duration is %d (%s) while mediaLength is %d (%s)\n", ffmpegDuration, ffmpegLength, mediaLength, Time.formatDetail(mediaLength));
+	    	}
+    	}
     }
     
     /**

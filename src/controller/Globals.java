@@ -117,7 +117,7 @@ public class Globals {
 	}
 	
 	/**
-	 * Returns an instance of the global classs
+	 * Returns an instance of the global class
 	 * @return
 	 */
 	public static Globals getInstance()
@@ -212,10 +212,22 @@ public class Globals {
 		this.overview = null;
 	}
 	
-	public static File getBackupLocation(){
+	public enum OsType { Windows, Linux, Mac };
+	
+	public static OsType getOs(){
 		String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
-		File dir;
 		if (OS.indexOf("win") >= 0) {
+			return OsType.Windows;
+		} else if (OS.indexOf("mac") >= 0) {
+			return OsType.Mac;
+		} else {
+			return OsType.Linux;
+		}
+	}
+	
+	public static File getBackupLocation(){
+		File dir;
+		if (getOs() == OsType.Windows) {
 			String location = System.getenv("APPDATA");
 			dir = new File(location + File.separator + "UiLOTSVideoCodingSystem");
 		} else {
