@@ -28,6 +28,7 @@ public class VideoDurationExtractor {
 		} else if(osType == OsType.Linux) {
 			exe = "avconv";
 		} else {
+			System.out.println("Selected MAC");
 			exe = "lib/ffmpeg";
 		}
 		
@@ -68,7 +69,6 @@ public class VideoDurationExtractor {
             }
             
 		} catch (IOException e) {
-			System.out.println("Exception: " + e);
 			return null;
 		}
 		
