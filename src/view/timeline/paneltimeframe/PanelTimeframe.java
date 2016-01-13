@@ -4,11 +4,12 @@ import controller.Globals;
 import view.player.IMediaPlayerListener;
 import view.timeline.ABar;
 import view.timeline.TimeLineBar;
+import model.AbstractTimeContainer;
 import model.AbstractTimeFrame;
+import model.TimeObserver.ITimeContainerObserver;
 import model.TimeObserver.ITimeFrameObserver;
 
 import java.awt.Color;
-import java.awt.SystemColor;
 import java.awt.image.BufferedImage;
 import java.awt.TexturePaint;
 import java.awt.Graphics;
@@ -36,8 +37,8 @@ public class PanelTimeframe extends JPanel
 	private static final long serialVersionUID = 1L;
 	
 	
-	private static final Color LOOK_COLOR = SystemColor.inactiveCaption;
-	private static final Color TRIAL_COLOR = SystemColor.activeCaption;
+	private static final Color LOOK_COLOR = new Color(132,170,232); 
+	private static final Color TRIAL_COLOR = view.panels.ExperimentOverview.HEADER_COLOR;
 	private static final Color TRIAL_INCOMPLETE_COLOR = new Color(189, 207,211);
 	private static final Color LOOK_INCOMPLETE_COLOR = new Color(181,185,188);
 	private static final Color TIMEOUT_COLOR = Color.RED;
@@ -74,6 +75,26 @@ public class PanelTimeframe extends JPanel
 		this.timeline = timeline;
 		
 		this.margin = (pane.getType() == ABar.TYPE_DETAIL) ? DETAIL_MARGIN : OVERVIEW_MARGIN;
+		
+		if(tf.getType() ==AbstractTimeFrame.TYPE_TRIAL){
+			((AbstractTimeContainer) tf).registerContainerListener(new ITimeContainerObserver(){
+
+				@Override
+				public void itemAdded(AbstractTimeContainer container,
+						AbstractTimeFrame tf, int itemNumber) {
+				}
+
+				@Override
+				public void itemRemoved(AbstractTimeContainer container,
+						AbstractTimeFrame tf) {
+				}
+
+				@Override
+				public void numberOfItemsChanged(AbstractTimeContainer container) {
+					updateInfo();
+				}
+			});
+		}
 		
 		tf.registerFrameListener(new ITimeFrameObserver(){
 
@@ -232,9 +253,14 @@ public class PanelTimeframe extends JPanel
 			{
 				int number = g.getController().getNumber(tf);
 				int nrlength = Integer.toBinaryString(number).length();
-				String label = String.format((tf.getType() == AbstractTimeFrame.TYPE_LOOK) ? "Look %d" : "Trial %d", number);
+				
+				long duration = tf.getType() == AbstractTimeFrame.TYPE_LOOK ? tf.getDuration() : ((AbstractTimeContainer) tf).getTotalTimeForItems();
+				
+				String label = String.format((tf.getType() == AbstractTimeFrame.TYPE_LOOK) ? "Look %d (%d ms)" : "Trial %d (%d ms)", number, duration);
 				String comment = tf.getComment();
-				setToolTipText(label + ": " + ((tf.getComment() == null) ? "No comments added" : tf.getComment()));
+				
+				String toolTipText = String.format("%s: %s", label, (tf.getComment() == null) ? "No comments added" : tf.getComment());
+				setToolTipText(toolTipText);
 				
 				if(getWidth() < 40 + 5 * nrlength)
 				{

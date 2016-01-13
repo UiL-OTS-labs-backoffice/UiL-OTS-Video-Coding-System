@@ -128,7 +128,7 @@ public class ControlBar  extends JPanel{
 		glassLabel.setIcon(glass);
 		glassLabel.setToolTipText("Use the slider to zoom in or out on the time line");
 		glassLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
-		glassLabel.setPreferredSize(new Dimension(65, 27));
+		glassLabel.setPreferredSize(new Dimension(70, 27));
 		
 		final JLabel referencedLabel = glassLabel;
 		navbar.register(new INavbarObserver() {

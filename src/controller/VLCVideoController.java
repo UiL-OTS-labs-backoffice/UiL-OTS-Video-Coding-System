@@ -118,16 +118,10 @@ public class VLCVideoController implements IVideoControls {
 	}
 
 	@Override
-	public void nextLook() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void nextLook() { }
 
 	@Override
-	public void prevLook() {
-		// TODO Auto-generated method stub
-
-	}
+	public void prevLook() { }
 
 	@Override
 	public void JumpToEnd() {

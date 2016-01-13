@@ -23,8 +23,6 @@ public class Main {
 	
 	static private boolean fail_find_vlc = false;
 	static private String vlc_location = null; //Make debugging on different machines easier
-	static private String file = null;
-	
 	/**
 	 * Main method tries to add VLC to the search path of this application
 	 * If this fails, a dialog is opened, asking the user to specify where
@@ -62,12 +60,6 @@ public class Main {
 				}
 			});
 		}
-		
-		// TODO remove this. I just wanted to get rid of the yellow warning signal.
-		// 	The program should pass the file path to the Globals getInstance method
-		// 	which should handle the opening of the file without showing the project
-		//	opener dialog
-		if(DEBUG) System.out.println(file);
 	}
 	
 	/**
@@ -94,7 +86,10 @@ public class Main {
 				}
 			} else {
 				File f = new File(args[i]);
-				if (f.exists()) file = args[i];
+				if (f.exists()) {
+					// TODO open file?
+					System.out.println("Should be opening " + f);					
+				}
 			}
 		}
 	}

@@ -30,8 +30,8 @@ public class ExperimentOverview extends JFrame {
 	private static final int COLUMNS = 5;
 	private static final int COL_WIDTH = 50;
 	
-	private static final Color HEADER_COLOR = new Color(79,129,189);
-	private static final Color[] ROW1_COLOR = {new Color(220, 230, 241), new Color(255,191,191)};
+	public static final Color HEADER_COLOR = new Color(79,129,189);
+	public static final Color[] ROW1_COLOR = {new Color(220, 230, 241), new Color(255,191,191)};
 	private static final Color[] ROW2_COLOR = {new Color(255,255,255),new Color(250,215,215)};
 	
 	private JPanel container;
