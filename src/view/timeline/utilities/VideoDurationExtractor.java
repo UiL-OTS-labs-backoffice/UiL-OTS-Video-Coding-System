@@ -2,13 +2,21 @@ package view.timeline.utilities;
 
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Writer;
 
 import controller.Globals;
 import controller.Globals.OsType;
 
+/**
+ * Code used from:
+ * http://www.coderanch.com/t/581592/java/java/Calculating-video-file-duration
+ */
 public class VideoDurationExtractor {
 	public static String getDuration(final String sVideoInput){
 		OsType osType = Globals.getOs();
@@ -17,17 +25,30 @@ public class VideoDurationExtractor {
 		
 		if(osType == OsType.Windows) {
 			exe = "lib/ffmpeg.exe";
+		} else if(osType == OsType.Linux) {
+			exe = "avconv";
 		} else {
-			exe = "";
+			exe = "lib/ffmpeg";
 		}
 		
 		try {
-			Process child = null;
+			String processName = String.format("%s -i \"%s\"", exe, sVideoInput);
+			Process child;
+			
 			if(osType == OsType.Windows){
-					child = Runtime.getRuntime().exec(exe + " -i \"" + sVideoInput + "\"");
+				child = Runtime.getRuntime().exec(processName);
 			} else {
-				System.out.println("Not windows. Not implemented");
+				File cmd = File.createTempFile("aaa", "sh");
+                Writer w =  new BufferedWriter(new FileWriter(cmd)); 
+                w.write(processName);
+                w.close();
+                cmd.canExecute();
+                cmd.canRead();
+                cmd.deleteOnExit();
+                String cmdPath = cmd.getAbsolutePath();
+                child = Runtime.getRuntime().exec(new String[]{"/bin/sh", cmdPath});
 			}
+			
 			
 			InputStream lsOut = child.getErrorStream();
 			InputStreamReader isr = new InputStreamReader(lsOut);
@@ -47,6 +68,7 @@ public class VideoDurationExtractor {
             }
             
 		} catch (IOException e) {
+			System.out.println("Exception: " + e);
 			return null;
 		}
 		

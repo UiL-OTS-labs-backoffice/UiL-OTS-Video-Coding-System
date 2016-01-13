@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import controller.Globals;
+
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
 import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
@@ -22,7 +24,6 @@ import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 import uk.co.caprica.vlcj.player.direct.RenderCallback;
 import uk.co.caprica.vlcj.player.direct.format.RV32BufferFormat;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
-import view.formatter.Time;
 import view.timeline.utilities.VideoDurationExtractor;
 
 public class VLCMediaPlayer implements IMediaPlayer{
@@ -178,12 +179,11 @@ public class VLCMediaPlayer implements IMediaPlayer{
 								videoIncompatibleWarning, "VIDEO INCOMPATIBLE",
 								JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
 						if (result == JOptionPane.YES_OPTION) {
+							Globals.getInstance().getPreferencesModel().setClosed();
 							System.exit(0);
 						}
 					}
 				});
-				System.out.println("DEFINITELY A PROBLEM HERE!");
-	    		System.out.format("ffmpeg duration is %d (%s) while mediaLength is %d (%s)\n", ffmpegDuration, ffmpegLength, mediaLength, Time.formatDetail(mediaLength));
 	    	}
     	}
     }
