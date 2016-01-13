@@ -4,11 +4,22 @@ package view.timeline.utilities;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Writer;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 import controller.Globals;
 import controller.Globals.OsType;
@@ -34,12 +45,25 @@ public class VideoDurationExtractor {
 		
 		try {
 			String processName = String.format("%s -i \"%s\"", exe, sVideoInput);
+			
+			System.out.println(processName);
+			
 			Process child;
 			
 			if(osType == OsType.Windows){
 				child = Runtime.getRuntime().exec(processName);
 			} else {
 				File cmd = File.createTempFile("aaa", "sh");
+				if(osType == OsType.Mac){
+					String tempDir = cmd.getParent();
+					try {
+						ExportResource(tempDir, exe);
+					} catch (Exception e) {
+						System.out.println("Couldn't extract to temp dir");
+						System.out.println(e);
+					}
+				}
+				
                 Writer w =  new BufferedWriter(new FileWriter(cmd)); 
                 w.write(processName);
                 w.close();
@@ -58,6 +82,7 @@ public class VideoDurationExtractor {
 			String line;
             while ((line = in.readLine()) != null)
             {
+            	System.out.println(line);
                 if(line.contains("Duration:"))
                 {
                     line = line.replaceFirst("Duration: ", ""); 
@@ -69,11 +94,39 @@ public class VideoDurationExtractor {
             }
             
 		} catch (IOException e) {
+			System.out.println("Exception checking duration: " + e);
 			return null;
 		}
 		
 		return res;
 	}
+	
+	static public String ExportResource(String targetDir, String resourceName) throws Exception {
+        InputStream stream = null;
+        OutputStream resStreamOut = null;
+        String jarFolder;
+        try {
+            stream = VideoDurationExtractor.class.getResourceAsStream(resourceName);//note that each / is a directory down in the "jar tree" been the jar the root of the tree
+            if(stream == null) {
+                throw new Exception("Cannot get resource \"" + resourceName + "\" from Jar file.");
+            }
+
+            int readBytes;
+            byte[] buffer = new byte[4096];
+            jarFolder = "";
+            resStreamOut = new FileOutputStream(jarFolder + resourceName);
+            while ((readBytes = stream.read(buffer)) > 0) {
+                resStreamOut.write(buffer, 0, readBytes);
+            }
+        } catch (Exception ex) {
+            throw ex;
+        } finally {
+            stream.close();
+            resStreamOut.close();
+        }
+
+        return jarFolder + resourceName;
+    }
 
 	public static long getDurationAsLong(final String sVideoInput){
 		String res = getDuration(sVideoInput);
