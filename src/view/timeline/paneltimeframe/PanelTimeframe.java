@@ -93,6 +93,11 @@ public class PanelTimeframe extends JPanel
 				public void numberOfItemsChanged(AbstractTimeContainer container) {
 					updateInfo();
 				}
+
+				@Override
+				public void childTimeChanged(AbstractTimeContainer container) {
+					updateInfo();					
+				}
 			});
 		}
 		
@@ -132,7 +137,7 @@ public class PanelTimeframe extends JPanel
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int x = e.getX() + panel.getX();
-				final long newTime = pane.timeByX(x);
+				final long newTime = pane.timeByXinView(x);
 				new Thread(){
 					public void run()
 					{

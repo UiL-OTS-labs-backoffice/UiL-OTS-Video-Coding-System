@@ -1,7 +1,5 @@
 package view.panels;
-
 import java.io.File;
-
 import javax.swing.JFileChooser;
 
 
@@ -24,7 +22,7 @@ public class SaveDialog {
 	}
 	
 	/**
-	 * getmethod for instance of videoselector
+	 * get method for instance of video selector
 	 * @return		video selector instance
 	 */
 	public SaveDialog getInstance()
@@ -47,11 +45,12 @@ public class SaveDialog {
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		chooser.setAcceptAllFileFilterUsed(false);
 		chooser.setCurrentDirectory(new File(dir.getAbsolutePath()));
-	    
-	    int returnVal = chooser.showSaveDialog(chooser);
+//	    int returnVal = chooser.showSaveDialog(chooser);
+		chooser.setApproveButtonText("Select");
+		int returnVal = chooser.showOpenDialog(null);
 	    
 	    if(returnVal == JFileChooser.APPROVE_OPTION) {
-	    	return chooser.getSelectedFile().getPath();
+	    	return chooser.getSelectedFile().getAbsolutePath();
 	    }
 	    else return null;
 	}	

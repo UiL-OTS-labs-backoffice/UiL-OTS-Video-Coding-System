@@ -17,7 +17,11 @@ import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 public class Main {
 	
-	static private final boolean DEBUG = false;
+	static private boolean DEBUG = false;
+	
+	public static boolean Debug(){
+		return DEBUG;
+	}
 	
 	static private ApplicationPreferences prefs;
 	
@@ -73,7 +77,10 @@ public class Main {
 			if (args[i].equals("-f"))
 			{
 				fail_find_vlc = true;
-			} else if(args[i].startsWith("vlc="))
+			} else if(args[i].equals("-d")) {
+				DEBUG = true;
+			}
+			else if(args[i].startsWith("vlc="))
 			{
 				Pattern p = Pattern.compile("-?[\"\']?vlc=(.*)[\"\']?");
 				Matcher m = p.matcher(args[i]);
@@ -82,6 +89,8 @@ public class Main {
 					if (f.isDirectory()) {
 						vlc_location = m.group(1);
 						trySearchPath(vlc_location);
+						prefs.setVLCUrl(vlc_location);
+						if(DEBUG) System.out.println("VLC location set (as given in argument) to " + vlc_location);
 					}
 				}
 			} else {
@@ -99,18 +108,24 @@ public class Main {
 	 */
 	private static void searchDefaultPaths()
 	{
-		if(com.sun.jna.Native.POINTER_SIZE == 8)
+		if(Globals.getOs() == Globals.OsType.Windows)
 		{
-			trySearchPath("C:\\Program Files\\VideoLAN\\VLC");
-		} else {
-			trySearchPath("C:\\Program Files (x86)\\VideoLAN");
+			if(com.sun.jna.Native.POINTER_SIZE == 8)
+			{
+				trySearchPath("C:\\Program Files\\VideoLAN\\VLC");
+			} else {
+				trySearchPath("C:\\Program Files (x86)\\VideoLAN");
+			}
+		} else if (Globals.getOs() == Globals.OsType.Linux)
+		{
+			// Best guess for Ubuntu. Doesn't read the path, except when in preferences.
+			if(prefs.getVLCUrl() == null) prefs.setVLCUrl("usr/bin/vlc");
 		}
-    	
-		// Best guess for Ubuntu. Doesn't read the path, except when in preferences.
-		if(prefs.getVLCUrl() == null) prefs.setVLCUrl("usr/bin/vlc");
-		
-    	// Best guess for OSX
-        trySearchPath("/Applications/VLC.app/Contents/MacOS/lib");
+		else {
+	    	// Best guess for OSX
+	        trySearchPath("/Applications/VLC.app/Contents/MacOS");
+	        if(prefs.getVLCUrl() == null) prefs.setVLCUrl("/Applications/VLC.app/Contents/MacOS/lib");
+		}
 	}
 	
 	/**

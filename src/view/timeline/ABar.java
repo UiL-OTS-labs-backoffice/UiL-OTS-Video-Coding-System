@@ -270,6 +270,9 @@ public abstract class ABar extends JPanel{
 					}
 				});
 			}
+
+			@Override
+			public void childTimeChanged(AbstractTimeContainer container) { }
 		});
 	}
 	

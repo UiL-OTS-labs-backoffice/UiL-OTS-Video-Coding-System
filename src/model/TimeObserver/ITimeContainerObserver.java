@@ -24,8 +24,15 @@ public interface ITimeContainerObserver {
 	
 	/**
 	 * Method to notify the observer that the amount of items was changed, either by insertion
-	 * or delition
+	 * or deletion
 	 * @param container		The affected time container
 	 */
 	public void numberOfItemsChanged(AbstractTimeContainer container);
+	
+	/**
+	 * Method to notify all observers a time frame in the current
+	 * container was updated
+	 * @param container		The affected time container
+	 */
+	public void childTimeChanged(AbstractTimeContainer container);
 }

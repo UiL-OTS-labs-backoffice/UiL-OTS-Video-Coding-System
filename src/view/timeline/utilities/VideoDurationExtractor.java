@@ -4,6 +4,7 @@ package view.timeline.utilities;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +21,7 @@ import controller.Globals.OsType;
 public class VideoDurationExtractor {
 	public static String getDuration(final String sVideoInput){
 		OsType osType = Globals.getOs();
-		final String exe;
+		String exe;
 		String res = null;
 		
 		if(osType == OsType.Windows) {
@@ -28,23 +29,35 @@ public class VideoDurationExtractor {
 		} else if(osType == OsType.Linux) {
 			exe = "avconv";
 		} else {
-			System.out.println("Selected MAC");
-			exe = "lib/ffmpeg";
+			exe = "ffmpeg";
 		}
 		
 		try {
 			String processName = String.format("%s -i \"%s\"", exe, sVideoInput);
+			
 			Process child;
 			
 			if(osType == OsType.Windows){
 				child = Runtime.getRuntime().exec(processName);
 			} else {
 				File cmd = File.createTempFile("aaa", "sh");
-                Writer w =  new BufferedWriter(new FileWriter(cmd)); 
+				if(osType == OsType.Mac){
+					String tempDir = cmd.getParent();
+					try {
+						String outPath = ExportResource(tempDir, "/ffmpeg");
+						processName = String.format("%s -i \"%s\"", outPath, sVideoInput);
+						File outFile = new File(outPath);
+						outFile.setReadable(true);
+						outFile.setExecutable(true);
+						outFile.deleteOnExit();
+					} catch (Exception e) {
+					}
+				}
+                Writer w =  new BufferedWriter(new FileWriter(cmd));
                 w.write(processName);
                 w.close();
-                cmd.canExecute();
-                cmd.canRead();
+                cmd.setExecutable(true);
+                cmd.setReadable(true);
                 cmd.deleteOnExit();
                 String cmdPath = cmd.getAbsolutePath();
                 child = Runtime.getRuntime().exec(new String[]{"/bin/sh", cmdPath});
@@ -67,13 +80,33 @@ public class VideoDurationExtractor {
                     break;
                 }
             }
-            
 		} catch (IOException e) {
 			return null;
 		}
 		
 		return res;
 	}
+	
+	public static String ExportResource(String targetDir, String resourceName) throws Exception {
+		InputStream stream = VideoDurationExtractor.class.getResourceAsStream(resourceName);
+		FileOutputStream fos = null;
+		
+		try{
+			fos = new FileOutputStream(targetDir + resourceName);
+			byte[] buf = new byte[2048];
+			int r = stream.read(buf);
+			while(r != -1){
+				fos.write(buf, 0, r);
+				r = stream.read(buf);
+			}
+		} finally {
+			if(fos != null){
+				fos.close();
+			}
+		}
+		
+		return targetDir + resourceName;
+    }
 
 	public static long getDurationAsLong(final String sVideoInput){
 		String res = getDuration(sVideoInput);
