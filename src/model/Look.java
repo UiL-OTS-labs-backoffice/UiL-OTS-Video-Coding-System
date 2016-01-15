@@ -12,7 +12,7 @@ public class Look extends AbstractTimeFrame
 	 * @param time	Start time of the look in milliseconds
 	 */
 	public Look(long time) {
-		super(time);
+		super(time, AbstractTimeFrame.TYPE_LOOK);
+		controller.Globals.getInstance().getExperimentModel().registerTimeFrameListener(this);
 	}
-	
 }

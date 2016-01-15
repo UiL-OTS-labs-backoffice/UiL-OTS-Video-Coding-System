@@ -183,4 +183,21 @@ public interface IVideoControls {
 	 * @param position	Position in media file in percentage points
 	 */
 	public void setPosition(float position);
+	
+	/**
+	 * Method to register a video controller observer
+	 * @param obj	The observer object
+	 */
+	public void register(IVideoControllerObserver obj);
+	
+	/**
+	 * Method to deregister a video controller observer
+	 * @param obj 	The observer object
+	 */
+	public void deregister(IVideoControllerObserver obj);
+	
+	/**
+	 * Notifies observers that the video has been instantiated and loaded
+	 */
+	public void videoInstantiated();
 }

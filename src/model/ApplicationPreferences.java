@@ -1,4 +1,5 @@
 package model;
+import java.io.File;
 import java.util.prefs.Preferences;
 
 /**
@@ -30,7 +31,7 @@ public class ApplicationPreferences {
 	 */
 	public String getVLCUrl()
 	{
-		return prefs.get("vlcURL", null);
+		return prefs.get("vlcURL", new File(".").getAbsolutePath());
 	}
 	
 	/**
@@ -129,5 +130,15 @@ public class ApplicationPreferences {
 		prefs.put("lastProjectDir", LastCsvDirectory);
 	}
 	
+	public void setClosed(){
+		prefs.putBoolean("closedProperly", true);
+	}
 	
+	public void setOpened(){
+		prefs.putBoolean("closedProperly", false);
+	}
+	
+	public boolean getClosedProperly(){
+		return prefs.getBoolean("closedProperly", true);
+	}
 }

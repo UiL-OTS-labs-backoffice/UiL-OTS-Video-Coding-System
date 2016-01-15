@@ -7,14 +7,20 @@ package controller;
  */
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import view.*;
+import view.panels.ExperimentOverview;
 import view.panels.ExperimentSettings;
+import view.panels.ProjectSelector;
 import model.*;
 
 /**
@@ -36,6 +42,7 @@ public class Globals {
 	// Views
 	private Editor editorView;
 	private ExperimentSettings settingsView;
+	private ExperimentOverview overview;
 	
 	// Experiment model instance
 	private Experiment experimentModel;
@@ -52,20 +59,40 @@ public class Globals {
 	{
 		instance = this;
 		controller = new Controller(instance);
+		preferences = new ApplicationPreferences();
 		videoController = new VLCVideoController(instance);
 		experimentModel = new Experiment(instance);
-		preferences = new ApplicationPreferences();
+		keyCodeModel = model.QuickKeys.getInstance(preferences);
 		
 		readIcons();
 		
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run()
-			{
-				keyCodeModel = model.QuickKeys.getInstance(preferences);
-				editorView = new Editor(instance);
-				settingsView = new ExperimentSettings(instance);
+		editorView = new Editor(instance);
+		settingsView = new ExperimentSettings(instance);
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				if(!preferences.getClosedProperly()) {
+					int recover = JOptionPane.showConfirmDialog(null, 
+							"It looks like the program was exited without saving last time.\nDo you want to check for backup files?",
+							"UiL OTS Video Coding System - Recovery", JOptionPane.YES_NO_OPTION);
+					if(recover == JOptionPane.YES_OPTION){
 				
-				view.panels.projectOpener opener = new view.panels.projectOpener(instance);
+						String url = ProjectSelector.show(getBackupLocation());
+						
+						if (url != null)
+						{
+							if(controller.open(url))
+							{
+								return;
+							}
+							else {
+								JOptionPane.showMessageDialog(new JPanel(), "Sorry! It looks like the project couldn't be opened", "Opening project failed", JOptionPane.ERROR_MESSAGE);
+							}
+						}
+					}
+				}
+				view.panels.projectOpener opener = new view.panels.projectOpener(
+						instance);
 				opener.setVisible(true);
 			}
 		});
@@ -74,7 +101,7 @@ public class Globals {
 	private static void readIcons(){
 		String path = "/img/icons/";
 		int sizes[] = {16, 24, 32, 48, 64, 96, 128, 256, 512};
-		for(int i = 0; i < 9; i++)
+		for(int i = 0; i < sizes.length; i++)
 		{
 			String filename = String.format("%s%dx%d.png", path, sizes[i], sizes[i]);
 			
@@ -90,7 +117,7 @@ public class Globals {
 	}
 	
 	/**
-	 * Returns an instance of the global classs
+	 * Returns an instance of the global class
 	 * @return
 	 */
 	public static Globals getInstance()
@@ -172,5 +199,43 @@ public class Globals {
 	public ApplicationPreferences getPreferencesModel()
 	{
 		return preferences;
+	}
+	
+	public void showExperimentOverview(){
+		if(this.overview == null){
+			this.overview = new view.panels.ExperimentOverview();
+		}
+		this.overview.setVisible(true);
+	}
+	
+	public void disposeExperimentOverview(){
+		this.overview = null;
+	}
+	
+	public enum OsType { Windows, Linux, Mac };
+	
+	public static OsType getOs(){
+		String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
+		if (OS.indexOf("win") >= 0) {
+			return OsType.Windows;
+		} else if (OS.indexOf("mac") >= 0) {
+			return OsType.Mac;
+		} else {
+			return OsType.Linux;
+		}
+	}
+	
+	public static File getBackupLocation(){
+		File dir;
+		if (getOs() == OsType.Windows) {
+			String location = System.getenv("APPDATA");
+			dir = new File(location + File.separator + "UiLOTSVideoCodingSystem");
+		} else {
+			String location = System.getProperty("user.home");
+			dir = new File(location + File.separator + ".UiLOTSVideoCodingSystem");
+		}
+		dir = new File(dir.getAbsolutePath() + File.separator + "autosave");
+		if(!dir.exists()) dir.mkdirs();
+		return dir;
 	}
 }

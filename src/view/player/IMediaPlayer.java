@@ -55,7 +55,7 @@ public interface IMediaPlayer {
 	public boolean isPlaying();
 
 	/**
-	 * TODO We don't know always how many frames per second the media is...
+	 * We don't know always how many frames per second the media is...
 	 * That hopefully becomes known while playing, but even that
 	 * depends in the format of the media. It seems to work for MPEG4
 	 * but not for MPEG(2).
@@ -139,5 +139,9 @@ public interface IMediaPlayer {
 	 * @param position	Position in media file in percentage points
 	 */
 	public void setPosition(float position);
+	
+	public void register(IMediaPlayerListener obj);
+	
+	public void deregister(IMediaPlayerListener obj);
 
 }

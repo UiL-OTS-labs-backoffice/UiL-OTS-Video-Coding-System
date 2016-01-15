@@ -1,14 +1,28 @@
 package model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import model.TimeObserver.IExperimentListener;
+import model.TimeObserver.IExperimentSubject;
+import model.TimeObserver.ITimeContainerObserver;
+import model.TimeObserver.ITimeContainerSubject;
+import model.TimeObserver.ITimeFrameObserver;
+import model.TimeObserver.ITimeFrameSubject;
 import controller.Globals;
 
-public class Experiment extends AbstractTimeContainer{
+public class Experiment extends AbstractTimeContainer implements IExperimentSubject{
 	
 	/**
 	 * SerialVersion UID
 	 */
 	private static final long serialVersionUID = 2L;
-
+	
+	private transient List<IExperimentListener> observers;
+	private transient Object MUTEX;
+	
 	/**
 	 * Current video file url
 	 */
@@ -23,6 +37,12 @@ public class Experiment extends AbstractTimeContainer{
 	 * Project file name
 	 */
 	private String saveName;
+	
+	/**
+	 * Keeps track of whether the file was saved or not
+	 */
+	private boolean backupState = false;
+	private boolean savedState = false;
 		
 	/**
 	 * Global Experiment Settings
@@ -42,7 +62,9 @@ public class Experiment extends AbstractTimeContainer{
 	 * @param g		Globals instance
 	 */
 	public Experiment(Globals g) {
-		super(0L);
+		super(0L, AbstractTimeFrame.TYPE_EXPERIMENT);
+		this.observers = new ArrayList<IExperimentListener>();
+		this.MUTEX = new Object();
 		this.g = g;
 	}
 	
@@ -66,9 +88,10 @@ public class Experiment extends AbstractTimeContainer{
 	}
 
 	@Override
-	public void addItem(long time) {
+	public AbstractTimeFrame addItem(long time) {
 		Trial nt = new Trial(time);
 		hiddenAddItem(time, nt);
+		return nt;
 	}
 
 	/*****************************************************************
@@ -120,6 +143,7 @@ public class Experiment extends AbstractTimeContainer{
 	 */
 	public void setUrl(String url)
 	{
+		stateChanged();
 		this.url = url;
 	}
 	
@@ -138,6 +162,7 @@ public class Experiment extends AbstractTimeContainer{
 	 */
 	public void setSaveURL(String url)
 	{
+		stateChanged();
 		this.SaveURL = url;
 	}
 	
@@ -156,6 +181,7 @@ public class Experiment extends AbstractTimeContainer{
 	 */
 	public void setSaveName(String name)
 	{
+		stateChanged();
 		this.saveName = name;
 	}
 	
@@ -237,6 +263,7 @@ public class Experiment extends AbstractTimeContainer{
 	
 	public void setTimeout(long timeout)
 	{
+		stateChanged();
 		this.timeout = timeout;
 	}
 	
@@ -247,6 +274,7 @@ public class Experiment extends AbstractTimeContainer{
 	
 	public void setUseTimeout(boolean useTimeout)
 	{
+		stateChanged();
 		this.useTimeout = useTimeout;
 	}
 	
@@ -254,4 +282,144 @@ public class Experiment extends AbstractTimeContainer{
 	{
 		return useTimeout;
 	}
+	
+	/**
+	 * Returns the save state of the current experiment
+	 * @return true if no changes have been made since last save
+	 */
+	public boolean isSaved(){
+		return this.savedState;
+	}
+	
+	/**
+	 * Returns the backup state of the current experiment
+	 * @return True if no changes have been made since last backup
+	 */
+	public boolean isBackupSaved(){
+		return this.backupState;
+	}
+	
+	public void registerContainerListener(ITimeContainerSubject s){
+		s.registerContainerListener(new ITimeContainerObserver(){
+
+			@Override
+			public void itemAdded(AbstractTimeContainer container,
+					AbstractTimeFrame tf, int itemNumber) { }
+
+			@Override
+			public void itemRemoved(AbstractTimeContainer container,
+					AbstractTimeFrame tf) { }
+			@Override
+			public void numberOfItemsChanged(AbstractTimeContainer container) {
+				stateChanged();
+			}
+
+			@Override
+			public void childTimeChanged(AbstractTimeContainer container) { }
+		});
+	}
+	
+	public void registerTimeFrameListener(ITimeFrameSubject s)
+	{
+		s.registerFrameListener(new ITimeFrameObserver(){
+
+			@Override
+			public void timeChanged(AbstractTimeFrame tf) {
+				stateChanged();
+			}
+
+			@Override
+			public void commentChanged(AbstractTimeFrame tf, String comment) {
+				stateChanged();
+			}
+		});
+	}
+	
+	private void stateChanged(){
+		this.savedState = false;
+		this.backupState = false;
+		notifyBackupChange();
+		notifySavedChange();
+	}
+	
+	public void isBackedUp(){
+		this.backupState = true;
+		notifyBackupChange();
+	}
+	
+	public void saved(){
+		this.savedState = true;
+		notifySavedChange();
+	}
+	
+	private void notifyBackupChange(){
+		List<IExperimentListener> observersLocal = null;
+		synchronized (MUTEX) {
+			observersLocal = new ArrayList<IExperimentListener>(this.observers);
+		}
+		for(IExperimentListener obj : observersLocal)
+		{
+			obj.backupstateChanged(this.backupState);
+		}
+	}
+	
+	private void notifySavedChange(){
+		List<IExperimentListener> observersLocal = null;
+		synchronized (MUTEX) {
+			observersLocal = new ArrayList<IExperimentListener>(this.observers);
+		}
+		for(IExperimentListener obj : observersLocal)
+		{
+			obj.saveStateChanged(this.savedState);
+		}
+	}
+
+	@Override
+	public void addExperimentListener(IExperimentListener obj) {
+		if(obj == null) throw new NullPointerException("Null Observer");
+		synchronized (MUTEX) {
+			if(!observers.contains(obj)) observers.add(obj);
+		}		
+	}
+
+	@Override
+	public void removeExperimentListener(IExperimentListener obj) {
+		synchronized (MUTEX) {
+			observers.remove(obj);
+		}
+	}
+	
+	/**
+	 * Method to get a backup of all registered listeners to the
+	 * current instance of the experiment
+	 * @return	List of listeners
+	 */
+	public List<IExperimentListener> getObservers(){
+		List<IExperimentListener> observersLocal = null;
+		synchronized (MUTEX) {
+			observersLocal = new ArrayList<IExperimentListener>(this.observers);
+		}
+		return observersLocal;
+	}
+	
+	/**
+	 * If the model is replaced, use this to register all previously registered
+	 * experiment listeners
+	 * @param newObservers	List of listeners
+	 */
+	public void replaceObservers(List<IExperimentListener> newObservers)
+	{
+		for(IExperimentListener el : newObservers){
+			addExperimentListener(el);
+		}
+	}
+	
+	private void readObject (final ObjectInputStream s ) throws ClassNotFoundException, IOException
+    {
+        s.defaultReadObject();
+        this.MUTEX = new Object();
+        this.observers = new ArrayList<IExperimentListener>();
+        saved();
+        isBackedUp();
+    }
 }

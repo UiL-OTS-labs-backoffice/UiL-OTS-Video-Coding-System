@@ -4,10 +4,14 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
+import controller.serializer.Serializer;
 import view.panels.CSVExportSelector;
 import view.panels.ExperimentSettings;
 import view.panels.SaveAs;
@@ -91,6 +95,7 @@ public class Controller {
 		g.getEditor().addVideoPlayerSurface(player);
 		g.getVideoController().setPlayer(player);
 		g.getExperimentModel().setEnd(player.getMediaDuration());
+		g.getVideoController().videoInstantiated();
 		g.getEditor().show();
 	}
 	
@@ -100,7 +105,7 @@ public class Controller {
 	 */
 	public boolean save()
 	{
-		return controller.serializer.Serializer.writeExperimentModel();
+		return controller.serializer.Serializer.save();
 	}
 	
 	/**
@@ -109,8 +114,12 @@ public class Controller {
 	 */
 	public void saveAs()
 	{
-		SaveAs dialog = new SaveAs();
-		dialog.setVisible(true);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				SaveAs dialog = new SaveAs();
+				dialog.setVisible(true);
+			}
+		});
 	}
 	
 	/**
@@ -144,10 +153,11 @@ public class Controller {
 			
 			exp.setGlobals(g);
 			g.setExperimentModel(exp);
+			g.getPreferencesModel().setOpened();
 			g.getEditor();
 			g.getEditor().show();
+			startBackupDaemon();
 			setVideo(exp.getUrl());
-			updateLabels(0L);
 			return true;
 		} else {
 			return false;
@@ -158,135 +168,27 @@ public class Controller {
 	 * Method to export the experiment information to a CSV file
 	 * @return
 	 */
-	public boolean export()
+	public boolean export(String name, int type)
 	{
-		view.panels.CSVExportSelector.getInstance();
-		String name = CSVExportSelector.show();
-		if (name == null)
-			return false;
-		else{
-			if (!(name.endsWith(".csv") || name.endsWith(".CSV")))
-				name += ".csv";
-			controller.export.CSVExport exporter = new controller.export.CSVExport();
-			return exporter.exportTotalLookTime(name);
-		}
-		
-	}
-	
-	/**
-	 * Method to export the overview information
-	 * @return
-	 */
-	public boolean exportOverview()
-	{
-		view.panels.CSVExportSelector.getInstance();
-		String name = CSVExportSelector.show();
-		if(name == null)
-			return false;
-		else{
-			if (!(name.endsWith(".csv") || name.endsWith(".CSV")))
-				name += ".csv";
-			controller.export.CSVExport exporter = new controller.export.CSVExport();
-			return exporter.exportExtendedInformation(name);
-		}
-	}
-	
-	/**
-	 * Updates the buttons and labels for the trials and looks
-	 * @param time	The current time stamp.
-	 */
-	public void updateLabels(long time)
-	{	
-		int tnr = g.getExperimentModel().getItemForTime(time);
-		updateButtons(tnr, time);
-		generateInfo(tnr, time);
-		g.getEditor().updateSlider();
-	}
-	
-	/**
-	 * Generates the labels for current trial and look and total look time
-	 * @param tnr		Current trial number
-	 * @param t			Current trial
-	 * @param lnr		Current look number
-	 */
-	private void generateInfo(int tnr, long time)
-	{
-		int totalTrials = g.getExperimentModel().getNumberOfItems();
-		String trial, look, totalTime;
-		if(totalTrials > 0)
-		{
-			trial = (tnr > 0) ? Integer.toString(tnr) : " ";
-			trial += String.format(" / %d", totalTrials);
-			Trial t = (Trial) g.getExperimentModel().getItem(Math.abs(tnr));
-			totalTime = String.format("%d ms", t.getTotalTimeForItems());
-			int totalLooks = t.getNumberOfItems();
-			
-			int lnr = t.getItemForTime(time);
-			
-			if (totalLooks > 0)
-			{
-				look = (lnr > 0) ? Integer.toString(lnr) : " ";
-				look += String.format(" / %d", totalLooks);
-			} else {
-				look = "Start a new look";
-			}
+		controller.export.CSVExport exporter = new controller.export.CSVExport();
+		boolean result;
+		if(type == CSVExportSelector.EXPORT_AS_OVERVIEW){
+			result = exporter.exportExtendedInformation(name);
 		} else {
-			trial = "Start a new trial";
-			look = trial;
-			totalTime = trial;
+			result = exporter.exportTotalLookTime(name);
 		}
-		
-		g.getEditor().setInfo(trial, look, totalTime);
+		return result;
 	}
 	
 	/**
-	 * Updates the button text and state
-	 * @param tnr		Current trial number
-	 * @param t			Current trial
-	 * @param lnr		Current look number
-	 * @param l			Current look
-	 * @param time		Current time
+	 * Get the number of an item
+	 * @param tf	Abstract Time Frame item
+	 * @return		Number for tf
 	 */
-	private void updateButtons(int tnr, long time)
+	public int getNumber(AbstractTimeFrame tf)
 	{
-		boolean nt = g.getExperimentModel().canAddItem(time) >= 0 & tnr <= 0;
-		boolean et = false, nl = false, el = false;
-		boolean tm = false; // Timeout?
-		int lnr = 0;
-		if(tnr != 0)
-		{
-			Trial t = (Trial) g.getExperimentModel().getItem(Math.abs(tnr));
-			lnr = t.getItemForTime(time);
-			et = t.canEnd(time) && lnr <= 0;
-			nl = t.canAddItem(time) >= 0 && lnr <= 0;
-			
-			if(lnr != 0)
-			{
-				Look l = (Look) t.getItem(Math.abs(lnr));
-				tm = l.getEnd() > -1 && time - l.getEnd() > g.getExperimentModel().getTimeout() && g.getExperimentModel().getUseTimeout();
-				el = tnr > 0 && l.canEnd(time);
-			}
-		}
-		
-		g.getEditor().updateButtons(endOrExtend(tnr, "trial"), endOrExtend(lnr, "look"), 
-				nt, et, nl, el, tnr > 0, lnr > 0, 
-				String.format("Comment trial %d", Math.abs(tnr)), String.format("Comment look %d", Math.abs(lnr))
-			);
-		g.getEditor().setTimeoutText(tm);
+		return g.getExperimentModel().getNumberForItem(tf);
 	}
-	
-	/**
-	 * Formats the text for the buttons
-	 * @param nr		The item number
-	 * @param type		"look" or "trial"
-	 * @return			A nice string for on a button
-	 */
-	private String endOrExtend(int nr, String type)
-	{
-		String str = (nr < 0) ? "Extend %s %d" : "End %s %d";
-		return String.format(str, type, Math.abs(nr));
-	}
-	
 	
 	/**
 	 * Get method for the list of trials
@@ -304,7 +206,6 @@ public class Controller {
 	{
 		long time = g.getVideoController().getMediaTime();
 		g.getExperimentModel().addItem(time);
-		updateLabels(time);
 	}
 	
 	/**
@@ -318,7 +219,6 @@ public class Controller {
 		{
 			Trial trial = (Trial) g.getExperimentModel().getItem(Math.abs(tnr));
 			trial.addItem(time);
-			updateLabels(time);
 		} else {
 			throw new IllegalStateException("Not currently in a trial");
 		}
@@ -333,7 +233,6 @@ public class Controller {
 		int tnr = Math.abs(g.getExperimentModel().getItemForTime(time));
 		Trial t = (Trial) g.getExperimentModel().getItem(tnr);
 		t.setEnd(time);
-		updateLabels(time);
 	}
 	
 	
@@ -348,7 +247,7 @@ public class Controller {
 		int lnr = Math.abs(t.getItemForTime(time));
 		Look l = (Look) t.getItem(lnr);
 		l.setEnd(time);
-		updateLabels(time);
+		t.calculateTimeout();
 	}
 	
 	/**
@@ -360,7 +259,19 @@ public class Controller {
 	{
 		long time = g.getVideoController().getMediaTime();
 		int tnr = g.getExperimentModel().getItemForTime(time);
-		if(tnr > 0){
+		removeTrial(tnr);
+	}
+	
+	public void removeTrial(int tnr)
+	{
+		if(tnr > 0 && g.getExperimentModel().getItems().size() >= tnr){
+			AbstractTimeContainer trial = (AbstractTimeContainer) g.getExperimentModel().getItem(tnr);
+//			for(AbstractTimeFrame look : ((Trial) trial).getItems())
+//			{
+//				g.getEditor().getBottomBar().getNavbar().removeTimeFrame(look);
+//			}
+//			g.getEditor().getBottomBar().getNavbar().removeTimeFrame(trial);
+			trial.removeAll();
 			g.getExperimentModel().removeItem(tnr);
 		}
 	}
@@ -377,12 +288,21 @@ public class Controller {
 		{
 			Trial t = (Trial) g.getExperimentModel().getItem(tnr);
 			int lnr = t.getItemForTime(time);
-			if (lnr > 0)
+			removeLook(tnr, lnr);
+		}
+	}
+	
+	public void removeLook(int tnr, int lnr)
+	{
+		if(tnr > 0 && tnr <= g.getExperimentModel().getItems().size())
+		{
+			Trial trial = (Trial) g.getExperimentModel().getItem(tnr);
+			if (lnr > 0 && lnr <= trial.getItems().size())
 			{
-				t.removeItem(lnr);
+//				g.getEditor().getBottomBar().getNavbar().removeTimeFrame(trial.getItem(lnr));
+				trial.removeItem(lnr);
 			}
 		}
-		
 	}
 	
 	/**
@@ -396,11 +316,26 @@ public class Controller {
 		if(tnr > 0)
 		{
 			Trial t = (Trial) g.getExperimentModel().getItem(tnr);
-			while(t.getNumberOfItems() > 0)
-			{
-				t.removeItem(1);
-			}
+			t.removeAll();
+//			while(t.getNumberOfItems() > 0)
+//			{
+//				g.getEditor().getBottomBar().getNavbar().removeTimeFrame(t.getItem(1));
+//				t.removeItem(1);
+//			}
 		}	
+	}
+	
+	public void removeLooksInTrial(int tnr)
+	{
+		if(tnr > 0 && tnr <= g.getExperimentModel().getItems().size())
+		{
+			Trial trial = (Trial) g.getExperimentModel().getItem(tnr);
+//			for(AbstractTimeFrame look : trial.getItems())
+//			{
+//				g.getEditor().getBottomBar().getNavbar().removeTimeFrame(look);
+//			}
+			trial.removeAll();
+		}
 	}
 	
 	/**
@@ -420,15 +355,6 @@ public class Controller {
 	public Trial getTrial(int trial)
 	{
 		return (Trial) g.getExperimentModel().getItem(trial);
-	}
-	
-	/**
-	 * Tells the view to update the file label
-	 */
-	public void updateCurrentFileLabel()
-	{
-		String curFile = g.getExperimentModel().getUrl();
-		g.getEditor().setFile((curFile == null) ? "Select a file to play" : curFile.replaceFirst(".*/([^/?]+).*", "$1"));
 	}
 	
 	/**
@@ -493,4 +419,13 @@ public class Controller {
 		return (key > 0) ? KeyEvent.getKeyText(key) : "";
 	}
 	
+	private void startBackupDaemon(){
+		Timer t = new Timer();
+		t.scheduleAtFixedRate(new TimerTask(){
+			@Override
+			public void run() {
+				Serializer.backup();
+			}
+		}, 5*60*1000, 5*60*1000);
+	}
 }

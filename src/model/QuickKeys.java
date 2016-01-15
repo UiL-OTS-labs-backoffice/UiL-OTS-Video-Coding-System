@@ -1,9 +1,13 @@
 package model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
+
+import view.event.IQuickKeyListener;
 
 /**
  * Contains references to quick keys
@@ -25,6 +29,9 @@ public class QuickKeys implements Serializable {
 	 * Reference to globals class
 	 */
 	private ApplicationPreferences prefs;
+	
+	private List<IQuickKeyListener> observers;
+	private final Object MUTEX = new Object();
 	
 	/**
 	 * List of available actions
@@ -55,19 +62,35 @@ public class QuickKeys implements Serializable {
 	}
 	
 	/**
+	 * Method to register a QuickKeyListener
+	 * @param observer	The listener object to be registered
+	 */
+	public void addQuickKeyListener(IQuickKeyListener observer){
+		synchronized(MUTEX){
+			if(!observers.contains(observer)){
+				observers.add(observer);
+			}
+		}
+	}
+	
+	/**
+	 * Method to deregister a QuickKeyListener
+	 * @param observer	The listener object to be deregistered
+	 */
+	public void removeQuickKeyListener(IQuickKeyListener observer){
+		synchronized(MUTEX){
+			observers.remove(observer);
+		}
+	}
+	
+	/**
 	 * Private constructor to ensure singleton
 	 * Sets default keys
 	 */
 	private QuickKeys(ApplicationPreferences prefs)
-	{		
+	{	
+		this.observers = new ArrayList<IQuickKeyListener>();
 		this.prefs = prefs;
-		
-		setKey("play", prefs.getKeyTuple("play", 32));
-		setKey("prevFrame", prefs.getKeyTuple("prevFrame", 37));
-		setKey("nextFrame", prefs.getKeyTuple("nextFrame", 39));
-		setKey("prevLook", prefs.getKeyTuple("prevLook", 91));
-		setKey("nextLook", prefs.getKeyTuple("nextLook", 93));
-		setKey("newLook", prefs.getKeyTuple("newLook", 78));
 		
 		isk("play", 32);
 		
@@ -138,13 +161,26 @@ public class QuickKeys implements Serializable {
 	 */
 	public void setKey(String action, int key)
 	{
+		int oldKey = -1;
 		for(Tuple t : actionMap)
 		{
 			if(t.getID() == action) {
+				oldKey = t.getKey();
 				t.setKey(key);
 				prefs.setKeyTuple(action, key);
 			} else if (t.getKey() == key) {
+				oldKey = t.getKey();
 				t.setKey(0);
+			}
+		}
+		
+		if(oldKey != -1){
+			List<IQuickKeyListener> localObservers;
+			synchronized(MUTEX){
+				localObservers = new ArrayList<IQuickKeyListener>(this.observers);
+			}
+			for(IQuickKeyListener o : localObservers){
+				o.actionUpdated(action, oldKey);
 			}
 		}
 	}

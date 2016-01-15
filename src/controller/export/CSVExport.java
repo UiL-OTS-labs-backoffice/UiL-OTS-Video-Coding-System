@@ -1,5 +1,7 @@
 package controller.export;
 
+import view.formatter.Time;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -122,10 +124,10 @@ public class CSVExport {
 			row += ";";
 			
 			// begintime
-			row += view.bottombar.PlayerControlsPanel.formatTime(trial.getBegin()) + ";";
+			row += Time.format(trial.getBegin()) + ";";
 			
 			// endtime
-			row += view.bottombar.PlayerControlsPanel.formatTime(trial.getEnd()) + ";";
+			row += Time.format(trial.getEnd()) + ";";
 			
 			// Total look time
 			row += Long.toString(trial.getTotalTimeForItems()) + ";";
@@ -162,10 +164,10 @@ public class CSVExport {
 				row += Integer.toString(l+1) + ";";
 				
 				// begintime
-				row += view.bottombar.PlayerControlsPanel.formatTime(look.getBegin()) + ";";
+				row += Time.format(look.getBegin()) + ";";
 				
 				// endtime
-				row += view.bottombar.PlayerControlsPanel.formatTime(look.getEnd()) + ";";
+				row += Time.format(look.getEnd()) + ";";
 				
 				// Total look time
 				row += Long.toString(look.getDuration()) + ";";
@@ -189,7 +191,7 @@ public class CSVExport {
 	/**
 	 * Exports the experiment to a csv
 	 * @param filename
-	 * @return	True if succesful
+	 * @return	True if successful
 	 */
 	private boolean writeCsv(String filename, ArrayList<String> list)
 	{

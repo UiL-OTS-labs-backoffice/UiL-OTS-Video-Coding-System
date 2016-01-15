@@ -6,13 +6,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.JLabel;
+
 import net.miginfocom.swing.MigLayout;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.concurrent.TimeUnit;
 
 import controller.*;
 
@@ -27,8 +30,8 @@ public class ExperimentOverview extends JFrame {
 	private static final int COLUMNS = 5;
 	private static final int COL_WIDTH = 50;
 	
-	private static final Color HEADER_COLOR = new Color(79,129,189);
-	private static final Color[] ROW1_COLOR = {new Color(220, 230, 241), new Color(255,191,191)};
+	public static final Color HEADER_COLOR = new Color(79,129,189);
+	public static final Color[] ROW1_COLOR = {new Color(220, 230, 241), new Color(255,191,191)};
 	private static final Color[] ROW2_COLOR = {new Color(255,255,255),new Color(250,215,215)};
 	
 	private JPanel container;
@@ -41,10 +44,38 @@ public class ExperimentOverview extends JFrame {
 		this.setBounds(300, 200, 700, 500);
 		createLayout();
 		addOverview();
+		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		this.addWindowListener(new WindowListener(){
+
+			@Override
+			public void windowOpened(WindowEvent e) { }
+
+			@Override
+			public void windowClosing(WindowEvent e) { }
+
+			@Override
+			public void windowClosed(WindowEvent e) { 
+				Globals.getInstance().disposeExperimentOverview();
+			}
+
+			@Override
+			public void windowIconified(WindowEvent e) { }
+
+			@Override
+			public void windowDeiconified(WindowEvent e) { }
+
+			@Override
+			public void windowActivated(WindowEvent e) { }
+
+			@Override
+			public void windowDeactivated(WindowEvent e) { }
+			
+		});
 	}
 	
+	
 	/**
-	 * Creates the gridbaglayout and adds it to the frame
+	 * Creates the grid bag layout and adds it to the frame
 	 */
 	private void createLayout()
 	{
@@ -68,7 +99,7 @@ public class ExperimentOverview extends JFrame {
 		JLabel lblH4 = new JLabel("End time");
 		JLabel lblH5 = new JLabel("Total look time");
 		
-		LinkedList<JLabel> labels = new LinkedList<JLabel>(Arrays.asList(lblH1, lblH2, lblH3, lblH4, lblH5));
+		ArrayList<JLabel> labels = new ArrayList<JLabel>(Arrays.asList(lblH1, lblH2, lblH3, lblH4, lblH5));
 		
 		int col = 0;
 		for(JLabel l : labels)
@@ -98,8 +129,8 @@ public class ExperimentOverview extends JFrame {
 			
 			addLabel("Trial " + i, row, 0, HEADER_COLOR);
 			addLabel(" ", row, 1, HEADER_COLOR);
-			addLabel(timeToString(t.getBegin()), row, 2, HEADER_COLOR);
-			addLabel(timeToString(t.getEnd()), row, 3, HEADER_COLOR);
+			addLabel(view.formatter.Time.formatDetail(t.getBegin()), row, 2, HEADER_COLOR);
+			addLabel(view.formatter.Time.formatDetail(t.getEnd()), row, 3, HEADER_COLOR);
 			addLabel(t.getTotalTimeForItems() + " ms", row, 4, HEADER_COLOR);
 			row++;
 			if(t.getComment() != null && t.getComment().length() > 0)
@@ -108,19 +139,16 @@ public class ExperimentOverview extends JFrame {
 				row++;
 			}
 			
-			model.Experiment em = Globals.getInstance().getExperimentModel();
-			long last_end = -1;
 			for(int j = 1; j <= t.getNumberOfItems(); j++)
 			{
 				model.Look l = (model.Look) t.getItem(j);
-				int index = (!em.getUseTimeout() || l.getBegin() - last_end < em.getTimeout() || last_end < 0) ? 0 : 1;
-				last_end = l.getEnd();
+				int index = t.getTimeout() >= 1 && t.getTimeout() <= l.getBegin() ? 1 : 0;
 				Color color = row_color[index];
 				
 				addLabel(" ", row, 0, color);
 				addLabel("Look " + j, row, 1, color);
-				addLabel(timeToString(l.getBegin()), row, 2, color);
-				addLabel(timeToString(l.getEnd()), row, 3, color);
+				addLabel(view.formatter.Time.formatDetail(l.getBegin()), row, 2, color);
+				addLabel(view.formatter.Time.formatDetail(l.getEnd()), row, 3, color);
 				addLabel(l.getDuration() + " ms", row, 4, color);
 				row++;
 				
@@ -149,30 +177,6 @@ public class ExperimentOverview extends JFrame {
 	}
 	
 	/**
-	 * Converts a long of milliseconds into a String
-	 * @param	time	The timestamp in milliseconds
-	 * @return	String		Readable time stamp
-	 */
-	private String timeToString(long time)
-	{
-		if(time == -1L)
-				return "--";
-		String s = String.format("%02d:%02d:%02d.%03d", 
-        		TimeUnit.MILLISECONDS.toHours(time), 
-        		
-        		TimeUnit.MILLISECONDS.toMinutes(time) - 
-        		TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(time)), 
-        		
-        		TimeUnit.MILLISECONDS.toSeconds(time) - 
-        		TimeUnit.MINUTES.toSeconds(
-        				TimeUnit.MILLISECONDS.toMinutes(time)
-        		),
-        		time - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(time))
-        	);
-		return s;
-	}
-	
-	/**
 	 * Method to quickly add a label
 	 * @param title		The text of the label
 	 * @param row		The row number where the label should be added
@@ -193,6 +197,12 @@ public class ExperimentOverview extends JFrame {
 		
 	}
 	
+	/**
+	 * Method to add a comment row
+	 * @param comment		The comment for the row
+	 * @param row			The row at which t insert the comment
+	 * @param color			The background color of the row
+	 */
 	private void addComment(String comment, int row, Color color)
 	{
 		JLabel l = new JLabel(String.format("<html><body><p style=\"margin-right: 10px;\">%s</p></body></html>", comment));

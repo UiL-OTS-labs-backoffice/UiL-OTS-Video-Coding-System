@@ -1,6 +1,8 @@
 package controller;
 
 import java.awt.Component;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementation of IVideoController for the VLC Video Player Object
@@ -15,12 +17,23 @@ public class VLCVideoController implements IVideoControls {
 	private Globals g;
 	
 	/**
+	 * Observers
+	 */
+	private List<IVideoControllerObserver> observers;
+	
+	/**
+	 * Immutable object
+	 */
+	private final Object MUTEX = new Object();
+	
+	/**
 	 * Instance of media player
 	 */
 	private view.player.IMediaPlayer player;
 	
 	protected VLCVideoController(Globals globals){
 		this.g = globals;
+		this.observers = new ArrayList<IVideoControllerObserver>();
 	}
 	
 	@Override
@@ -41,21 +54,16 @@ public class VLCVideoController implements IVideoControls {
 	@Override
 	public void play() {
 		player.start();
-		g.getEditor().setPlayState(player.isPlaying());
 	}
 
 	@Override
 	public void nextFrame() {
 		player.nextFrame();
-		long time = getMediaTime();
-		g.getController().updateLabels(time);
 	}
 
 	@Override
 	public void prevFrame() {
 		player.previousFrame();
-		long time = getMediaTime();
-		g.getController().updateLabels(time);
 	}
 
 	@Override
@@ -78,19 +86,23 @@ public class VLCVideoController implements IVideoControls {
 	@Override
 	public void nextTrial() {
 		int tnr = Math.abs(g.getExperimentModel().getItemForTime(getMediaTime()));
+		System.out.println("Next trial: " + tnr);
 		if(tnr > 0 && tnr < g.getExperimentModel().getNumberOfItems())
 		{
 			model.AbstractTimeFrame t = g.getExperimentModel().getItem(tnr+1);
 			long time = t.getBegin();
 			player.setMediaTime(time);
+			System.out.println("\tSet to " + (tnr + 1));
 		} else {
 			player.setMediaTime(player.getMediaDuration());
+			System.out.println("\tSet to end of experiment");
 		}
 	}		
 
 	@Override
 	public void prevTrial() {
-		int tnr = Math.abs(g.getExperimentModel().getItemForTime(getMediaTime()));
+		int tnr = g.getExperimentModel().getItemForTime(getMediaTime());
+		System.out.println("Prev trial: " + tnr);
 		if (tnr > 1) tnr--;
 		else if (tnr < 0) tnr = Math.abs(tnr);
 		if(tnr > 0)
@@ -98,22 +110,18 @@ public class VLCVideoController implements IVideoControls {
 			model.AbstractTimeFrame t = g.getExperimentModel().getItem(tnr);
 			long time = t.getBegin();
 			player.setMediaTime(time);
+			System.out.println("\tSet to " + tnr);
 		} else {
 			player.setMediaTime(0);
+			System.out.println("\tSet to beginning of experiment");
 		}
 	}
 
 	@Override
-	public void nextLook() {
-		// TODO Auto-generated method stub
-
-	}
+	public void nextLook() { }
 
 	@Override
-	public void prevLook() {
-		// TODO Auto-generated method stub
-
-	}
+	public void prevLook() { }
 
 	@Override
 	public void JumpToEnd() {
@@ -213,4 +221,29 @@ public class VLCVideoController implements IVideoControls {
 		player.setPosition(position);
 	}
 
+	@Override
+	public void register(IVideoControllerObserver obj) {
+		if(obj == null) throw new NullPointerException("Null Observer");
+        synchronized (MUTEX) {
+        	if(!observers.contains(obj)) observers.add(obj);
+        }		
+	}
+
+	@Override
+	public void deregister(IVideoControllerObserver obj) {
+		synchronized (MUTEX) {
+			observers.remove(obj);
+		}
+	}
+
+	@Override
+	public void videoInstantiated() {
+		ArrayList<IVideoControllerObserver> localObservers;
+		synchronized(MUTEX) {
+			localObservers = new ArrayList<IVideoControllerObserver>(this.observers);
+		}
+		for(IVideoControllerObserver obj : localObservers) {
+			obj.videoInstantiated();
+		}
+	}
 }

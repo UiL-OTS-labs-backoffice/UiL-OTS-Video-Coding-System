@@ -3,10 +3,16 @@ package view.player;
 import java.awt.Dimension;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import controller.Globals;
+
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
 import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
@@ -18,6 +24,7 @@ import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 import uk.co.caprica.vlcj.player.direct.RenderCallback;
 import uk.co.caprica.vlcj.player.direct.format.RV32BufferFormat;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
+import view.timeline.utilities.VideoDurationExtractor;
 
 public class VLCMediaPlayer implements IMediaPlayer{
 
@@ -36,6 +43,10 @@ public class VLCMediaPlayer implements IMediaPlayer{
      */
     private long mediaLength;
     
+    private List<IMediaPlayerListener> observers;
+    
+    private final Object MUTEX = new Object();
+    
     /**
      * Display component
      */
@@ -50,6 +61,7 @@ public class VLCMediaPlayer implements IMediaPlayer{
    	
    	public VLCMediaPlayer(String url)
    	{
+   		this.observers = new ArrayList<IMediaPlayerListener>();
    		mediaURL = url;
 		
 		internalCreateNewVisualComponent(null);
@@ -116,14 +128,15 @@ public class VLCMediaPlayer implements IMediaPlayer{
         semaphore = new Semaphore(0);	        
         hiddenMediaPlayer.playMedia(media);
         
-        
         try {
         	semaphore.tryAcquire(1000L, TimeUnit.MILLISECONDS);
         	wait(1000);
         } catch(InterruptedException ex) {	        		
         }
-
         mediaLength = hiddenMediaPlayer.getLength();
+        
+        checkMediaDuration(media, mediaLength);
+        
         hiddenMediaPlayer.pause();
         long trytime = hiddenMediaPlayer.getLength() / 2;
         hiddenMediaPlayer.setTime(trytime);
@@ -137,6 +150,42 @@ public class VLCMediaPlayer implements IMediaPlayer{
         hiddenMediaPlayer.release();
         hiddenMediaPlayer = null;
         semaphore = null;
+    }
+    
+    private void checkMediaDuration(String media, long duration){
+    	String ffmpegLength = VideoDurationExtractor.getDuration(media);
+    	
+    	if(ffmpegLength == null){
+    		SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					JOptionPane.showMessageDialog(null,
+							"WARNING: Video compatibility could not be checked.\n"
+							+ "If the video is incompatible, results of coding this video might be\n"
+							+ "off by a long way. Check video compatibility manually.", "Warning",
+							JOptionPane.ERROR_MESSAGE);
+				}
+			});
+    	} else {
+	    	long ffmpegDuration = VideoDurationExtractor.getDurationAsLong(media);
+	    	if(Math.abs(ffmpegDuration - duration) > 50){
+	    		final String videoIncompatibleWarning = "CRITICAL WARNING: THIS VIDEO IS INCOMPATIBLE\n"
+	    				+ "Media time cannot be read properly from this video. This will cause the results of coding this video to be worthless!\n"
+	    				+ "We recommend to use a video converter, to create a more suitable video format.\nContinue at your own risk.\n\n"
+	    				+ "Do you want to close this project?";
+	    		
+	    		SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						int result = JOptionPane.showConfirmDialog(null,
+								videoIncompatibleWarning, "VIDEO INCOMPATIBLE",
+								JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
+						if (result == JOptionPane.YES_OPTION) {
+							Globals.getInstance().getPreferencesModel().setClosed();
+							System.exit(0);
+						}
+					}
+				});
+	    	}
+    	}
     }
     
     /**
@@ -175,7 +224,13 @@ public class VLCMediaPlayer implements IMediaPlayer{
 			    	stdev = msPerFrame / 2;
 		        }
 		    }
-			
+			List<IMediaPlayerListener> localObservers;
+			synchronized(MUTEX) {
+				localObservers = new ArrayList<IMediaPlayerListener>(observers);
+			}
+			for(IMediaPlayerListener l : localObservers){
+				l.mediaStarted();
+			}
 		}
     	
 		public void finished(MediaPlayer mediaPlayer) {
@@ -191,161 +246,92 @@ public class VLCMediaPlayer implements IMediaPlayer{
 					stdev = msPerFrame / 2;
 				}
 			}
+			mediaTimeChanged();
 		}
 
 		@Override
-		public void backward(MediaPlayer arg0) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void backward(MediaPlayer arg0) { }
 
 		@Override
-		public void buffering(MediaPlayer arg0, float arg1) {
-			// TODO Auto-generated method stub
-			
-		}
-
-
+		public void buffering(MediaPlayer arg0, float arg1) { }
 
 		@Override
-		public void endOfSubItems(MediaPlayer arg0) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void endOfSubItems(MediaPlayer arg0) { }
 
 		@Override
-		public void error(MediaPlayer arg0) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void error(MediaPlayer arg0) { }
 
 		@Override
-		public void forward(MediaPlayer arg0) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void forward(MediaPlayer arg0) { }
 
 		@Override
-		public void lengthChanged(MediaPlayer arg0, long arg1) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void lengthChanged(MediaPlayer arg0, long arg1) { }
 
 		@Override
 		public void mediaChanged(MediaPlayer arg0, libvlc_media_t arg1,
-				String arg2) {
-			// TODO Auto-generated method stub
-			
-		}
+				String arg2) { }
 
 		@Override
-		public void mediaDurationChanged(MediaPlayer arg0, long arg1) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void mediaDurationChanged(MediaPlayer arg0, long arg1) { }
 
 		@Override
-		public void mediaFreed(MediaPlayer arg0) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void mediaFreed(MediaPlayer arg0) { }
 
 		@Override
-		public void mediaMetaChanged(MediaPlayer arg0, int arg1) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void mediaMetaChanged(MediaPlayer arg0, int arg1) { }
 
 		@Override
-		public void mediaParsedChanged(MediaPlayer arg0, int arg1) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void mediaParsedChanged(MediaPlayer arg0, int arg1) { }
 
 		@Override
-		public void mediaStateChanged(MediaPlayer arg0, int arg1) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void mediaStateChanged(MediaPlayer arg0, int arg1) { }
 
 		@Override
-		public void mediaSubItemAdded(MediaPlayer arg0, libvlc_media_t arg1) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void mediaSubItemAdded(MediaPlayer arg0, libvlc_media_t arg1) { }
 
 		@Override
-		public void newMedia(MediaPlayer arg0) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void newMedia(MediaPlayer arg0) { }
 
 		@Override
-		public void opening(MediaPlayer arg0) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void opening(MediaPlayer arg0) { }
 
 		@Override
-		public void pausableChanged(MediaPlayer arg0, int arg1) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void pausableChanged(MediaPlayer arg0, int arg1) { }
 
 		@Override
 		public void paused(MediaPlayer arg0) {
-			// TODO Auto-generated method stub
-			
+			List<IMediaPlayerListener> localObservers;
+			synchronized(MUTEX) {
+				localObservers = new ArrayList<IMediaPlayerListener>(observers);
+			}
+			for(IMediaPlayerListener l : localObservers){
+				l.mediaPaused();
+			}
 		}
 
 		@Override
-		public void positionChanged(MediaPlayer arg0, float arg1) {
-			// TODO Auto-generated method stub
-			
-		}
-
+		public void positionChanged(MediaPlayer arg0, float arg1) { }
 	
 		@Override
-		public void seekableChanged(MediaPlayer arg0, int arg1) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void seekableChanged(MediaPlayer arg0, int arg1) { }
 
 		@Override
-		public void snapshotTaken(MediaPlayer arg0, String arg1) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void snapshotTaken(MediaPlayer arg0, String arg1) { }
 
 		@Override
-		public void stopped(MediaPlayer arg0) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void stopped(MediaPlayer arg0) { }
 
 		@Override
-		public void subItemFinished(MediaPlayer arg0, int arg1) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void subItemFinished(MediaPlayer arg0, int arg1) { }
 
 		@Override
-		public void subItemPlayed(MediaPlayer arg0, int arg1) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void subItemPlayed(MediaPlayer arg0, int arg1) { }
 
 		@Override
-		public void titleChanged(MediaPlayer arg0, int arg1) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void titleChanged(MediaPlayer arg0, int arg1) { }
 
 		@Override
-		public void videoOutput(MediaPlayer arg0, int arg1) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void videoOutput(MediaPlayer arg0, int arg1) { }
     };
 	
     /* (non-Javadoc)
@@ -446,7 +432,7 @@ public class VLCMediaPlayer implements IMediaPlayer{
 	 */
     @Override
 	public void start() {
-       	if(player.isPlaying())
+		if(player.isPlaying())
        	{
        		if(player.canPause())
        			player.pause();
@@ -460,13 +446,13 @@ public class VLCMediaPlayer implements IMediaPlayer{
 	 */
     @Override
 	public void stop() {
-        if (player.isPlaying()) {
+		if (player.isPlaying()) {
             if (player.canPause()) {
                 player.pause();
             } else {
                 player.stop();
             }
-        }
+		}
     }
     
     /* (non-Javadoc)
@@ -511,9 +497,9 @@ public class VLCMediaPlayer implements IMediaPlayer{
     * @see view.IMediaPlayer#setMediaTime(long)
     */
    @Override
-   public void setMediaTime(long time) {
+   public void setMediaTime(final long time) {
 	   player.setTime(time - offset);
-	   Globals.getInstance().getController().updateLabels(time);
+	   mediaTimeChanged();
    }
    
    /* (non-Javadoc)
@@ -525,6 +511,7 @@ public class VLCMediaPlayer implements IMediaPlayer{
 			stop();
 		}
 		player.nextFrame();
+		mediaTimeChanged();
    }
 	
 	/* (non-Javadoc)
@@ -545,7 +532,6 @@ public class VLCMediaPlayer implements IMediaPlayer{
 	        if (newTime < 0) {
 	        	newTime = 0;
 	        }
-	        
 	        setMediaTime(newTime);
 		}
     }
@@ -579,7 +565,6 @@ public class VLCMediaPlayer implements IMediaPlayer{
 	 */
     @Override
 	public long getMediaDuration() {
-        //return player.getLength();
     	return mediaLength;
     }
 
@@ -594,5 +579,32 @@ public class VLCMediaPlayer implements IMediaPlayer{
 	public void setPosition(float position) {
 		player.setPosition(position);
 	}
+	
+	@Override
+	public void register(IMediaPlayerListener obj) {
+		if(obj == null) throw new NullPointerException("Null Observer");
+        synchronized (MUTEX) {
+        	if(!observers.contains(obj)) observers.add(obj);
+        }		
+	}
 
+	@Override
+	public void deregister(IMediaPlayerListener obj) {
+		synchronized (MUTEX) {
+			observers.remove(obj);
+		}
+	}
+	
+	/**
+	 * Notify observers of a change in the media time
+	 */
+	private void mediaTimeChanged() {
+		List<IMediaPlayerListener> localObservers;
+		synchronized(MUTEX) {
+			localObservers = new ArrayList<IMediaPlayerListener>(observers);
+		}
+		for(IMediaPlayerListener l : localObservers){
+			l.mediaTimeChanged();
+		}
+	}
  }

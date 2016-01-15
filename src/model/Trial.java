@@ -9,16 +9,18 @@ public class Trial extends AbstractTimeContainer
 	
 	/**
 	 * Creates a new trial at the time given as the argument
-	 * @param time	Starttime of the trial in milliseconds
+	 * @param time	Start time of the trial in milliseconds
 	 */
 	public Trial(long time) {
-		super(time);
+		super(time, AbstractTimeFrame.TYPE_TRIAL);
+		controller.Globals.getInstance().getExperimentModel().registerTimeFrameListener(this);
+		controller.Globals.getInstance().getExperimentModel().registerContainerListener(this);
 	}
 
 	@Override
-	public void addItem(long time) {
+	public AbstractTimeFrame addItem(long time) {
 		Look nl = new Look(time);
 		hiddenAddItem(time, nl);
+		return nl;
 	}
-
 }
