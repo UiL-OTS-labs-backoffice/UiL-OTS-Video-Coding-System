@@ -101,7 +101,7 @@ public class projectOpener extends JFrame {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
 		setTitle("New Project");
-		this.setSize(742, 373);
+		this.setSize(742, 400);
 		this.setLocation(450, 200);
 		
 		panel = new JPanel();

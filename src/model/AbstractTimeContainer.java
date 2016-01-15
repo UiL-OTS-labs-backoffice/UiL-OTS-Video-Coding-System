@@ -10,6 +10,7 @@ import controller.Globals;
 import model.AbstractTimeFrame;
 import model.TimeObserver.ITimeContainerObserver;
 import model.TimeObserver.ITimeContainerSubject;
+import model.TimeObserver.ITimeFrameObserver;
 
 /**
  * This abstract class extends the time frame
@@ -51,8 +52,8 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 	}
 
 	/**
-	 * Method to get all the subitems
-	 * @return	LinkedList of type Timeframe that contains all subitems of this
+	 * Method to get all the sub items
+	 * @return	LinkedList of type Time frame that contains all sub items of this
 	 * 					container
 	 */
 	public LinkedList<AbstractTimeFrame> getItems()
@@ -280,6 +281,18 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
 			synchronized (ITEMS_MUTEX) {
 				items.add(canAdd, tf);
 			}
+			
+			tf.registerFrameListener(new ITimeFrameObserver(){
+
+				@Override
+				public void timeChanged(AbstractTimeFrame tf) {
+					childTimeChanged();
+				}
+
+				@Override
+				public void commentChanged(AbstractTimeFrame tf, String comment) { }
+				
+			});
 			itemAdded(tf, canAdd + 1);
 		}
 		calculateTimeout();
@@ -534,6 +547,20 @@ public abstract class AbstractTimeContainer extends AbstractTimeFrame implements
     	{
     		obj.itemRemoved(this, item);
     		obj.numberOfItemsChanged(this);
+    	}
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void childTimeChanged(){
+    	List<ITimeContainerObserver> observersLocal = null;
+    	synchronized(CONTAINER_MUTEX) {
+    		observersLocal = new ArrayList<ITimeContainerObserver>(this.containerObservers);
+    	}
+    	for(ITimeContainerObserver obj : observersLocal)
+    	{
+    		obj.childTimeChanged(this);
     	}
     }
     

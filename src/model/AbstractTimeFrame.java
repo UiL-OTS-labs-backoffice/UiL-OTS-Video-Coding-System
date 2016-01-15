@@ -197,7 +197,7 @@ public abstract class AbstractTimeFrame implements Serializable, ITimeFrameSubje
 	 */
 	public long getDuration()
 	{
-		return duration;
+		return ended == ENDED_TRUE ? duration : 0;
 	}
 	
 	/**

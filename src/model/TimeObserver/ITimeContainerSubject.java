@@ -33,4 +33,10 @@ public interface ITimeContainerSubject {
 	 */
 	public void itemRemoved(AbstractTimeFrame item);
 	
+	/**
+	 * Method to notify all observers a time frame in the current
+	 * container was updated
+	 */
+	public void childTimeChanged();
+	
 }

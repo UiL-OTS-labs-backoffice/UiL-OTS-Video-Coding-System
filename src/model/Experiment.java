@@ -313,6 +313,9 @@ public class Experiment extends AbstractTimeContainer implements IExperimentSubj
 			public void numberOfItemsChanged(AbstractTimeContainer container) {
 				stateChanged();
 			}
+
+			@Override
+			public void childTimeChanged(AbstractTimeContainer container) { }
 		});
 	}
 	
