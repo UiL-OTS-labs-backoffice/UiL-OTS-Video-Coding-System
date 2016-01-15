@@ -45,7 +45,6 @@ public class Serializer {
 	
 	public static boolean writeExperimentModel(String uri)
 	{
-		System.out.println("Saving to " + uri);
 		try{
 			FileOutputStream fout = new FileOutputStream(uri);
 			ObjectOutputStream oos = new ObjectOutputStream(fout);
