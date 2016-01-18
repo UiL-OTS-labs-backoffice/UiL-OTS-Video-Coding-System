@@ -20,7 +20,7 @@ The amount of trials and looks is not set, so any amount can be used, but before
 * Projects can be saved for later continuation
 * Automatic file recovery option on inexpected shutdown
 
-## Version 2
+### Version 2
 Version 2 of the UiL OTS Video Coding System has been officially released in January 2016. In this version, the user interface received a mayor overhaul. A time line like interface was added, to provided an even clearer overview of where trials and looks have been added inside the project. This time line also provides quick access to all sorts of actions that can be performed on trials and looks in the project.
 
 ## Requires:
