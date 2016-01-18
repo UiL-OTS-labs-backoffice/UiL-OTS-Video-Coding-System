@@ -31,4 +31,18 @@ Version 2 of the UiL OTS Video Coding System has been officially released in Jan
 The UiL OTS Video Coding System is developed by the UiL OTS Labs of the Utrecht University. A [how-to for using the UiL OTS Video Coding System](http://uilots-labs.wp.hum.uu.nl/how-to/how-to-recode-videos-offline-in-the-babylab/) is provided on the website, as well as an [FAQ](http://uilots-labs.wp.hum.uu.nl/how-to/faq-troubleshooting-uil-ots-video-coding-system/)
 Please use the issues tracker if you encounter any problems.
 
+## License
+Copyright (C) 2015 UiL OTS Labs
 
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; version 2 of the License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
