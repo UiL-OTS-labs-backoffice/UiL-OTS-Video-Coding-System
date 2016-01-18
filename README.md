@@ -27,6 +27,8 @@ Version 2 of the UiL OTS Video Coding System has been officially released in Jan
  * [VLC](http://www.videolan.org/vlc/)
  * [Java Runtime Environment (JRE)](https://www.java.com/en/download/) 1.6 or later
 
+## Support
+The UiL OTS Video Coding System is developed by the UiL OTS Labs of the Utrecht University. A [how-to for using the UiL OTS Video Coding System](http://uilots-labs.wp.hum.uu.nl/how-to/how-to-recode-videos-offline-in-the-babylab/) is provided on the website, as well as an [FAQ](http://uilots-labs.wp.hum.uu.nl/how-to/faq-troubleshooting-uil-ots-video-coding-system/)
 Please use the issues tracker if you encounter any problems.
 
 
