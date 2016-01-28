@@ -33,6 +33,7 @@ public class Globals {
 	 * Instance of this Globals class
 	 */
 	private static Globals instance;
+	private boolean debug;
 	
 	// Controller
 	private Controller controller;
@@ -231,6 +232,7 @@ public class Globals {
 	}
 	
 	public enum OsType { Windows, Linux, Mac };
+	public enum OsArch {OS32, OS64};
 	
 	public static OsType getOs(){
 		String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
@@ -240,6 +242,15 @@ public class Globals {
 			return OsType.Mac;
 		} else {
 			return OsType.Linux;
+		}
+	}
+	
+	public static OsArch getArch(){
+		String Arch = System.getProperty("os.arch", "generic").toLowerCase(Locale.ENGLISH);
+		if(Arch.indexOf("64") >= 0){
+			return OsArch.OS64;
+		} else {
+			return OsArch.OS32;
 		}
 	}
 	
@@ -255,5 +266,13 @@ public class Globals {
 		dir = new File(dir.getAbsolutePath() + File.separator + "autosave");
 		if(!dir.exists()) dir.mkdirs();
 		return dir;
+	}
+	
+	public boolean debug(){
+		return this.debug;
+	}
+	
+	public void debug(boolean debug){
+		this.debug = debug;
 	}
 }

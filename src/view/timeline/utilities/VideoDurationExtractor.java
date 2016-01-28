@@ -1,6 +1,5 @@
 package view.timeline.utilities;
 
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -19,13 +18,22 @@ import controller.Globals.OsType;
  * http://www.coderanch.com/t/581592/java/java/Calculating-video-file-duration
  */
 public class VideoDurationExtractor {
+	private static boolean debug;
+	
 	public static String getDuration(final String sVideoInput){
+		debug = Globals.getInstance().debug();
 		OsType osType = Globals.getOs();
 		String exe;
 		String res = null;
 		
 		if(osType == OsType.Windows) {
-			exe = "lib/ffmpeg.exe";
+			String tempDir = System.getProperty("java.io.tmpdir");
+			try {
+				exe = ExportResource(tempDir, "/ffmpeg.exe");
+			} catch (Exception e) {
+				if(debug)e.printStackTrace();
+				exe = "lib/ffmpeg.exe";
+			}
 		} else if(osType == OsType.Linux) {
 			exe = "avconv";
 		} else {
@@ -34,6 +42,10 @@ public class VideoDurationExtractor {
 		
 		try {
 			String processName = String.format("%s -i \"%s\"", exe, sVideoInput);
+			
+			if(debug){
+				System.out.println("Process name: " + processName);
+			}
 			
 			Process child;
 			
@@ -69,8 +81,12 @@ public class VideoDurationExtractor {
 			BufferedReader in = new BufferedReader(isr);
 			
 			String line;
+			
             while ((line = in.readLine()) != null)
             {
+            	if(Globals.getInstance().debug()){
+    				System.out.println(line);
+    			}
                 if(line.contains("Duration:"))
                 {
                     line = line.replaceFirst("Duration: ", ""); 
@@ -81,6 +97,7 @@ public class VideoDurationExtractor {
                 }
             }
 		} catch (IOException e) {
+			if(debug) System.out.println(e);
 			return null;
 		}
 		

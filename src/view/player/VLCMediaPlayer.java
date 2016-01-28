@@ -154,6 +154,10 @@ public class VLCMediaPlayer implements IMediaPlayer{
     
     private void checkMediaDuration(String media, long duration){
     	String ffmpegLength = VideoDurationExtractor.getDuration(media);
+    	if(Globals.getInstance().debug()){
+    		System.out.println("FFMPEG string: " + ffmpegLength);
+    	}
+    	
     	
     	if(ffmpegLength == null){
     		SwingUtilities.invokeLater(new Runnable() {
@@ -166,7 +170,7 @@ public class VLCMediaPlayer implements IMediaPlayer{
 				}
 			});
     	} else {
-	    	long ffmpegDuration = VideoDurationExtractor.getDurationAsLong(media);
+	    	long ffmpegDuration = VideoDurationExtractor.parseDurationAsLong(ffmpegLength);
 	    	if(Math.abs(ffmpegDuration - duration) > 50){
 	    		final String videoIncompatibleWarning = "CRITICAL WARNING: THIS VIDEO IS INCOMPATIBLE\n"
 	    				+ "Media time cannot be read properly from this video. This will cause the results of coding this video to be worthless!\n"
