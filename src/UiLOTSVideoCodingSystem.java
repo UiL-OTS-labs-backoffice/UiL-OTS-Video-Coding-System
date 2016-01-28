@@ -15,7 +15,7 @@ import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 
-public class Main {
+public class UiLOTSVideoCodingSystem {
 	
 	static private boolean DEBUG = false;
 	
@@ -31,7 +31,7 @@ public class Main {
 	static private String existing;
 	
 	/**
-	 * Main method tries to add VLC to the search path of this application
+	 * UiLOTSVideoCodingSystem method tries to add VLC to the search path of this application
 	 * If this fails, a dialog is opened, asking the user to specify where
 	 * VLC is installed. Otherwise, the application itself is started
 	 * 
@@ -59,6 +59,7 @@ public class Main {
 		{
 			// Only starts the main application after VLC has been found
 			Globals g = Globals.getInstance();
+			g.debug(DEBUG);
 			if(!openExisting) {
 				g.showNewProject();
 			}

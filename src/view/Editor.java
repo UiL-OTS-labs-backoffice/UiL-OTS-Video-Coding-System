@@ -20,7 +20,7 @@ import controller.*;
 import controller.serializer.Serializer;
 
 /**
- * Main view of the program
+ * UiLOTSVideoCodingSystem view of the program
  * @author mooij006
  *
  */
