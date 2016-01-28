@@ -27,6 +27,9 @@ public class Main {
 	
 	static private boolean fail_find_vlc = false;
 	static private String vlc_location = null; //Make debugging on different machines easier
+	static private boolean openExisting = false;
+	static private String existing;
+	
 	/**
 	 * Main method tries to add VLC to the search path of this application
 	 * If this fails, a dialog is opened, asking the user to specify where
@@ -55,7 +58,13 @@ public class Main {
 		if(vlcFound() && !fail_find_vlc)
 		{
 			// Only starts the main application after VLC has been found
-			Globals.getInstance();
+			Globals g = Globals.getInstance();
+			if(!openExisting) {
+				g.showNewProject();
+			}
+			else {
+				g.open(existing);
+			}
 		} else {
 			SwingUtilities.invokeLater(new Runnable(){
 				public void run(){
@@ -77,7 +86,8 @@ public class Main {
 			if (args[i].equals("-f"))
 			{
 				fail_find_vlc = true;
-			} else if(args[i].equals("-d")) {
+			} 
+			else if(args[i].equals("-d")) {
 				DEBUG = true;
 			}
 			else if(args[i].startsWith("vlc="))
@@ -93,11 +103,19 @@ public class Main {
 						if(DEBUG) System.out.println("VLC location set (as given in argument) to " + vlc_location);
 					}
 				}
+			} else if(args[i].startsWith("setVLC=")) {
+				Pattern p = Pattern.compile("-?[\"\']?setVLC=(.*)[\"\']?");
+				Matcher m = p.matcher(args[i]);
+				if(m.find()) {
+					vlc_location = m.group(1);
+					prefs.setVLCUrl(vlc_location);
+					System.exit(0);
+				}
 			} else {
 				File f = new File(args[i]);
 				if (f.exists()) {
-					// TODO open file?
-					System.out.println("Should be opening " + f);					
+					openExisting = true;
+					existing = f.getAbsolutePath();
 				}
 			}
 		}

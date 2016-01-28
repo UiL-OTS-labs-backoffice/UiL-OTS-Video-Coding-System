@@ -68,7 +68,9 @@ public class Globals {
 		
 		editorView = new Editor(instance);
 		settingsView = new ExperimentSettings(instance);
-		
+	}
+	
+	public void showNewProject(){
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				if(!preferences.getClosedProperly()) {
@@ -122,9 +124,25 @@ public class Globals {
 	 */
 	public static Globals getInstance()
 	{
-		if(instance == null)
+		if(instance == null){
 			new Globals();
+		}
 		return instance;
+	}
+	
+	public void open(final String url){
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				if (!controller.open(url)) {
+					JOptionPane
+							.showMessageDialog(
+									new JPanel(),
+									"Sorry! It looks like the project couldn't be opened",
+									"Opening project failed",
+									JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
 	}
 	
 	/**

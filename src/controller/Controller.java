@@ -158,6 +158,7 @@ public class Controller {
 			g.getEditor().show();
 			startBackupDaemon();
 			setVideo(exp.getUrl());
+			
 			return true;
 		} else {
 			return false;
