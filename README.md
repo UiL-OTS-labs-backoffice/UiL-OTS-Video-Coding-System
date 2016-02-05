@@ -31,7 +31,7 @@ An installer and a (portable) launcher for Windows are now provided as well. See
 
 ## Support
 The UiL OTS Video Coding System is developed by the UiL OTS Labs of the Utrecht University. A [how-to for using the UiL OTS Video Coding System](http://uilots-labs.wp.hum.uu.nl/how-to/how-to-recode-videos-offline-in-the-babylab/) is provided on the lab's website, as well as an [FAQ](http://uilots-labs.wp.hum.uu.nl/how-to/faq-troubleshooting-uil-ots-video-coding-system/).
-Please use the issues tracker if you encounter any problems. 
+Please use the issues tracker if you encounter any problems.
 
 ## License
 Copyright (C) 2015 UiL OTS Labs
