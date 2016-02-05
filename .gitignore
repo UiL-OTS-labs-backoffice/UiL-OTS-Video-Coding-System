@@ -13,6 +13,7 @@ $RECYCLE.BIN/
 *.msi
 *.msm
 *.msp
+*.exe
 
 # =========================
 # Operating System Files
@@ -52,3 +53,11 @@ Temporary Items
 # Exclude binaries
 bin/
 bin
+
+# Eclude VLC Portable (download from vlc.com)
+build/Windows/Portable/vlc-portable-win-32/*
+build/Windows/Portable/vlc-portable-win-64/*
+
+# Excluded built files
+build/Windows/Portable/VideoCodingUiLOTS.jar
+build/Windows/Installer/VideoCodingUiLOTS.jar
