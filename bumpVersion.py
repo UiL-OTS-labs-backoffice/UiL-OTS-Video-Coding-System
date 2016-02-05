@@ -37,6 +37,7 @@ def parseArgs():
 	"""
 	if len(sys.argv) > 1:
 		version = checkVersion(sys.argv[1])
+		print version
 		if len(sys.argv) > 2:
 			has_to_be = re.compile("^{0}$".format(version_name_check))
 			if not re.match(has_to_be, sys.argv[2]):
@@ -61,6 +62,7 @@ def updateConfig(v):
 	json_values['version_major'] = v['major']
 	json_values['version_minor'] = v['minor']
 	json_values['version_micro'] = v['micro']
+	json_values['version'] 		 = v['version']
 	json_values['output_location'] = "build/output/version-{version}".format(**v)
 	if "v_name" in v:
 		json_values['version_name'] = v['v_name']
@@ -159,9 +161,14 @@ def updateAnt(json):
 	print "Ant updated"
 
 def updateAntLine(json, p, l):
-	searched = p.search(l)
-	if searched != None and len(searched.groups()) > 2:
-		print l
+	searched = re.search(p,l)
+	if searched != None and len(searched.groups()) > 1:
+		if searched.group(1) == "version":
+			return '\t<property name="version" value="{version}"/>\n'.format(**json)
+		elif searched.group(1) == "jarname":
+			return '\t<property name="jarname" value="{jar_file}"/>\n'.format(**json)
+		elif searched.group(1) == "output.dir":
+			return '\t<property name="output.dir" value="output/version-${version}"/>\n'
 	return l
 
 if __name__ == "__main__":
