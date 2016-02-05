@@ -116,7 +116,7 @@ Section -installjre jre
   Strcmp $InstallJRE "yes" InstallJRE JREPathStorage
   DetailPrint "Starting the JRE installation"
 InstallJRE:
-  File /oname=$TEMP\jre_setup.exe jre-8u66-windows-i586.exe
+  File /oname=$TEMP\jre_setup.exe jre-8u71-windows-i586.exe
   ;MessageBox MB_OK "Installing JRE"
   DetailPrint "Java not found. Launching JRE setup"
   ;ExecWait "$TEMP\jre_setup.exe /S" $0

@@ -1,0 +1,68 @@
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+*.exe
+
+# =========================
+# Operating System Files
+# =========================
+
+# OSX
+# =========================
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Eclipse meuk
+.settings
+.classpath
+.project
+*.log
+
+# Exclude binaries
+bin/
+bin
+
+# Eclude VLC Portable (download from vlc.com)
+build/Windows/Portable/vlc-portable-win-32/*
+build/Windows/Portable/vlc-portable-win-64/*
+!build/Windows/Portable/vlc-portable-win-32/PUT_VLC_HERE
+!build/Windows/Portable/vlc-portable-win-64/PUT_VLC_HERE
+
+# Excluded built files
+build/Windows/Portable/VideoCodingUiLOTS.jar
+build/Windows/Installer/VideoCodingUiLOTS.jar
+!build/Windows/Installer/vlc-2.2.1-win32.exe
+!build/Windows/Installer/vlc-2.2.1-win64.exe
+!build/Windows/jre-8u71-windows-i586.exe
