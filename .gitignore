@@ -55,17 +55,15 @@ Temporary Items
 bin/
 bin
 
-# Eclude VLC Portable (download from vlc.com)
-build/Windows/Portable/vlc-portable-win-32/*
-build/Windows/Portable/vlc-portable-win-64/*
-!build/Windows/Portable/vlc-portable-win-32/PUT_VLC_HERE
-!build/Windows/Portable/vlc-portable-win-64/PUT_VLC_HERE
+# Exclude VLC Portable (download from vlc.com)
+build/windows/installer/vlc-portable-win-32/*
+build/windows/installer/vlc-portable-win-64/*
+!build/windows/installer/vlc-portable-win-32/PUT_VLC_HERE
+!build/windows/installer/vlc-portable-win-64/PUT_VLC_HERE
 
 # Excluded built files
-build/Windows/Portable/VideoCodingUiLOTS.jar
-build/Windows/Installer/VideoCodingUiLOTS.jar
-!build/Windows/Installer/vlc-2.2.1-win32.exe
-!build/Windows/Installer/vlc-2.2.1-win64.exe
-!build/Windows/Installer/jre-8u71-windows-i586.exe
+!build/windows/Installer/vlc-2.2.1-win32.exe
+!build/windows/Installer/vlc-2.2.1-win64.exe
+!build/windows/Installer/jre-8u71-windows-i586.exe
 
 build/output/*

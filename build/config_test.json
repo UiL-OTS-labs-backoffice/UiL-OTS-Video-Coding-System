@@ -1,9 +1,0 @@
-{
-    "version_name": "Melpomenia", 
-    "version": "2.1.2", 
-    "version_major": 2, 
-    "version_minor": 1, 
-    "version_micro": 2, 
-    "vlc_version": "2.2.1", 
-    "java_installer": "jre-8u71-windows-i586.exe"
-}
