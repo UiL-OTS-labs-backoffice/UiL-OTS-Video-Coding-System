@@ -13,6 +13,7 @@ $RECYCLE.BIN/
 *.msi
 *.msm
 *.msp
+*.exe
 
 # =========================
 # Operating System Files
@@ -31,6 +32,7 @@ Icon
 
 # Thumbnails
 ._*
+*~
 
 # Files that might appear on external disk
 .Spotlight-V100
@@ -52,3 +54,16 @@ Temporary Items
 # Exclude binaries
 bin/
 bin
+
+# Exclude VLC Portable (download from vlc.com)
+build/windows/installer/vlc-portable-win-32/*
+build/windows/installer/vlc-portable-win-64/*
+!build/windows/installer/vlc-portable-win-32/PUT_VLC_HERE
+!build/windows/installer/vlc-portable-win-64/PUT_VLC_HERE
+
+# Excluded built files
+!build/windows/Installer/vlc-2.2.1-win32.exe
+!build/windows/Installer/vlc-2.2.1-win64.exe
+!build/windows/Installer/jre-8u71-windows-i586.exe
+
+build/output/*

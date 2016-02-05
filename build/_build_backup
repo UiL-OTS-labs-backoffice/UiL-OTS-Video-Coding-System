@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project ActuallyWorkingVideoCodingSystem with Jar-in-Jar Loader">
+	
+	<!-- variable propertjes -->
+	<property name="version" value="2.1.2"/>
+	<property name="jarname" value="UiLOTSVideoCodingSystem.jar"/>
+	<property name="output.dir" value="output/version-${version}"/>
+	<!-- end of variable properties -->
+
+	<property name="base.dir" value=".."/>
+	<property name="src.dir" value="${base.dir}/src"/>
+    <property name="lib.dir" value="${base.dir}/lib" />
+    <property name="classes.dir" value="${base.dir}/bin"/>
+
+    <path id="lib.path.id">
+        <fileset dir="${lib.dir}" />
+    </path>
+ 
+    <target name="clean">
+        <delete dir="${output.dir}"/>
+        <delete dir="${classes.dir}"/>
+    </target>
+ 
+    <target name="compile" depends="resolve">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="lib.path.id"/>
+    </target>
+ 
+    <target name="jar" depends="compile">
+        <mkdir dir="${output.dir}"/>
+        <jar destfile="${output.dir}/${jarname}" basedir="${classes.dir}"/>
+    </target>
+
+</project>
