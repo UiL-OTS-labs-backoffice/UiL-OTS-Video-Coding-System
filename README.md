@@ -23,12 +23,14 @@ The amount of trials and looks is not set, so any amount can be used, but before
 ### Version 2
 Version 2 of the UiL OTS Video Coding System has been officially released in January 2016. In this version, the user interface received a mayor overhaul. A time line like interface was added, to provided an even clearer overview of where trials and looks have been added inside the project. This time line also provides quick access to all sorts of actions that can be performed on trials and looks in the project.
 
+An installer and a (portable) launcher for Windows are now provided as well. See the releases tab to download.
+
 ## Requires:
  * [VLC](http://www.videolan.org/vlc/)
  * [Java Runtime Environment (JRE)](https://www.java.com/en/download/) 1.6 or later
 
 ## Support
-The UiL OTS Video Coding System is developed by the UiL OTS Labs of the Utrecht University. A [how-to for using the UiL OTS Video Coding System](http://uilots-labs.wp.hum.uu.nl/how-to/how-to-recode-videos-offline-in-the-babylab/) is provided on the website, as well as an [FAQ](http://uilots-labs.wp.hum.uu.nl/how-to/faq-troubleshooting-uil-ots-video-coding-system/)
+The UiL OTS Video Coding System is developed by the UiL OTS Labs of the Utrecht University. A [how-to for using the UiL OTS Video Coding System](http://uilots-labs.wp.hum.uu.nl/how-to/how-to-recode-videos-offline-in-the-babylab/) is provided on the lab's website, as well as an [FAQ](http://uilots-labs.wp.hum.uu.nl/how-to/faq-troubleshooting-uil-ots-video-coding-system/).
 Please use the issues tracker if you encounter any problems.
 
 ## License
