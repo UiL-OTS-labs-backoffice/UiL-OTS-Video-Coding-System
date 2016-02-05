@@ -3,7 +3,7 @@
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
 	<property name="version" value="2.1.2"/>
-	<property name="output.dir" value="C:\Users\3966615\Documents\VideoCodingSystemAnt\output\${version}"/>
+	<property name="output.dir" value="output\${version}"/>
 	<target name="create_run_jar">
         <jar destfile="C:/Users/3966615/Documents/${version}/VideoCodingUiLOTS-${version}.jar">
             <manifest>

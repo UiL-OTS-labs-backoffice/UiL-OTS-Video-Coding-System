@@ -9,6 +9,10 @@
 !define JRE_VERSION "1.6.0"
 !define Vendor "UiL OTS Labs"
 !define ShortVendor "UiLOTSLabs"
+
+; Versions and files
+!define VLC_Install_version "2.2.1"
+!define Java_Installer "jre-8u71-windows-i586.exe"
  
 !include "MUI.nsh"
 !include "Sections.nsh"
@@ -116,7 +120,7 @@ Section -installjre jre
   Strcmp $InstallJRE "yes" InstallJRE JREPathStorage
   DetailPrint "Starting the JRE installation"
 InstallJRE:
-  File /oname=$TEMP\jre_setup.exe jre-8u71-windows-i586.exe
+  File /oname=$TEMP\jre_setup.exe ${Java_Installer}
   ;MessageBox MB_OK "Installing JRE"
   DetailPrint "Java not found. Launching JRE setup"
   ;ExecWait "$TEMP\jre_setup.exe /S" $0
@@ -183,11 +187,11 @@ InstallVLC:
 	IntCmp $JreArchType 64 X64 NotX64
 X64:
 	DetailPrint "Extracting VLC setup"
-	File /oname=$TEMP\vlc_installer.exe vlcwin64.exe
+	File /oname=$TEMP\vlc_installer.exe vlc-${VLC_Install_version}-win64.exe
 	Goto FinishInstall
 NotX64:
 	DetailPrint "Extracting VLC setup"
-	File /oname=$TEMP\vlc_installer.exe vlcwin32.exe
+	File /oname=$TEMP\vlc_installer.exe vlc-${VLC_Install_version}-win32.exe
 	Goto FinishInstall
 FinishInstall:
 	DetailPrint "Starting VLC setup"
