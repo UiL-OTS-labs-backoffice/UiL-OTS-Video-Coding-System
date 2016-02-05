@@ -142,8 +142,31 @@ def getJarFileRelativeLocation(json):
 	os.chdir(curAbsPath)
 	return relPathToJar
 
+def updateAnt(json):
+	print "Updating ant"
+	p = re.compile('<property name=\"([\w\.]*)\" value=\"([-${}\/\w\.]*)"\/>')
+	f = open("build/build.xml", "rb")
+	lst = list()
+	for l in f.readlines():
+		lst.append(updateAntLine(json,p,l))
+	f.close()
+	print "Parameters changed"
+
+	f = open("build/build.xml", 'wb')
+	for l in lst:
+		f.write(l)
+	f.close()
+	print "Ant updated"
+
+def updateAntLine(json, p, l):
+	searched = p.search(l)
+	if searched != None and len(searched.groups()) > 2:
+		print l
+	return l
+
 if __name__ == "__main__":
 	v = parseArgs()
 	json = updateConfig(v)
 	updateJavaAbout(v)
 	updateNsi(json)
+	updateAnt(json)

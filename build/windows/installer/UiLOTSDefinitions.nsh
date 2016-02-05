@@ -1,4 +1,4 @@
-!define OutLocation "../../output/version-2.1.2"
+!define OutLocation "../../output/version-2.2.2"
 !define JarFile "UiLOTSVideoCodingSystem.jar"
 !define AppVersion "2.1.2"
 !define VLC_Install_version "2.2.1"
