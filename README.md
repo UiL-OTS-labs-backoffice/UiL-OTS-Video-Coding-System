@@ -1,5 +1,5 @@
 # UiL OTS Video Coding System
-The UiL OTS Video Coding System is a piece of software for coding videos created in the UiL OTS Baby Lab, or in experiments with a similar setup. The software can be used to code looks of participants for each of the trials in the experiment. For each trial, the total look time is calculated, which can then be exported to a csv file.
+The UiL OTS Video Coding System is a piece of software for coding videos created in the UiL OTS Baby Lab, or in experiments with a similar setup. The software can be used to code looks of participants for each of the trials in the experiment. For each trial, the total look time is calculated, which can then be exported to a csv file. 
 
 ## Type of experiment
 This software is specifically made for researchers of the UiL OTS using a setup like in the [babylab of the UiL OTS labs](http://uilots-labs.wp.hum.uu.nl/facilities/baby-lab/). This software does not allow for much more than is required by those experimenters, but exactly this makes it simple to use for the purposes for which it was made. 
@@ -27,11 +27,11 @@ An installer and a (portable) launcher for Windows are now provided as well. See
 
 ## Requires:
  * [VLC](http://www.videolan.org/vlc/)
- * [Java Runtime Environment (JRE)](https://www.java.com/en/download/) 1.6 or later
+ * [Java Runtime Environment (JRE)](https://www.java.com/en/download/) 1.6 or later (although it is adviced to always use the latest version of Java).
 
 ## Support
 The UiL OTS Video Coding System is developed by the UiL OTS Labs of the Utrecht University. A [how-to for using the UiL OTS Video Coding System](http://uilots-labs.wp.hum.uu.nl/how-to/how-to-recode-videos-offline-in-the-babylab/) is provided on the lab's website, as well as an [FAQ](http://uilots-labs.wp.hum.uu.nl/how-to/faq-troubleshooting-uil-ots-video-coding-system/).
-Please use the issues tracker if you encounter any problems. 
+Please use the issues tracker if you encounter any problems.
 
 ## License
 Copyright (C) 2015 UiL OTS Labs
