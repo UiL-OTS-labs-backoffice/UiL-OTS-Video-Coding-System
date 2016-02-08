@@ -1,5 +1,0 @@
-!define OutLocation "../../output/version-3.8.6"
-!define JarFile "VideoCodingUiLOTS-3.8.6.jar"
-!define AppVersion "3.8.6"
-!define VLC_Install_version "2.2.1"
-!define Java_Installer "jre-8u71-windows-i586.exe"
