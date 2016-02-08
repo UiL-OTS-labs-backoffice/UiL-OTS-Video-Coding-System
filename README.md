@@ -1,5 +1,5 @@
 # UiL OTS Video Coding System
-The UiL OTS Video Coding System is a piece of software for coding videos created in the UiL OTS Baby Lab, or in experiments with a similar setup. The software can be used to code looks of participants for each of the trials in the experiment. For each trial, the total look time is calculated, which can then be exported to a csv file.
+The UiL OTS Video Coding System is a piece of software for coding videos created in the UiL OTS Baby Lab, or in experiments with a similar setup. The software can be used to code looks of participants for each of the trials in the experiment. For each trial, the total look time is calculated, which can then be exported to a csv file. 
 
 ## Type of experiment
 This software is specifically made for researchers of the UiL OTS using a setup like in the [babylab of the UiL OTS labs](http://uilots-labs.wp.hum.uu.nl/facilities/baby-lab/). This software does not allow for much more than is required by those experimenters, but exactly this makes it simple to use for the purposes for which it was made. 
