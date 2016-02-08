@@ -14,7 +14,6 @@ import model.ApplicationPreferences;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
-
 public class UiLOTSVideoCodingSystem {
 	
 	static private boolean DEBUG = false;

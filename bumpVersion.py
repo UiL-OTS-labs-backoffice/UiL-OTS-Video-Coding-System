@@ -35,20 +35,24 @@ def parseArgs():
 	First argument is version number
 	Second argument is version name (optional)
 	"""
-	if len(sys.argv) > 1:
-		version = checkVersion(sys.argv[1])
-		print version
-		if len(sys.argv) > 2:
-			has_to_be = re.compile("^{0}$".format(version_name_check))
-			if not re.match(has_to_be, sys.argv[2]):
-				#raise ValueError("Version name cannot contain any strange characters")
-				print "Version name can only contain letters, numbers, spaces, dashes and underscores"
-				exit(1)
-			version["v_name"] = sys.argv[2]
-	else:
-		raiseVersionError("not provided")
+	args = filter(lambda a : not a.startswith("-"), sys.argv)
+	if len(args) > 0:
+		runAfterwards = "-c" in sys.argv
+		if len(args) > 1:
+			version = checkVersion(args[1])
+			print version
+			if len(args) > 2:
+				has_to_be = re.compile("^{0}$".format(version_name_check))
+				if not re.match(has_to_be, args[2]):
+					#raise ValueError("Version name cannot contain any strange characters")
+					print "Version name can only contain letters, numbers, spaces, dashes and underscores"
+					exit(1)
+				version["v_name"] = args[2]
+		else:
+			raiseVersionError("not provided")
 	print "Version parsed"
-	return version
+	
+	return version, runAfterwards
 
 def updateConfig(v):
 	"""
@@ -64,6 +68,7 @@ def updateConfig(v):
 	json_values['version_micro'] = v['micro']
 	json_values['version'] 		 = v['version']
 	json_values['output_location'] = "build/output/version-{version}".format(**v)
+	json_values['jar_file']			= "VideoCodingUiLOTS-{version}.jar".format(**v)
 	if "v_name" in v:
 		json_values['version_name'] = v['v_name']
 	json_dumped = json.dumps(json_values, indent=4)
@@ -171,9 +176,16 @@ def updateAntLine(json, p, l):
 			return '\t<property name="output.dir" value="output/version-${version}"/>\n'
 	return l
 
+def runAnt():
+	os.chdir("build")
+	os.system("ant")
+	os.chdir("../")
+
 if __name__ == "__main__":
-	v = parseArgs()
+	v, runAfterwards = parseArgs()
 	json = updateConfig(v)
 	updateJavaAbout(v)
 	updateNsi(json)
 	updateAnt(json)
+	if runAfterwards:
+		runAnt()
