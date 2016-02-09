@@ -1,0 +1,21 @@
+This software is free under the GNU general public license version 2, and comes
+with no warrenty whatsoever. 
+
+                    GNU GENERAL PUBLIC LICENSE
+                       Version 2, June 1991
+
+ Copyright (C) 1989, 1991 Free Software Foundation, Inc., <http://fsf.org/>
+ 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+You can find the GPL license at /usr/share/common-license/GPL-2
+
+This package is not a part of the Debian distribution, as it is optional to install.
+
+This package uses ffmpeg (https://www.ffmpeg.org) / libav (https://libav.org/), VLC (http://www.videolan.org/vlc/) and Java (http://java.com/en/), which are all licensed seperately and by their respective owners.
+
+In addition, the Java application uses the following libraries:
+  * VLCj 2.4.0: https://github.com/caprica/vlcj/releases/tag/vlcj-2.4.0
+  * MigLayout 4.0: www.migcalendar.com/miglayout/versions/4.0/a (Swing version)
+  * Java Native Library (JNA) 3.5.2: http://mvnrepository.com/artifact/net.java.dev.jna/jna/3.5.2

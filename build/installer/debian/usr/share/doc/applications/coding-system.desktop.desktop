@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=UiL OTS Video Coding System
+Comment=Video coding tool for researchers
+Exec=/usr/bin/UiLOTSVideoCodingSystem.sh
+Icon=/usr/share/UiLOTSVideoCodingSystem/512x512.png
+Terminal=false
+Type=Application
+Categories=GNOME;Application
+StartupNotify=true
+Name[C]=coding-system.desktop

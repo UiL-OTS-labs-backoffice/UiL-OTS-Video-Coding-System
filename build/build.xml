@@ -72,7 +72,8 @@
     </target>
 
     <target name="createDebianPackage">
-        <exec executable="/bin/bash" os="Linux">
+        <exec executable="sudo" os="Linux">
+            <arg value="/bin/bash"/>
             <arg value="packageMaker.sh"/>
             <arg value="${basedir}/${output.dir}/${jarname}"/>
             <arg value="${basedir}/${output.dir}/UiLOTSVideoCodingSystem-${version}.deb"/>
