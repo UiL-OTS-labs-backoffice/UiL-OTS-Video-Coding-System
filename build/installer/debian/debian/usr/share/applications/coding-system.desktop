@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=UiL OTS Video Coding System
+Comment=Video coding tool for researchers
+Exec=/usr/bin/coding-system %f
+Icon=codingsystem
+Terminal=false
+Type=Application
+Categories=GNOME;Science;Education;Application;AudioVideo;Video;AudioVideoEditing
+MimeType=application/x-videocodingsystem
+StartupNotify=false

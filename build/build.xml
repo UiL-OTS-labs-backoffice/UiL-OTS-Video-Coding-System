@@ -15,6 +15,7 @@
     <property name="src.dir" value="${base.dir}/src"/>
     <property name="lib.dir" value="${base.dir}/lib" />
     <property name="classes.dir" value="${base.dir}/bin"/>
+    <property name="deb.dir" value="installer/debian"/>
 
     <echo message="source dir: ${src.dir}"/>
     <echo message="lib dir: ${lib.dir}"/>
@@ -74,13 +75,11 @@
     <target name="createDebianPackage">
         <exec executable="sudo" os="Linux">
             <arg value="/bin/bash"/>
-            <arg value="packageMaker.sh"/>
+            <arg value="${deb.dir}/packageMaker.sh"/>
+            <arg value="${deb.dir}"/>
             <arg value="${basedir}/${output.dir}/${jarname}"/>
-            <arg value="${basedir}/${output.dir}/UiLOTSVideoCodingSystem-${version}.deb"/>
+            <arg value="${basedir}/${output.dir}/UiLOTSVideoCodingSystem-${version}-"/>
             <arg value="${jarname}"/>
         </exec>
     </target>
-
-
-
 </project>

@@ -2,7 +2,9 @@ Package: coding-system
 Version: 2.1.2
 Section: x11
 Priority: optional
-Architecture: all
+Architecture: amd64
+Installed-Size: 27346
+Depends: default-jre | java-runtime (>= 1.6), vlc, libav-tools
 Maintainer: A.J. de Mooij <A.J.deMooij@uu.nl>
 Homepage: http://uilots-labs.wp.hum.uu.nl/
 Vcs-Browser: https://github.com/UiL-OTS-labs-backoffice/UiL-OTS-Video-Coding-System

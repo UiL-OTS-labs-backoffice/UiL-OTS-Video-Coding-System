@@ -9,11 +9,11 @@ with no warrenty whatsoever.
  Everyone is permitted to copy and distribute verbatim copies
  of this license document, but changing it is not allowed.
 
-You can find the GPL license at /usr/share/common-license/GPL-2
+You can find the GPL license at /usr/share/common-licenses/GPL-2
 
 This package is not a part of the Debian distribution, as it is optional to install.
 
-This package uses ffmpeg (https://www.ffmpeg.org) / libav (https://libav.org/), VLC (http://www.videolan.org/vlc/) and Java (http://java.com/en/), which are all licensed seperately and by their respective owners.
+This package uses ffmpeg (https://www.ffmpeg.org) / libav (https://libav.org/), VLC (http://www.videolan.org/vlc/) and Java (http://java.com/en/), which are all licensed separately and by their respective owners.
 
 In addition, the Java application uses the following libraries:
   * VLCj 2.4.0: https://github.com/caprica/vlcj/releases/tag/vlcj-2.4.0
