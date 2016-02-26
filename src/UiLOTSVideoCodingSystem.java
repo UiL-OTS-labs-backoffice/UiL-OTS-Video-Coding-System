@@ -1,8 +1,10 @@
 import java.io.File;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import com.sun.jna.NativeLibrary;
@@ -13,6 +15,10 @@ import controller.Globals;
 import model.ApplicationPreferences;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
+
+import com.apple.eawt.AppEvent.OpenFilesEvent;
+import com.apple.eawt.Application;
+import com.apple.eawt.OpenFilesHandler;
 
 public class UiLOTSVideoCodingSystem {
 	
@@ -45,10 +51,27 @@ public class UiLOTSVideoCodingSystem {
 	 */
 	public static void main(String[] args) {
 		
+		if (Globals.getOs() == Globals.OsType.Mac){
+			Application a = Application.getApplication();
+			a.setOpenFileHandler(new OpenFilesHandler() {
+				@Override
+				public void openFiles(OpenFilesEvent e) {
+					List<File> files = e.getFiles();
+					if(files.size() > 1){
+						JOptionPane.showMessageDialog(new JPanel(), 
+								"Only one file can be opened at the time with this application", 
+								"Can only open one file",
+								JOptionPane.WARNING_MESSAGE);
+					}
+					openExisting = true;
+					existing = files.get(0).getAbsolutePath();
+				}
+			});
+		}
+		
 		prefs = new ApplicationPreferences();
 		
 		if(args.length > 0) handleArguments(args);
-		
 		if(vlc_location != null)
 			
 		searchDefaultPaths();
@@ -59,6 +82,7 @@ public class UiLOTSVideoCodingSystem {
 			// Only starts the main application after VLC has been found
 			Globals g = Globals.getInstance();
 			g.debug(DEBUG);
+			
 			if(!openExisting) {
 				g.showNewProject();
 			}
@@ -67,6 +91,7 @@ public class UiLOTSVideoCodingSystem {
 			}
 		} else {
 			SwingUtilities.invokeLater(new Runnable(){
+				@Override
 				public void run(){
 					view.panels.VLCNotFound vlcError = new view.panels.VLCNotFound(prefs);
 					vlcError.setVisible(true);

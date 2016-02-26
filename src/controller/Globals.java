@@ -238,7 +238,7 @@ public class Globals {
 		String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
 		if (OS.indexOf("win") >= 0) {
 			return OsType.Windows;
-		} else if (OS.indexOf("mac") >= 0) {
+		} else if (OS.indexOf("os x") >= 0) {
 			return OsType.Mac;
 		} else {
 			return OsType.Linux;
