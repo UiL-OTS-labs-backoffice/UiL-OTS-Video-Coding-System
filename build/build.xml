@@ -15,6 +15,8 @@
 	<property name="output.dir" value="output/version-${version}"/>
     <!-- end of variable properties -->
 
+    <property name="mac.app.name" value="UiL OTS Video Coding System"/>
+
     <property name="base.dir" value=".."/>
     <property name="src.dir" value="${base.dir}/src"/>
     <property name="lib.dir" value="${base.dir}/lib" />
@@ -59,8 +61,8 @@
     </target>
 
     <target name="createInstallers" depends="create_run_jar">
-        <antcall target="createWindowsInstallers"/>
-        <antcall target="createDebianPackage"/>
+        <!--<antcall target="createWindowsInstallers"/>-->
+        <!-- <antcall target="createDebianPackage"/> -->
         <antcall target="createMacOSPackage"/>
     </target>
 
@@ -88,7 +90,7 @@
     <target name="createMacOSPackage">
         <jarbundler
             dir="${basedir}/${output.dir}"
-            name="UiL OTS Video Coding System"
+            name="${mac.app.name}"
             shortname="Coding System"
             icon="${osx.dir}/codingsystem.icns"
             version="${version}"
@@ -101,11 +103,16 @@
                 extensions="uil"
                 name="UiL OTS Video Coding Project"
                 mimeTypes="application/x-videocodingsystem"
-                iconfile="codingsystem.icns"
+                iconfile="${osx.dir}/codingsystem.icns"
                 role="Editor"
              />
         </jarbundler>
-
+        <exec executable="sudo" os="Linux">
+            <arg value="/bin/bash"/>
+            <arg value="${basedir}/${osx.dir}/copyapplefiles.sh"/>
+            <arg value="${basedir}/${output.dir}/${mac.app.name}.app"/>
+            <arg value="UiL-OTS-Video-Coding-System-${version}"/>
+        </exec>
     </target>
 
 </project>
