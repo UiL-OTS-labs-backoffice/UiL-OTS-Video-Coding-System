@@ -61,8 +61,8 @@
     </target>
 
     <target name="createInstallers" depends="create_run_jar">
-        <!--<antcall target="createWindowsInstallers"/>-->
-        <!-- <antcall target="createDebianPackage"/> -->
+        <antcall target="createWindowsInstallers"/>
+        <antcall target="createDebianPackage"/>
         <antcall target="createMacOSPackage"/>
     </target>
 
@@ -112,6 +112,8 @@
             <arg value="${basedir}/${osx.dir}/copyapplefiles.sh"/>
             <arg value="${basedir}/${output.dir}/${mac.app.name}.app"/>
             <arg value="UiL-OTS-Video-Coding-System-${version}"/>
+            <arg value="UiL OTS Video Coding System Version ${version}"/>
+            <arg value="${basedir}/${output.dir}"/>
         </exec>
     </target>
 

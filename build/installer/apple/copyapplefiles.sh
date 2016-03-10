@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ./copyapplefiles.sh [path-to-app-file] [name-of-app-file]
+# ./copyapplefiles.sh [path-to-app-file] [dmg-name] [drive-name] [output-location]
 
 BASEDIR=$(dirname "$0")
 
@@ -8,7 +8,7 @@ SIZE=$(du -s "$1" | sed -e "s/\t.*//")
 COUNT=$(expr $SIZE / 1000 + 2)
 
 dd if=/dev/zero of="/tmp/$2.dmg" bs=1M count=$COUNT
-mkfs.hfsplus -v "$2" "/tmp/$2.dmg"
+mkfs.hfsplus -v "$3" "/tmp/$2.dmg"
 
 sudo mkdir /mnt/appledisk
 sudo mount -o loop "/tmp/$2.dmg" /mnt/appledisk
@@ -25,3 +25,4 @@ sleep 1
 sudo umount /mnt/appledisk
 sudo rm -R /mnt/appledisk
 
+mv /tmp/$2.dmg $4/$2.dmg
