@@ -83,7 +83,7 @@
             <arg value="${deb.dir}/packageMaker.sh"/>
             <arg value="${deb.dir}"/>
             <arg value="${basedir}/${output.dir}/${jarname}"/>
-            <arg value="${basedir}/${output.dir}/UiLOTSVideoCodingSystem-${version}-"/>
+            <arg value="${basedir}/${output.dir}/UiLOTSVideoCodingSystem-${version}"/>
             <arg value="${jarname}"/>
         </exec>
     </target>

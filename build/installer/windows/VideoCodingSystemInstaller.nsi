@@ -218,6 +218,8 @@ Section "${AppName}" SecAppFiles
   SectionIn 1 RO	; Full install, cannot be unselected
 			; If you add more sections be sure to add them here as well
   SetOutPath $INSTDIR
+  Delete $INSTDIR/VideoCodingUiLOTS.jar
+  Delete $INSTDIR/VideoCodingUiLOTS-*.jar
   File ${OutLocation}/${JarFile}
   File logo.ico
   ;Store install folder
