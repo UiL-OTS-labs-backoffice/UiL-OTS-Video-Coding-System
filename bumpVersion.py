@@ -176,27 +176,21 @@ def updateAntLine(json, p, l):
 			return '\t<property name="output.dir" value="output/version-${version}"/>\n'
 	return l
 
-def updateDebian(json):
+def updateDebian(json, arch):
 	print "Updating debian"
 	p = re.compile(r'^Version: .*')
-	f = open("build/installer/debian/DEBIAN/control", "rb")
+	f = open("build/installer/debian/control-%s" % arch, "rb")
 	lst = list()
 	for l in f.readlines():
 		lst.append(updateDebianLine(json,p,l))
 	f.close()
 	print "Changing version in debian package"
-	f = open("build/installer/debian/DEBIAN/control", 'wb')
+	f = open("build/installer/debian/control-%s" % arch, 'wb')
 	for l in lst:
 		f.write(l)
 	f.close()
 	print "Version updated in debian control file."
-	print "Creating starter script"
-	f = open("build/installer/debian/usr/bin/UiLOTSVideoCodingSystem.sh", 'wb')
-	f.write("#!/bin/bash\n")
-	f.write("java -jar {jar_file}".format(**json))
-	f.close()
-	os.chmod("build/installer/linux/debian/usr/bin/UiLOTSVideoCodingSystem.sh", 0555)
-
+	
 def updateDebianLine(json, p, l):
 	searched = re.search(p,l)
 	if searched != None:
@@ -215,6 +209,7 @@ if __name__ == "__main__":
 	updateJavaAbout(v)
 	updateNsi(json)
 	updateAnt(json)
-	updateDebian(json)
+	updateDebian(json, "amd64")
+	updateDebian(json, "i386")
 	if runAfterwards:
 		runAnt()
