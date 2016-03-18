@@ -129,7 +129,7 @@ def updateNsi(json):
 	"""
 	jarFilePath = getJarFileRelativeLocation(json)
 	print "Updating NSIS definition file"
-	f = open("build/windows/installer/UiLOTSDefinitions.nsh", 'wb')
+	f = open("build/installer/windows/UiLOTSDefinitions.nsh", 'wb')
 	f.write("!define OutLocation \"{0}\"\n".format(jarFilePath))
 	f.write("!define JarFile \"{jar_file}\"\n".format(**json))
 	f.write("!define AppVersion \"{version}\"\n".format(**json))
@@ -144,7 +144,7 @@ def getJarFileRelativeLocation(json):
 	If something changes in directory structure, this fails
 	"""
 	curAbsPath = os.path.abspath(".")
-	os.chdir("build/windows/installer/")
+	os.chdir("build/installer/windows/")
 	relPathToJar = os.path.relpath(curAbsPath + "/" + json["output_location"])
 	os.chdir(curAbsPath)
 	return relPathToJar
@@ -176,6 +176,28 @@ def updateAntLine(json, p, l):
 			return '\t<property name="output.dir" value="output/version-${version}"/>\n'
 	return l
 
+def updateDebian(json, arch):
+	print "Updating debian"
+	p = re.compile(r'^Version: .*')
+	f = open("build/installer/debian/control-%s" % arch, "rb")
+	lst = list()
+	for l in f.readlines():
+		lst.append(updateDebianLine(json,p,l))
+	f.close()
+	print "Changing version in debian package"
+	f = open("build/installer/debian/control-%s" % arch, 'wb')
+	for l in lst:
+		f.write(l)
+	f.close()
+	print "Version updated in debian control file."
+	
+def updateDebianLine(json, p, l):
+	searched = re.search(p,l)
+	if searched != None:
+		return "Version: {version}\n".format(**json)
+	else:
+		return l
+
 def runAnt():
 	os.chdir("build")
 	os.system("ant")
@@ -187,5 +209,7 @@ if __name__ == "__main__":
 	updateJavaAbout(v)
 	updateNsi(json)
 	updateAnt(json)
+	updateDebian(json, "amd64")
+	updateDebian(json, "i386")
 	if runAfterwards:
 		runAnt()
