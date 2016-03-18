@@ -80,13 +80,10 @@ public class UiLOTSVideoCodingSystem {
 		p.updateMsg("Processing arguments..");
 		if(args.length > 0) handleArguments(args);
 		
-		
+		p.updateMsg("Searching for VLC");
 		if(vlc_location != null)
-		{
-			p.updateMsg("Searching for VLC");
 			searchDefaultPaths();
-			searchPreferencedPath();
-		}
+		searchPreferencedPath();
 		
 		if(vlcFound() && !fail_find_vlc)
 		{
