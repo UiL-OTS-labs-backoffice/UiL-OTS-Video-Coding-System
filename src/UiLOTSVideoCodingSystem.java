@@ -15,6 +15,7 @@ import controller.Globals;
 import model.ApplicationPreferences;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
+import view.panels.LoadingPanel;
 
 import com.apple.eawt.AppEvent.OpenFilesEvent;
 import com.apple.eawt.Application;
@@ -50,12 +51,16 @@ public class UiLOTSVideoCodingSystem {
 	 * 							Required for automatic file association
 	 */
 	public static void main(String[] args) {
+		LoadingPanel p = new LoadingPanel();
 		
 		if (Globals.getOs() == Globals.OsType.Mac){
 			Application a = Application.getApplication();
+			p.updateMsg("Checking Mac OS compatibility...");
 			a.setOpenFileHandler(new OpenFilesHandler() {
 				@Override
 				public void openFiles(OpenFilesEvent e) {
+					
+					@SuppressWarnings("unchecked")
 					List<File> files = e.getFiles();
 					if(files.size() > 1){
 						JOptionPane.showMessageDialog(new JPanel(), 
@@ -70,23 +75,32 @@ public class UiLOTSVideoCodingSystem {
 		}
 		
 		prefs = new ApplicationPreferences();
+		p.updateMsg("Initializing application preferences...");
 		
+		p.updateMsg("Processing arguments..");
 		if(args.length > 0) handleArguments(args);
+		
+		
 		if(vlc_location != null)
-			
-		searchDefaultPaths();
-		searchPreferencedPath();
+		{
+			p.updateMsg("Searching for VLC");
+			searchDefaultPaths();
+			searchPreferencedPath();
+		}
 		
 		if(vlcFound() && !fail_find_vlc)
 		{
+			p.updateMsg("Initializing application view...");
 			// Only starts the main application after VLC has been found
 			Globals g = Globals.getInstance();
 			g.debug(DEBUG);
 			
 			if(!openExisting) {
+				p.updateMsg("Starting new project...");
 				g.showNewProject();
 			}
 			else {
+				p.updateMsg("Opening project...");
 				g.open(existing);
 			}
 		} else {
@@ -98,6 +112,7 @@ public class UiLOTSVideoCodingSystem {
 				}
 			});
 		}
+		p.dispose();
 	}
 	
 	/**
