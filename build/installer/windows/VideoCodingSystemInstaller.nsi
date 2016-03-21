@@ -109,6 +109,8 @@ Var VLCPath
 ;Installer Sections
  
 Section -installjre jre
+  IfSilent 0 +2
+	Call CheckInstalledJRE
   Push $0
   Push $1
  
@@ -166,6 +168,9 @@ End:
 SectionEnd
 
 Section -installvlc vlc
+	IfSilent 0 +2
+		Call CheckIfVLCInstalled
+
 	Push $0
 	Push $1
 	DetailPrint "Probing VLC installation"
@@ -182,7 +187,7 @@ InstallVLC:
 	DetailPrint "Starting the VLC installation"
 	IntCmp $JreArchType 64 X64 NotX64
 X64:
-	DetailPrint "Extracting VLC setup"
+	DetailPrint "Extracting VLC setup (extracting. Go to finish)"
 	File /oname=$TEMP\vlc_installer.exe vlc-${VLC_Install_version}-win64.exe
 	Goto FinishInstall
 NotX64:
@@ -212,6 +217,8 @@ StillNotFound:
 EndOfFunction:
 	Pop $1
 	Pop $0
+	IfSilent 0 +2
+		Call myPreInstfiles
 SectionEnd
  
 Section "${AppName}" SecAppFiles
@@ -287,7 +294,7 @@ Function myPreInstfiles
 FunctionEnd
 
 Function CheckIfVLCInstalled
-	Exch $1 ; $1 base
+	Push $1 ; $1 base
 	IntCmp $JreArchType 64 Check64Bit Check32Bit	
 Check32Bit:
 	ReadRegStr $1 HKLM "SOFTWARE\Wow6432Node\VideoLan\VLC" "InstallDir"
@@ -306,7 +313,7 @@ Found:
 	StrCpy $InstallVLC "no"
 	Goto EndOfFunction
 EndOfFunction:
-	Exch $1 ; restore stack
+	Pop $1 ; restore stack
 	Return
 FunctionEnd
  
