@@ -1,12 +1,14 @@
 #!/bin/bash
+tmp_dir=$(mktemp -d -t uilots-XXXXXXXXXX)
 
 # copy file structure for i386
 cd $1
-mkdir -p /tmp/uilots/debian/
-cp -R debian/ /tmp/uilots/
-cp control-amd64 /tmp/uilots/debian/DEBIAN/control
-cp control-i386 /tmp/uilots/
-cd /tmp/uilots/
+mkdir -p $tmp_dir/uilots/debian/
+cp -R debian/ $tmp_dir/uilots/
+mkdir $tmp_dir/uilots/debian/DEBIAN
+cp control-amd64 $tmp_dir/uilots/debian/DEBIAN/control
+cp control-i386 $tmp_dir/uilots/
+cd $tmp_dir/uilots/
 
 # copy jar file
 mkdir -p debian/usr/share/coding-system/
@@ -28,10 +30,10 @@ dpkg --build debian
 mv debian.deb $3-amd64.deb
 
 # Build i386 package
-cp /tmp/uilots/control-i386 /tmp/uilots/debian/DEBIAN/control
+cp $tmp_dir/uilots/control-i386 $tmp_dir/uilots/debian/DEBIAN/control
 dpkg --build debian
 mv debian.deb $3-i386.deb
 
 # Clean
-cd /tmp
+cd $tmp_dir
 rm -R uilots

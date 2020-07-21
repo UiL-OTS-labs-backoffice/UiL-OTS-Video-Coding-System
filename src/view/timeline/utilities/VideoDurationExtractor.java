@@ -34,8 +34,6 @@ public class VideoDurationExtractor {
 				if(debug)e.printStackTrace();
 				exe = "lib/ffmpeg.exe";
 			}
-		} else if(osType == OsType.Linux) {
-			exe = "avconv";
 		} else {
 			exe = "ffmpeg";
 		}

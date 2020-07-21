@@ -1,11 +1,11 @@
 {
-    "jar_file": "VideoCodingUiLOTS-2.1.3.jar", 
-    "output_location": "build/output/version-2.1.3", 
-    "version_name": "Melpomenia", 
-    "version": "2.1.3", 
-    "version_major": 2, 
-    "version_minor": 1, 
-    "version_micro": 3, 
-    "vlc_version": "2.2.1", 
+    "jar_file": "VideoCodingUiLOTS-2.2.0.jar",
+    "output_location": "build/output/version-2.2.0",
+    "version_name": "Alpha",
+    "version": "2.2.0",
+    "version_major": 2,
+    "version_minor": 2,
+    "version_micro": 0,
+    "vlc_version": "2.2.1",
     "java_installer": "jre-8u71-windows-i586.exe"
 }
