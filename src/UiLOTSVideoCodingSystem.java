@@ -1,4 +1,5 @@
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -13,17 +14,17 @@ import java.util.regex.Matcher;
 
 import controller.Globals;
 import model.ApplicationPreferences;
-import uk.co.caprica.vlcj.player.MediaPlayerFactory;
-import uk.co.caprica.vlcj.runtime.RuntimeUtil;
+import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
+import uk.co.caprica.vlcj.binding.RuntimeUtil;
 import view.panels.LoadingPanel;
 
-import com.apple.eawt.AppEvent.OpenFilesEvent;
-import com.apple.eawt.Application;
-import com.apple.eawt.OpenFilesHandler;
+import java.awt.Desktop;
+import java.awt.desktop.OpenFilesHandler;
+import java.awt.desktop.OpenFilesEvent;
 
 public class UiLOTSVideoCodingSystem {
 	
-	static private boolean DEBUG = false;
+	static private boolean DEBUG = true;
 	
 	public static boolean Debug(){
 		return DEBUG;
@@ -54,9 +55,9 @@ public class UiLOTSVideoCodingSystem {
 		LoadingPanel p = new LoadingPanel();
 		
 		if (Globals.getOs() == Globals.OsType.Mac){
-			Application a = Application.getApplication();
 			p.updateMsg("Checking Mac OS compatibility...");
-			a.setOpenFileHandler(new OpenFilesHandler() {
+			Desktop desktop = Desktop.getDesktop();
+			desktop.setOpenFileHandler(new OpenFilesHandler() {
 				@Override
 				public void openFiles(OpenFilesEvent e) {
 					
@@ -81,7 +82,7 @@ public class UiLOTSVideoCodingSystem {
 		if(args.length > 0) handleArguments(args);
 		
 		p.updateMsg("Searching for VLC");
-		if(vlc_location != null)
+		if(vlc_location == null)
 			searchDefaultPaths();
 		searchPreferencedPath();
 		
@@ -173,8 +174,10 @@ public class UiLOTSVideoCodingSystem {
 			}
 		} else if (Globals.getOs() == Globals.OsType.Linux)
 		{
+			String prefPath = prefs.getVLCUrl();
 			// Best guess for Ubuntu. Doesn't read the path, except when in preferences.
-			if(prefs.getVLCUrl() == null) prefs.setVLCUrl("usr/bin/vlc");
+			if(prefPath == null || new File(".").getAbsolutePath().equals(prefPath))
+				prefs.setVLCUrl("/usr/bin/vlc");
 		}
 		else {
 	    	// Best guess for OSX
@@ -202,9 +205,10 @@ public class UiLOTSVideoCodingSystem {
 			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), p);
 		} catch (java.lang.UnsatisfiedLinkError e) {
 			vlcErrorMessage("Not in prefs");
-		} catch (Error e)
-		{
+		} catch (Error e) {
 			vlcErrorMessage("General error in preference path");
+			if(DEBUG)
+				throw e;
 		}
 	}
 	
@@ -227,7 +231,7 @@ public class UiLOTSVideoCodingSystem {
 		} catch(java.lang.RuntimeException e){
 			if(DEBUG) System.out.println("Runtime exception (this is good. Means VLC wasn't found at all");
 		} catch(Error e) {
-			if(DEBUG) System.out.println("Other error:");
+			if(DEBUG) System.out.println("Other error:" + e.toString());
 		}
 		
 		return found;

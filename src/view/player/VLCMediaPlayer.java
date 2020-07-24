@@ -3,6 +3,7 @@ package view.player;
 import java.awt.Dimension;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -13,16 +14,17 @@ import javax.swing.SwingUtilities;
 
 import controller.Globals;
 
-import uk.co.caprica.vlcj.player.MediaPlayer;
-import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
-import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
-import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
-import uk.co.caprica.vlcj.player.MediaPlayerFactory;
-import uk.co.caprica.vlcj.player.direct.BufferFormat;
-import uk.co.caprica.vlcj.player.direct.BufferFormatCallback;
-import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
-import uk.co.caprica.vlcj.player.direct.RenderCallback;
-import uk.co.caprica.vlcj.player.direct.format.RV32BufferFormat;
+import uk.co.caprica.vlcj.media.MediaRef;
+import uk.co.caprica.vlcj.media.TrackType;
+import uk.co.caprica.vlcj.player.base.MediaPlayer;
+import uk.co.caprica.vlcj.player.base.MediaPlayerEventListener;
+import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
+import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
+import uk.co.caprica.vlcj.player.embedded.videosurface.callback.BufferFormat;
+import uk.co.caprica.vlcj.player.embedded.videosurface.callback.BufferFormatCallback;
+import uk.co.caprica.vlcj.player.embedded.videosurface.VideoSurface;
+import uk.co.caprica.vlcj.player.embedded.videosurface.callback.RenderCallback;
+import uk.co.caprica.vlcj.player.embedded.videosurface.callback.format.RV32BufferFormat;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import view.timeline.utilities.VideoDurationExtractor;
 
@@ -70,7 +72,7 @@ public class VLCMediaPlayer implements IMediaPlayer{
         // seekable, playable, #video outputs, video size... all false or 0.
         // Therefore, we play a small bit of the media in a second media player,
         // which doesn't display anything on the screen, to find out the video size. 
-		tryHiddenPlayer(mediaURL);     
+		tryHiddenPlayer(mediaURL);
 
 		Dimension dim = (videoSize != null) ? videoSize
                                             : fallbackVideoSize;
@@ -90,8 +92,8 @@ public class VLCMediaPlayer implements IMediaPlayer{
 	
 	private void internalCreateNewVisualComponent(String [] prepareOptions) {
         playerComponent = new EmbeddedMediaPlayerComponent();
-        player = playerComponent.getMediaPlayer();
-        player.addMediaPlayerEventListener(infoListener);
+        player = playerComponent.mediaPlayer();
+        player.events().addMediaPlayerEventListener(infoListener);
         
         playerComponent.addHierarchyListener(new HierarchyListener() {
 			// This makes sure that when the player window becomes displayable
@@ -100,53 +102,59 @@ public class VLCMediaPlayer implements IMediaPlayer{
             public void hierarchyChanged(HierarchyEvent e) {
             	long flags = e.getChangeFlags() & (HierarchyEvent.PARENT_CHANGED);
                 if ((flags != 0) &&	e.getComponent().isDisplayable()) {
-                    player.start();
-                   	player.pause();
+                    player.controls().start();
+                   	player.controls().pause();
             	}
             }
         });
         
         // configure the player with the given media file
-        player.prepareMedia(mediaURL, prepareOptions);
-        player.parseMedia();
-        
-        player.setEnableMouseInputHandling(false);
-        player.setEnableKeyInputHandling(false);
+        player.media().prepare(mediaURL, prepareOptions);
+        player.media().parsing().parse();
+
+        player.input().enableKeyInputHandling(false);
+        player.input().enableMouseInputHandling(false);
 	}
-	
-    private DirectMediaPlayer hiddenMediaPlayer;
+
+    private EmbeddedMediaPlayer hiddenMediaPlayer;
     private Semaphore semaphore;
     
     /*
      * Play media invisibly, to find out the size.
+     * NOTE: THIS WILL CAUSE VLC ERRORS. They can be ignored, the original programmer employed a hack to find out
+     * the video size. I'm not in the mood to fix it, as it's not really a functional problem. It's just evil code.
      */
     private synchronized void tryHiddenPlayer(String media) {
     	MediaPlayerFactory factory = new MediaPlayerFactory();
     	TestRenderCallback render = new TestRenderCallback();
-    	hiddenMediaPlayer = factory.newDirectMediaPlayer(new TestBufferFormatCallback(), render);
-        hiddenMediaPlayer.setVolume(0);
-        semaphore = new Semaphore(0);	        
-        hiddenMediaPlayer.playMedia(media);
-        
+		hiddenMediaPlayer = factory.mediaPlayers().newEmbeddedMediaPlayer();
+    	VideoSurface surface = factory.videoSurfaces().newVideoSurface(new TestBufferFormatCallback(), render, false);
+		hiddenMediaPlayer.videoSurface().set(surface);
+    	hiddenMediaPlayer.audio().setVolume(0);
+        semaphore = new Semaphore(0);
+        hiddenMediaPlayer.media().play(media);
+
         try {
         	semaphore.tryAcquire(1000L, TimeUnit.MILLISECONDS);
         	wait(1000);
-        } catch(InterruptedException ex) {	        		
+        } catch(InterruptedException ex) {
+        	if(Globals.getInstance().debug())
+        		System.out.println(ex);
         }
-        mediaLength = hiddenMediaPlayer.getLength();
-        
+        mediaLength = hiddenMediaPlayer.status().length();
+
         checkMediaDuration(media, mediaLength);
-        
-        hiddenMediaPlayer.pause();
-        long trytime = hiddenMediaPlayer.getLength() / 2;
-        hiddenMediaPlayer.setTime(trytime);
+
+        hiddenMediaPlayer.controls().pause();
+        long trytime = hiddenMediaPlayer.status().length() / 2;
+        hiddenMediaPlayer.controls().setTime(trytime);
         try{
         	wait(1000);
         } catch(InterruptedException ex){
         }
-        this.offset = hiddenMediaPlayer.getTime() - trytime;
-        
-        hiddenMediaPlayer.stop();
+        this.offset = hiddenMediaPlayer.status().time() - trytime;
+
+        hiddenMediaPlayer.controls().stop();
         hiddenMediaPlayer.release();
         hiddenMediaPlayer = null;
         semaphore = null;
@@ -201,7 +209,7 @@ public class VLCMediaPlayer implements IMediaPlayer{
         }
 
         @Override
-        public void display(DirectMediaPlayer mediaPlayer, com.sun.jna.Memory[] nativeBuffer, BufferFormat bufferFormat) {
+        public void display(MediaPlayer mediaPlayer, ByteBuffer[] nativeBuffer, BufferFormat bufferFormat) {
         }
     }
     
@@ -216,18 +224,24 @@ public class VLCMediaPlayer implements IMediaPlayer{
         	semaphore.release();
             return new RV32BufferFormat(352, 288);
         }
-    }
+
+		@Override
+		public void allocatedBuffers(ByteBuffer[] byteBuffers) {
+
+		}
+	}
     
     MediaPlayerEventListener infoListener = new MediaPlayerEventListener() {
 		
     	public void playing(MediaPlayer mediaPlayer) {
-			if (msPerFrame <= 0) {
-			    float fps = mediaPlayer.getFps();
-			    if (fps > 1) {
-			    	msPerFrame = (1000d / fps);
-			    	stdev = msPerFrame / 2;
-		        }
-		    }
+    		// TODO: wtf is
+//			if (msPerFrame <= 0) {
+//			    float fps = mediaPlayer.getFps();
+//			    if (fps > 1) {
+//			    	msPerFrame = (1000d / fps);
+//			    	stdev = msPerFrame / 2;
+//		        }
+//		    }
 			List<IMediaPlayerListener> localObservers;
 			synchronized(MUTEX) {
 				localObservers = new ArrayList<IMediaPlayerListener>(observers);
@@ -239,17 +253,17 @@ public class VLCMediaPlayer implements IMediaPlayer{
     	
 		public void finished(MediaPlayer mediaPlayer) {
 			VLCMediaPlayer.this.stop();
-			VLCMediaPlayer.this.player.stop();
+			VLCMediaPlayer.this.player.controls().stop();
 		}
 		
 		public void timeChanged(MediaPlayer mediaPlayer, long newTime) {
-			if (msPerFrame <= 0) {
-				float fps = mediaPlayer.getFps();
-				if (fps > 1) {
-					msPerFrame = (1000d / fps);
-					stdev = msPerFrame / 2;
-				}
-			}
+//			if (msPerFrame <= 0) {
+//				float fps = mediaPlayer.getFps();
+//				if (fps > 1) {
+//					msPerFrame = (1000d / fps);
+//					stdev = msPerFrame / 2;
+//				}
+//			}
 			mediaTimeChanged();
 		}
 
@@ -260,9 +274,6 @@ public class VLCMediaPlayer implements IMediaPlayer{
 		public void buffering(MediaPlayer arg0, float arg1) { }
 
 		@Override
-		public void endOfSubItems(MediaPlayer arg0) { }
-
-		@Override
 		public void error(MediaPlayer arg0) { }
 
 		@Override
@@ -270,31 +281,6 @@ public class VLCMediaPlayer implements IMediaPlayer{
 
 		@Override
 		public void lengthChanged(MediaPlayer arg0, long arg1) { }
-
-		@Override
-		public void mediaChanged(MediaPlayer arg0, libvlc_media_t arg1,
-				String arg2) { }
-
-		@Override
-		public void mediaDurationChanged(MediaPlayer arg0, long arg1) { }
-
-		@Override
-		public void mediaFreed(MediaPlayer arg0) { }
-
-		@Override
-		public void mediaMetaChanged(MediaPlayer arg0, int arg1) { }
-
-		@Override
-		public void mediaParsedChanged(MediaPlayer arg0, int arg1) { }
-
-		@Override
-		public void mediaStateChanged(MediaPlayer arg0, int arg1) { }
-
-		@Override
-		public void mediaSubItemAdded(MediaPlayer arg0, libvlc_media_t arg1) { }
-
-		@Override
-		public void newMedia(MediaPlayer arg0) { }
 
 		@Override
 		public void opening(MediaPlayer arg0) { }
@@ -326,17 +312,66 @@ public class VLCMediaPlayer implements IMediaPlayer{
 		public void stopped(MediaPlayer arg0) { }
 
 		@Override
-		public void subItemFinished(MediaPlayer arg0, int arg1) { }
-
-		@Override
-		public void subItemPlayed(MediaPlayer arg0, int arg1) { }
-
-		@Override
 		public void titleChanged(MediaPlayer arg0, int arg1) { }
 
 		@Override
 		public void videoOutput(MediaPlayer arg0, int arg1) { }
-    };
+
+		@Override
+		public void mediaChanged(MediaPlayer mediaPlayer, MediaRef mediaRef) {
+
+		}
+
+		@Override
+		public void scrambledChanged(MediaPlayer mediaPlayer, int i) {
+
+		}
+
+		@Override
+		public void elementaryStreamAdded(MediaPlayer mediaPlayer, TrackType trackType, int i) {
+
+		}
+
+		@Override
+		public void elementaryStreamDeleted(MediaPlayer mediaPlayer, TrackType trackType, int i) {
+
+		}
+
+		@Override
+		public void elementaryStreamSelected(MediaPlayer mediaPlayer, TrackType trackType, int i) {
+
+		}
+
+		@Override
+		public void corked(MediaPlayer mediaPlayer, boolean b) {
+
+		}
+
+		@Override
+		public void muted(MediaPlayer mediaPlayer, boolean b) {
+
+		}
+
+		@Override
+		public void volumeChanged(MediaPlayer mediaPlayer, float v) {
+
+		}
+
+		@Override
+		public void audioDeviceChanged(MediaPlayer mediaPlayer, String s) {
+
+		}
+
+		@Override
+		public void chapterChanged(MediaPlayer mediaPlayer, int i) {
+
+		}
+
+		@Override
+		public void mediaPlayerReady(MediaPlayer mediaPlayer) {
+
+		}
+	};
 	
     /* (non-Javadoc)
 	 * @see view.IMediaPlayer#createNewVisualComponent()
@@ -345,19 +380,19 @@ public class VLCMediaPlayer implements IMediaPlayer{
 	public java.awt.Component createNewVisualComponent() {
         if (playerComponent != null && player != null) {
         	// Preserve the time, volume, play rate, aspect ratio.
-        	long time = player.getTime();
-        	int volume = player.getVolume();
-        	float rate = player.getRate();
+        	long time = player.status().time();
+        	int volume = player.audio().volume();
+        	float rate = player.status().rate();
         	float ar = getAspectRatio();
         	
-   			playerComponent.release(true);
+   			playerComponent.release();
    			playerComponent = null;
    			String opt1 = ":start-time=" + Float.toString(time / 1000f);
    			String[] opts = { opt1 };
             internalCreateNewVisualComponent(opts);
 			
-            player.setRate(rate);
-            player.setVolume(volume);
+            player.controls().setRate(rate);
+            player.audio().setVolume(volume);
             setAspectRatio(ar);
             
             return playerComponent;
@@ -427,7 +462,7 @@ public class VLCMediaPlayer implements IMediaPlayer{
 	        case 239: aspect = "239:100"; break;
 	        default: aspect  = ""; break;
         }
-    	player.setAspectRatio(aspect);
+    	player.video().setAspectRatio(aspect);
     	this.aspectRatio = aspectRatio;
     }
     
@@ -436,13 +471,13 @@ public class VLCMediaPlayer implements IMediaPlayer{
 	 */
     @Override
 	public void start() {
-		if(player.isPlaying())
+		if(player.status().isPlaying())
        	{
-       		if(player.canPause())
-       			player.pause();
+       		if(player.status().canPause())
+       			player.controls().pause();
        	}
        	else
-       		player.play();	// async!
+       		player.controls().play();	// async!
     }
 	
     /* (non-Javadoc)
@@ -450,11 +485,11 @@ public class VLCMediaPlayer implements IMediaPlayer{
 	 */
     @Override
 	public void stop() {
-		if (player.isPlaying()) {
-            if (player.canPause()) {
-                player.pause();
+		if (player.status().isPlaying()) {
+            if (player.status().canPause()) {
+                player.controls().pause();
             } else {
-                player.stop();
+                player.controls().stop();
             }
 		}
     }
@@ -464,7 +499,7 @@ public class VLCMediaPlayer implements IMediaPlayer{
 	 */
     @Override
 	public boolean isPlaying() {
-        return player.isPlaying();
+        return player.status().isPlaying();
     }
     
     /* (non-Javadoc)
@@ -494,7 +529,7 @@ public class VLCMediaPlayer implements IMediaPlayer{
     */
    @Override
    public long getMediaTime() {
-		return player.getTime();
+		return player.status().time();
    }
    
    /* (non-Javadoc)
@@ -502,7 +537,7 @@ public class VLCMediaPlayer implements IMediaPlayer{
     */
    @Override
    public void setMediaTime(final long time) {
-	   player.setTime(time - offset);
+	   player.controls().setTime(time - offset);
 	   mediaTimeChanged();
    }
    
@@ -511,10 +546,10 @@ public class VLCMediaPlayer implements IMediaPlayer{
     */
    @Override
 	public void nextFrame() {
-		if (player.isPlaying()) {
+		if (player.status().isPlaying()) {
 			stop();
 		}
-		player.nextFrame();
+		player.controls().nextFrame();
 		mediaTimeChanged();
    }
 	
@@ -524,12 +559,12 @@ public class VLCMediaPlayer implements IMediaPlayer{
     @Override
 	public void previousFrame() {
 		if (player != null) {
-			if (player.isPlaying()) {
+			if (player.status().isPlaying()) {
 				stop();
 			}
 			
 			double msecPerSample = getMilliSecondsPerSample();
-			long curTime = player.getTime();
+			long curTime = player.status().time();
 			
         	long newTime = (long) Math.floor(curTime - msecPerSample);
         	
@@ -545,7 +580,7 @@ public class VLCMediaPlayer implements IMediaPlayer{
 	 */
     @Override
 	public float getRate() {
-        return player.getRate();
+        return player.status().rate();
     }
     
     /* (non-Javadoc)
@@ -553,7 +588,7 @@ public class VLCMediaPlayer implements IMediaPlayer{
 	 */
     @Override
 	public void setRate(float rate) {
-        player.setRate(rate);
+        player.controls().setRate(rate);
     }
 
     /* (non-Javadoc)
@@ -575,13 +610,13 @@ public class VLCMediaPlayer implements IMediaPlayer{
 
 	@Override
 	public float getPosition() {
-		return player.getPosition();
+		return player.status().position();
 	}
 
 
 	@Override
 	public void setPosition(float position) {
-		player.setPosition(position);
+		player.controls().setPosition(position);
 	}
 	
 	@Override
