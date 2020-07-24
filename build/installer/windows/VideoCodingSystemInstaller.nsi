@@ -5,7 +5,7 @@
  
 !define AppName "UiL OTS Video Coding System"
 !define ShortName "VideoCodingSystem"
-!define JRE_VERSION "1.6.0"
+!define JRE_VERSION "11.0"
 !define Vendor "UiL OTS Labs"
 !define ShortVendor "UiLOTSLabs"
  
@@ -258,11 +258,6 @@ SectionEnd
 Section "Desktop shortcut" SecCreateDesktopShortcut
 	SectionIn 1 ; Can be unselected
 	CreateShortCut "$DESKTOP\${AppName}.lnk" "$JREPath" '-jar "$INSTDIR\${JarFile}"' "$INSTDIR\logo.ico" 0
-SectionEnd
-
-Section "Associate .UiL files" SecFileAssociation
-	SectionIn 1;
-	${registerExtension} "$JREPath" '-jar "$INSTDIR\${JarFile}"' ".UiL" "UiL OTS Video Coding Project" "$INSTDIR\logo.ico"
 SectionEnd
  
 ;--------------------------------

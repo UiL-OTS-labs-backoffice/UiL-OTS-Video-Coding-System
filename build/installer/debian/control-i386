@@ -4,7 +4,7 @@ Section: x11
 Priority: optional
 Architecture: i386
 Installed-Size: 27346
-Depends: openjdk-6-jre | java-runtime (= 1.8), vlc, ffmpeg
+Depends: openjdk-6-jre | java-runtime (= 11), vlc, ffmpeg
 Maintainer: T.D. Mees <T.D.Mees@uu.nl>
 Homepage: http://uilots-labs.wp.hum.uu.nl/
 Vcs-Browser: https://github.com/UiL-OTS-labs-backoffice/UiL-OTS-Video-Coding-System
